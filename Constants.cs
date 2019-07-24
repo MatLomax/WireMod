@@ -58,6 +58,7 @@ namespace WireMod
             new List<string>
             {
                 "PlayerDistanceSensor",
+                "NPCDistanceSensor",
             },
         };
 
@@ -84,6 +85,7 @@ namespace WireMod
             { "OutputLamp", "Output Lamp" },
             { "OutputSign", "Output Sign" },
             { "PlayerDistanceSensor", "Nearest Player Distance Sensor" },
+            { "NPCDistanceSensor", "Nearest NPC Distance Sensor" },
         };
     }
 }
