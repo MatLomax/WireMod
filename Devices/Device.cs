@@ -79,7 +79,7 @@ namespace WireMod.Devices
             }
         }
 
-        public List<(string Line, Color Color)> Debug()
+        public virtual List<(string Line, Color Color)> Debug()
         {
             var defaultColor = Color.Black;
             var titleColor = Color.DarkBlue;

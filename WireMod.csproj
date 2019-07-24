@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="Devices\Constants\StringConstant.cs" />
     <Compile Include="Devices\Filters\Filter.cs" />
     <Compile Include="Devices\Maths\Divide.cs" />
@@ -99,6 +100,7 @@
     <Content Include="Images\Add.png" />
     <Content Include="Images\Icons\DeleteIcon.png" />
     <Content Include="Images\Divide.png" />
+    <Content Include="Images\Icons\NoneIcon.png" />
     <Content Include="Images\Icons\StringConstantIcon.png" />
     <Content Include="Images\Multiply.png" />
     <Content Include="Images\StringConstant.png" />

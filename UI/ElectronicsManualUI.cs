@@ -98,12 +98,76 @@ namespace WireMod.UI
 		}
 	}
 
+	public class ManualButton : UIImageButton
+	{
+		public string Name { get; set; }
+		public int ToolCat { get; set; }
+		public int Tool { get; set; }
+		
+		public ManualButton(string name, Texture2D texture) : base(texture)
+		{
+			this.Name = name;
+		}
+
+		protected override void DrawSelf(SpriteBatch spriteBatch)
+		{
+			var modPlayer = Main.LocalPlayer.GetModPlayer<WireModPlayer>();
+			if (modPlayer == null)
+			{
+				base.DrawSelf(spriteBatch);
+				return;
+			}
+
+			var hovering = this.ContainsPoint(Main.MouseScreen);
+
+			if (this.ToolCat == modPlayer.ToolCategoryMode && this.Tool == modPlayer.ToolMode && modPlayer.ToolMode + modPlayer.ToolCategoryMode > 0)
+			{
+				this.SetVisibility(1f, 1f);
+			}
+			else if (hovering)
+			{
+				this.SetVisibility(0.5f, 0.5f);
+			}
+			else
+			{
+				this.SetVisibility(0.25f, 0.25f);
+			}
+
+			if (hovering)
+			{
+				//Main.NewText("Hovering DrawSelf");
+				Main.instance.MouseText(Constants.ToolNames[this.Name]);
+				
+				// Click
+				if (!Main.mouseLeftRelease || !Main.mouseLeft)
+				{
+					base.DrawSelf(spriteBatch);
+					return;
+				}
+				
+				modPlayer.ToolCategoryMode = this.ToolCat;
+				modPlayer.ToolMode = this.Tool;
+
+				if (this.ToolCat <= 0)
+				{
+					base.DrawSelf(spriteBatch);
+					return;
+				}
+
+				modPlayer.PlacingDevice = (Device)Activator.CreateInstance(Type.GetType("WireMod.Devices." + Constants.Tools[this.ToolCat][this.Tool]) ?? throw new InvalidOperationException("Device not found!"));
+				modPlayer.PlacingDevice.SetPins();
+			}
+
+			base.DrawSelf(spriteBatch);
+		}
+	}
+
 	public class ElectronicsManualUI : UIState
 	{
 		public static bool Visible { get; set; }
 
 		public static UIPanel BackgroundPanel;
-		
+
 		public float OffsetX = 200f;
 		public float OffsetY = 0f;
 		public float PanelWidth = 250f;
@@ -128,7 +192,7 @@ namespace WireMod.UI
 
 			var currentY = 0f;
 			var currentX = this.Padding;
-            
+
 			for (var cat = 0; cat < Constants.ToolCategories.Count; cat++)
 			{
 				var uiTitle = new UIText(Constants.ToolCategories[cat]);
@@ -152,7 +216,7 @@ namespace WireMod.UI
 					}
 
 					//var a = WireMod.Instance.GetTexture($"Images/{tool}");
-					
+
 					//var cropped = new Texture2D(Main.graphics.GraphicsDevice, 16, 16);
 
 					//// Copy the data from the cropped region into a buffer, then into the new texture
@@ -161,37 +225,46 @@ namespace WireMod.UI
 					//a.GetData(0, newBounds, data, 0, newBounds.Width * newBounds.Height);
 					//croppedTexture.SetData(data);
 
-					var button = new UIImageButton(WireMod.Instance.GetTexture($"Images/Icons/{tool}Icon"));
+					var button = new ManualButton(tool, WireMod.Instance.GetTexture($"Images/Icons/{tool}Icon"))
+					{
+						ToolCat = cat,
+						Tool = i
+					};
+
 					button.Height.Set(this.ButtonSize, 0f);
 					button.Width.Set(this.ButtonSize, 0f);
 					button.Left.Set(currentX, 0f);
 					button.Top.Set(currentY - (this.ButtonSize / 2), 0f);
+					button.SetVisibility(0f, 0.25f);
 
-					var catIndex = cat;
-					var index = i;
-					var name = tool;
-
-					button.OnClick += (e, el) =>
-					{
-						//Main.NewText(typeof(AndGate).AssemblyQualifiedName);
-						//Main.NewText("WireMod.Devices." + Constants.Tools[catIndex][index]);
-						if (Main.dedServ) return;
-
-						var modPlayer = Main.LocalPlayer.GetModPlayer<WireModPlayer>();
-						if (modPlayer == null) return;
-						
-						modPlayer.ToolCategoryMode = catIndex;
-						modPlayer.ToolMode = index;
-
-						if (catIndex == 0) return;
-						
-						modPlayer.PlacingDevice = (Device)Activator.CreateInstance(Type.GetType("WireMod.Devices." + Constants.Tools[catIndex][index]) ?? throw new InvalidOperationException("Device not found!"));
-						modPlayer.PlacingDevice.SetPins();
-					};
+					//var catIndex = cat;
+					//var index = i;
 
 					//button.OnMouseOver += (e, el) =>
 					//{
-					//	Main.hoverItemName = name;
+					//	if (Main.dedServ) return;
+
+					//	Main.hoverItemName = Constants.Tools[catIndex][index];
+
+					//	//if (el.IsMouseHovering)
+					//	//{
+					//	//	((UIImageButton)el).SetVisibility(1f, 0.5f);
+					//	//}
+
+					//	//if (((UIImageButton)el).IsMouseHovering) Main.NewText("Hovering");
+
+					//	if (!Main.mouseLeftRelease || !Main.mouseLeft) return;
+
+					//	//var modPlayer = Main.LocalPlayer.GetModPlayer<WireModPlayer>();
+					//	//if (modPlayer == null) return;
+
+					//	//modPlayer.ToolCategoryMode = catIndex;
+					//	//modPlayer.ToolMode = index;
+
+					//	//if (catIndex == 0) return;
+
+					//	//modPlayer.PlacingDevice = (Device)Activator.CreateInstance(Type.GetType("WireMod.Devices." + Constants.Tools[catIndex][index]) ?? throw new InvalidOperationException("Device not found!"));
+					//	//modPlayer.PlacingDevice.SetPins();
 					//};
 
 					BackgroundPanel.Append(button);
@@ -205,20 +278,20 @@ namespace WireMod.UI
 
 			BackgroundPanel.Height.Set(currentY + this.Padding, 0f);
 
-
 			this.Append(BackgroundPanel);
 			Recalculate();
 		}
 
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
-			if (BackgroundPanel.ContainsPoint(new Vector2((float)Main.mouseX, (float)Main.mouseY)))
+			base.DrawSelf(spriteBatch);
+
+			if (BackgroundPanel.ContainsPoint(Main.MouseScreen))
 			{
 				Main.LocalPlayer.mouseInterface = true;
 			}
 
-			var modPlayer = Main.player[Main.myPlayer]?.GetModPlayer<WireModPlayer>(WireMod.Instance);
-			
+			var modPlayer = Main.LocalPlayer.GetModPlayer<WireModPlayer>();
 			if (modPlayer != null && modPlayer.ShowPreview) this.DrawPreview(spriteBatch);
 		}
 
@@ -233,15 +306,17 @@ namespace WireMod.UI
 
 			var screenRect = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
 
-
 			//var mouseTile = new Point16((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16);
-		    var mouseTile = WireMod.Instance.GetMouseTilePosition();
+			var mouseTile = WireMod.Instance.GetMouseTilePosition();
 			//Main.NewText($"Mouse Tile: X {mouseTile.X}, Y {mouseTile.Y}");
 
 			var offsetMouseTile = new Point16(mouseTile.X - dev.Origin.X, mouseTile.Y - dev.Origin.Y);
 			//Main.NewText($"Offset Mouse Tile: X {offsetMouseTile.X}, Y {offsetMouseTile.Y}");
 
-			var offsetMouseWorld = new Point16(offsetMouseTile.X * 16, offsetMouseTile.Y * 16);
+			var offsetMouseWorld = new Point16(
+				(int)(offsetMouseTile.X * 16 * Main.GameZoomTarget),
+				(int)(offsetMouseTile.Y * 16 * Main.GameZoomTarget)
+			);
 			//Main.NewText($"Offset Mouse World: X {offsetMouseWorld.X}, Y {offsetMouseWorld.Y}");
 
 			var offsetMouseScreen = new Point16(offsetMouseWorld.X - screenRect.X, offsetMouseWorld.Y - screenRect.Y);
@@ -252,8 +327,8 @@ namespace WireMod.UI
 			var deviceScreenRect = new Rectangle(
 				offsetMouseScreen.X,
 				offsetMouseScreen.Y,
-				dev.Width * 16,
-				dev.Height * 16
+				(int)(dev.Width * 16 * Main.GameZoomTarget),
+				(int)(dev.Height * 16 * Main.GameZoomTarget)
 			);
 
 			spriteBatch.Draw(texture, deviceScreenRect, Color.White * 0.5f);

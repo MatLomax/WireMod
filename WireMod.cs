@@ -34,18 +34,19 @@ namespace WireMod
         {
             Terraria.ModLoader.IO.TagSerializer.AddSerializer(new DeviceSerializer());
 
-            if (Main.dedServ) return;
+            if (Main.netMode == NetmodeID.Server) return;
+            //if (Main.dedServ) return;
 
-            this.ElectronicsManualUI = new ElectronicsManualUI();
-            this.ElectronicsManualUI.Activate();
-            this.ElectronicsVisionUI = new ElectronicsVisionUI();
-            this.ElectronicsVisionUI.Activate();
+            //this.ElectronicsManualUI = new ElectronicsManualUI();
+            //this.ElectronicsManualUI.Activate();
+            //this.ElectronicsVisionUI = new ElectronicsVisionUI();
+            //this.ElectronicsVisionUI.Activate();
 
             this.ElectronicsManualUserInterface = new UserInterface();
-            this.ElectronicsManualUserInterface.SetState(this.ElectronicsManualUI);
+            //this.ElectronicsManualUserInterface.SetState(this.ElectronicsManualUI);
             
             this.ElectronicsVisionUserInterface = new UserInterface();
-            this.ElectronicsVisionUserInterface.SetState(this.ElectronicsVisionUI);
+            //this.ElectronicsVisionUserInterface.SetState(this.ElectronicsVisionUI);
 
             this.DebuggerUserInterface = new UserInterface();
         }
@@ -55,8 +56,8 @@ namespace WireMod
             // TODO: Fix this bullshit
             foreach (var device in Devices.Where(d => d.Pins["Out"].Count > 0)) device.Pins["Out"][0].GetValue();
 
-            //if (Main.netMode == NetmodeID.Server) return;
-            if (Main.dedServ) return;
+            if (Main.netMode == NetmodeID.Server) return;
+            //if (Main.dedServ) return;
 
             if (DebuggerUI.Visible)
             {
@@ -76,7 +77,8 @@ namespace WireMod
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
-            if (Main.dedServ) return;
+            if (Main.netMode == NetmodeID.Server) return;
+            //if (Main.dedServ) return;
 
             var mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
             if (mouseTextIndex != -1)
@@ -85,12 +87,6 @@ namespace WireMod
                     "WireMod: Devices",
                     delegate
                     {
-                        if (DebuggerUI.Visible)
-                        {
-                            this.DebuggerUserInterface.Draw(Main.spriteBatch, new GameTime());
-                            DebuggerUI.Visible = false;
-                        }
-
                         if (ElectronicsManualUI.Visible)
                         {
                             this.ElectronicsManualUserInterface?.Draw(Main.spriteBatch, new GameTime());
@@ -101,6 +97,12 @@ namespace WireMod
                         {
                             this.ElectronicsVisionUserInterface?.Draw(Main.spriteBatch, new GameTime());
                             ElectronicsVisionUI.Visible = false;
+                        }
+
+                        if (DebuggerUI.Visible)
+                        {
+                            this.DebuggerUserInterface?.Draw(Main.spriteBatch, new GameTime());
+                            DebuggerUI.Visible = false;
                         }
 
                         return true;
@@ -125,12 +127,12 @@ namespace WireMod
 
         public (int X, int Y) GetMouseTilePosition()
         {
-            //var zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+            var zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             var (x, y) = this.GetMouseWorldPosition();
 
             return (
-                (int)x / 16,
-                (int)y / 16
+                (int)((x / 16 / Main.GameZoomTarget) - zero.X),
+                (int)((y / 16 / Main.GameZoomTarget) - zero.Y)
             );
         }
 
@@ -143,6 +145,7 @@ namespace WireMod
 
         #region Device Functions
         public static Device GetDevice(Point16 location) => GetDevice(location.X, location.Y);
+        public static Device GetDevice((int X, int Y) location) => GetDevice(location.X, location.Y);
         public static Device GetDevice(int x, int y)
         {
             return Devices.FirstOrDefault(d => d.LocationRect.Intersects(new Rectangle(x, y, 1, 1)));
@@ -166,8 +169,8 @@ namespace WireMod
             )));
         }
 
-        public static void PlaceDevice(Device device, Point16 location, string value = null) => PlaceDevice(device, location.X, location.Y, null);
-        public static void PlaceDevice(Device device, int x, int y, string value = null)
+        public static void PlaceDevice(Device device, Point16 location) => PlaceDevice(device, location.X, location.Y);
+        public static void PlaceDevice(Device device, int x, int y)
         {
             // Check if the target area is clear of other devices
             if (!CanPlace(device, x, y)) return;
@@ -175,7 +178,6 @@ namespace WireMod
             // Add to arrays
             device.LocationRect = new Rectangle(x - device.Origin.X, y - device.Origin.Y, device.Width, device.Height);
             device.SetPins();
-            if (value != null) device.Value = value;
             Devices.Add(device);
 
             foreach (var pinDesign in device.PinLayout)

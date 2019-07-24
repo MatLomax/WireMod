@@ -90,13 +90,19 @@ namespace WireMod
 
 		public void ReceivePlace(BinaryReader reader, int from)
 		{
-            var name = reader.ReadString();
+			var name = reader.ReadString();
 			var x = reader.ReadInt32();
 			var y = reader.ReadInt32();
 			var value = reader.ReadString();
-            
+
 			WireMod.Instance.Logger.Info($"Received Place: name {name}, value {value}, x {x}, y {y}");
-			
+
+			if (name == "")
+			{
+				WireMod.Instance.Logger.Info($"Ignoring last Place message");
+				return;
+			}
+
 			if (Main.netMode == NetmodeID.Server)
 			{
 				SendPlace(-1, from, name, value, x, y);
@@ -106,7 +112,8 @@ namespace WireMod
 				var device = (Device)Activator.CreateInstance(Type.GetType("WireMod.Devices." + name) ?? throw new InvalidOperationException("Device not found!"));
 				device.LocationRect = new Rectangle(x, y, device.Width, device.Height);
 
-				WireMod.PlaceDevice(device, x, y, value);
+				device.Value = value;
+				WireMod.PlaceDevice(device, x, y);
 			//}
 		}
 		#endregion
@@ -114,7 +121,7 @@ namespace WireMod
 		#region Request
 		public void SendRequest(int to, int from)
 		{
-			var packet = GetPacket(Place, from);
+			var packet = GetPacket(Request, from);
 
 			packet.Write(from);
 
@@ -151,14 +158,14 @@ namespace WireMod
 			var y = reader.ReadInt32();
 
 			WireMod.Instance.Logger.Info($"Received Remove: x {x}, y {y}");
-			
+
 			if (Main.netMode == NetmodeID.Server)
 			{
 				SendRemove(-1, from, x, y);
 			}
 			//else
 			//{
-				WireMod.RemoveDevice(x, y);
+			WireMod.RemoveDevice(x, y);
 			//}
 		}
 		#endregion
@@ -182,7 +189,7 @@ namespace WireMod
 			var srcY = reader.ReadInt32();
 			var destX = reader.ReadInt32();
 			var destY = reader.ReadInt32();
-		
+
 			WireMod.Instance.Logger.Info($"Received Connect: srcX {srcX}, srcY {srcY}, destX {destX}, destY {destY}");
 
 			if (Main.netMode == NetmodeID.Server)
@@ -191,14 +198,14 @@ namespace WireMod
 			}
 			//else
 			//{
-				var src = WireMod.GetDevicePin(srcX, srcY);
-				var dest = WireMod.GetDevicePin(destX, destY);
-				if (src == null || dest == null) return;
+			var src = WireMod.GetDevicePin(srcX, srcY);
+			var dest = WireMod.GetDevicePin(destX, destY);
+			if (src == null || dest == null) return;
 
-				src.Disconnect();
-				dest.Disconnect();
-				src.ConnectedPin = dest;
-				dest.ConnectedPin = src;
+			src.Disconnect();
+			dest.Disconnect();
+			src.ConnectedPin = dest;
+			dest.ConnectedPin = src;
 			//}
 		}
 		#endregion
@@ -220,15 +227,15 @@ namespace WireMod
 			var y = reader.ReadInt32();
 
 			WireMod.Instance.Logger.Info($"Received Disconnect: x {x}, y {y}");
-			
+
 			if (Main.netMode == NetmodeID.Server)
 			{
 				this.SendDisconnect(-1, from, x, y);
 			}
 			//else
 			//{
-				var src = WireMod.GetDevicePin(x, y);
-				src?.Disconnect();
+			var src = WireMod.GetDevicePin(x, y);
+			src?.Disconnect();
 			//}
 		}
 		#endregion
@@ -257,14 +264,14 @@ namespace WireMod
 			}
 			//else
 			//{
-				var device = WireMod.GetDevice(x, y);
-				if (device == null) return;
+			var device = WireMod.GetDevice(x, y);
+			if (device == null) return;
 
-				device.Value = value;
+			device.Value = value;
 			//}
 		}
 		#endregion
-		
+
 		#region TripWire
 		public void SendTripWire(int to, int from, int x, int y)
 		{
@@ -283,10 +290,10 @@ namespace WireMod
 
 			WireMod.Instance.Logger.Info($"Received TripWire: x {x}, y {y}");
 
-			if (Main.netMode == NetmodeID.Server)
-			{
+			//if (Main.netMode == NetmodeID.Server)
+			//{
 				Wiring.TripWire(x, y, 1, 1);
-			}
+			//}
 		}
 		#endregion
 	}

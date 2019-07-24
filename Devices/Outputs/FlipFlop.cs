@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -43,12 +44,23 @@ namespace WireMod.Devices
                 }
                 else
                 {
+                    Wiring.TripWire(this.Pins["Out"][0].Location.X, this.Pins["Out"][0].Location.Y, 1, 1);
                     WireMod.PacketHandler.SendTripWire(256, Main.myPlayer, this.Pins["Out"][0].Location.X, this.Pins["Out"][0].Location.Y);
                 }
             }
 
             this.Value = in0.ToString();
             return in0;
+        }
+
+        public override List<(string Line, Color Color)> Debug()
+        {
+            var debug = base.Debug();
+
+            debug.Add(("------------------------", Color.Black));
+            debug.Add(($"Stored Value: {this.Value}", Color.Purple));
+
+            return debug;
         }
     }
 }

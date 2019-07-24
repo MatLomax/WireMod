@@ -31,10 +31,10 @@ namespace WireMod
 			{
 				mod.Logger.Info($"Loading device \"{device.Name}\": X {device.LocationRect.X}, Y: {device.LocationRect.Y}");
 
-				if (Main.netMode == NetmodeID.Server)
-				{
-					WireMod.PacketHandler.SendPlace(-1, -1, device.Name, device.Value, device.LocationRect.X, device.LocationRect.Y);
-				}
+				//if (Main.netMode == NetmodeID.Server)
+				//{
+				//	WireMod.PacketHandler.SendPlace(-1, -1, device.Name, device.Value, device.LocationRect.X, device.LocationRect.Y);
+				//}
 
 				WireMod.PlaceDevice(device, device.LocationRect.X, device.LocationRect.Y);
 			}

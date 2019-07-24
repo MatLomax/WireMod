@@ -32,12 +32,16 @@ namespace WireMod.Items
         {
             if (Main.netMode == NetmodeID.Server) return;
 
-            var modPlayer = player.GetModPlayer<WireModPlayer>(WireMod.Instance);
+            var modPlayer = player.GetModPlayer<WireModPlayer>();
+
+            WireMod.Instance.ElectronicsManualUserInterface.SetState(new ElectronicsManualUI());
             ElectronicsManualUI.Visible = true;
+
+            WireMod.Instance.ElectronicsVisionUserInterface.SetState(new ElectronicsVisionUI());
             ElectronicsVisionUI.Visible = true;
+
             modPlayer.ShowPreview = false;
-
-
+            
             if (modPlayer.PlacingDevice != null)
             {
                 if (modPlayer.ToolCategoryMode > 0)
@@ -47,10 +51,8 @@ namespace WireMod.Items
             }
             else
             {
-                var dev = WireMod.GetDevice((int)(Main.MouseWorld.X / 16f), (int)(Main.MouseWorld.Y / 16f));
+                var dev = WireMod.GetDevice(WireMod.Instance.GetMouseTilePosition());
                 if (dev == null) return;
-
-                //Main.NewText("Debug");
 
                 WireMod.Instance.DebuggerUserInterface.SetState(new DebuggerUI(dev.Name, dev.Debug()));
                 DebuggerUI.Visible = true;
@@ -70,27 +72,27 @@ namespace WireMod.Items
             var device = WireMod.GetDevice(x, y);
 
             var pin = WireMod.Pins.FirstOrDefault(p => p.Location == new Point16(x, y));
-
-            // No tool selected
-            if (modPlayer.ToolMode == -1)
-            {
-                if (device == null) return false;
-
-                if (player.altFunctionUse == 2)
-                {
-                    // Right click
-                    device.OnRightClick(pin);
-
-                    return true;
-                }
-
-                // Do something?
-            }
-
+            
             // Wiring tools
             if (modPlayer.ToolCategoryMode == 0)
             {
+                // No tool selected
                 if (modPlayer.ToolMode == 0)
+                {
+                    if (device == null) return false;
+
+                    if (player.altFunctionUse == 2)
+                    {
+                        // Right click
+                        device.OnRightClick(pin);
+
+                        return true;
+                    }
+
+                    // Do something?
+                }
+
+                if (modPlayer.ToolMode == 1)
                 {
                     if (pin == null) return true;
 
@@ -157,7 +159,7 @@ namespace WireMod.Items
                     #endregion
                 }
 
-                if (modPlayer.ToolMode == 1)
+                if (modPlayer.ToolMode == 2)
                 {
                     // Delete device
                     if (device == null) return false;

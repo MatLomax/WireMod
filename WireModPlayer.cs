@@ -16,8 +16,8 @@ namespace WireMod
 		//public bool ElectronicsVisionVisible;
 		//public bool DebuggerVisible;
 		public bool ShowPreview;
-		public int ToolCategoryMode = -1;
-		public int ToolMode = -1;
+		public int ToolCategoryMode = 0;
+		public int ToolMode = 0;
 
 		//internal UserInterface ElectronicsManualUserInterface = new UserInterface();
 		//internal UserInterface ElectronicsVisionUserInterface = new UserInterface();
