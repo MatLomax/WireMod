@@ -1,0 +1,3 @@
+author = matlomax
+version = 0.1
+displayName = WireMod

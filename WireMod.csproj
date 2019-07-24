@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8298EAB6-0586-4BDA-9483-83624B66B13A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WireMod</RootNamespace>
+    <AssemblyName>WireMod</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Devices\Constants\StringConstant.cs" />
+    <Compile Include="Devices\Filters\Filter.cs" />
+    <Compile Include="Devices\Maths\Divide.cs" />
+    <Compile Include="Devices\Maths\Multiply.cs" />
+    <Compile Include="Devices\Maths\Subtract.cs" />
+    <Compile Include="Devices\Maths\Add.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="Items\MicrochipItem.cs" />
+    <Compile Include="Items\ElectronicsManual.cs" />
+    <Compile Include="PacketHandler.cs" />
+    <Compile Include="UI\ElectronicsVisionUI.cs" />
+    <Compile Include="UI\ElectronicsManualUI.cs" />
+    <Compile Include="UI\DebuggerUI.cs" />
+    <Compile Include="WireMod.cs" />
+    <Compile Include="Devices\Constants\TeamColorConstant.cs" />
+    <Compile Include="Devices\Constants\NumberConstant.cs" />
+    <Compile Include="Devices\Gates\NotGate.cs" />
+    <Compile Include="Devices\Gates\OrGate.cs" />
+    <Compile Include="Devices\Gates\AndGate.cs" />
+    <Compile Include="Devices\Device.cs" />
+    <Compile Include="Devices\Constants\FalseConstant.cs" />
+    <Compile Include="Devices\IOutput.cs" />
+    <Compile Include="Devices\Maths\GreaterThan.cs" />
+    <Compile Include="Devices\Maths\LessThan.cs" />
+    <Compile Include="Devices\Outputs\FlipFlop.cs" />
+    <Compile Include="Devices\Outputs\OutputSign.cs" />
+    <Compile Include="Devices\Outputs\OutputLamp.cs" />
+    <Compile Include="Devices\Pin.cs" />
+    <Compile Include="Devices\Constants\TrueConstant.cs" />
+    <Compile Include="Devices\PinDesign.cs" />
+    <Compile Include="Devices\Sensors\PlayerDistanceSensor.cs" />
+    <Compile Include="WireModPlayer.cs" />
+    <Compile Include="WireModWorld.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\Untinker\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_32\Microsoft.Xna.Framework\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_32\Microsoft.Xna.Framework.Game\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_32\Microsoft.Xna.Framework.Graphics\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Graphics.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Xact, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_32\Microsoft.Xna.Framework.Xact\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Xact.dll</HintPath>
+    </Reference>
+    <Reference Include="ReLogic">
+      <HintPath>..\Untinker\ReLogic.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="Terraria">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\terraria\Terraria.exe</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Images\Add.png" />
+    <Content Include="Images\Icons\DeleteIcon.png" />
+    <Content Include="Images\Divide.png" />
+    <Content Include="Images\Icons\StringConstantIcon.png" />
+    <Content Include="Images\Multiply.png" />
+    <Content Include="Images\StringConstant.png" />
+    <Content Include="Images\Subtract.png" />
+    <Content Include="Images\Icons\WiringIcon.png" />
+    <Content Include="Images\Icons\AddIcon.png" />
+    <Content Include="Images\Icons\AndGateIcon.png" />
+    <Content Include="Images\Icons\DivideIcon.png" />
+    <Content Include="Items\ElectronicsManual.png" />
+    <Content Include="Images\Icons\FalseConstantIcon.png" />
+    <Content Include="Images\Icons\FlipFlopIcon.png" />
+    <Content Include="Images\Icons\GreaterThanIcon.png" />
+    <Content Include="Images\Icons\LessThanIcon.png" />
+    <Content Include="Items\MicrochipItem.png" />
+    <Content Include="Images\Icons\MultiplyIcon.png" />
+    <Content Include="Images\Icons\NotGateIcon.png" />
+    <Content Include="Images\Icons\NumberConstantIcon.png" />
+    <Content Include="Images\Icons\OrGateIcon.png" />
+    <Content Include="Images\Icons\OutputLampIcon.png" />
+    <Content Include="Images\Icons\OutputSignIcon.png" />
+    <Content Include="Images\Icons\PlayerDistanceSensorIcon.png" />
+    <Content Include="Images\Icons\SubtractIcon.png" />
+    <Content Include="Images\Icons\TeamColorConstantIcon.png" />
+    <Content Include="Images\Icons\TrueConstantIcon.png" />
+    <Content Include="Images\FlipFlop.png" />
+    <Content Include="Images\GreaterThan.png" />
+    <Content Include="Images\LessThan.png" />
+    <Content Include="Images\NotGate.png" />
+    <Content Include="Images\NumberConstant.png" />
+    <Content Include="Images\OrGate.png" />
+    <Content Include="Images\AndGate.png" />
+    <Content Include="Images\FalseConstant.png" />
+    <Content Include="Images\OutputSign.png" />
+    <Content Include="Images\OutputLamp.png" />
+    <Content Include="Images\PlayerDistanceSensor.png" />
+    <Content Include="Images\TeamColorConstant.png" />
+    <Content Include="Images\TrueConstant.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>"C:\Program Files (x86)\Steam\steamapps\common\terraria\tModLoaderServer.exe" -build "$(ProjectDir)\" -eac "$(TargetPath)"</PostBuildEvent>
+  </PropertyGroup>
+</Project>
