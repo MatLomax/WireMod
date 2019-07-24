@@ -205,8 +205,8 @@ namespace WireMod.Items
 
             // Reset
             modPlayer.PlacingDevice = null;
-            modPlayer.ToolCategoryMode = -1;
-            modPlayer.ToolMode = -1;
+            modPlayer.ToolCategoryMode = 0;
+            modPlayer.ToolMode = 0;
 
             return true;
         }
