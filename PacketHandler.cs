@@ -105,9 +105,8 @@ namespace WireMod
 			//{
 				var device = (Device)Activator.CreateInstance(Type.GetType("WireMod.Devices." + name) ?? throw new InvalidOperationException("Device not found!"));
 				device.LocationRect = new Rectangle(x, y, device.Width, device.Height);
-				device.Value = value;
 
-				WireMod.PlaceDevice(device, x, y);
+				WireMod.PlaceDevice(device, x, y, value);
 			//}
 		}
 		#endregion

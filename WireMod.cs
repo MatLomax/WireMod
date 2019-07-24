@@ -166,8 +166,8 @@ namespace WireMod
             )));
         }
 
-        public static void PlaceDevice(Device device, Point16 location, string value = "") => PlaceDevice(device, location.X, location.Y, value);
-        public static void PlaceDevice(Device device, int x, int y, string value = "")
+        public static void PlaceDevice(Device device, Point16 location, string value = null) => PlaceDevice(device, location.X, location.Y, null);
+        public static void PlaceDevice(Device device, int x, int y, string value = null)
         {
             // Check if the target area is clear of other devices
             if (!CanPlace(device, x, y)) return;
@@ -175,7 +175,7 @@ namespace WireMod
             // Add to arrays
             device.LocationRect = new Rectangle(x - device.Origin.X, y - device.Origin.Y, device.Width, device.Height);
             device.SetPins();
-            device.Value = value;
+            if (value != null) device.Value = value;
             Devices.Add(device);
 
             foreach (var pinDesign in device.PinLayout)
