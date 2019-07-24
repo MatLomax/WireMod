@@ -138,10 +138,8 @@ namespace WireMod
 
         // For lack of a better place to put this...
 
-        //public static Device[,] Devices = new Device[Main.maxTilesX, Main.maxTilesY];
         public static List<Device> Devices = new List<Device>();
         public static List<Pin> Pins = new List<Pin>();
-        //public static Pin[,] Pins = new Pin[Main.maxTilesX, Main.maxTilesY];
 
         #region Device Functions
         public static Device GetDevice(Point16 location) => GetDevice(location.X, location.Y);

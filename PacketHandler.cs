@@ -1,39 +1,15 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 using WireMod.Devices;
 
 namespace WireMod
 {
-	internal abstract class PacketHandler
-	{
-		internal byte HandlerType { get; set; }
-
-		public abstract void HandlePacket(BinaryReader reader, int from);
-
-		protected PacketHandler(/*byte handlerType*/)
-		{
-			//HandlerType = handlerType;
-		}
-
-		protected ModPacket GetPacket(byte packetType, int fromWho)
-		{
-			var p = WireMod.Instance.GetPacket();
-			//p.Write(HandlerType);
-			p.Write(packetType);
-			//if (Main.netMode == NetmodeID.Server)
-			//{
-			//	p.Write((byte)fromWho);
-			//}
-			return p;
-		}
-	}
-
-	internal class DevicePacketHandler : PacketHandler
+	internal class DevicePacketHandler
 	{
 		public const byte Place = 1;
 		public const byte Remove = 2;
@@ -43,11 +19,15 @@ namespace WireMod
 		public const byte TripWire = 6;
 		public const byte Request = 7;
 
-		public DevicePacketHandler(/*byte handlerType*/) /*: base(handlerType)*/
+
+		protected ModPacket GetPacket(byte packetType, int fromWho)
 		{
+			var packet = WireMod.Instance.GetPacket();
+			packet.Write(packetType);
+			return packet;
 		}
 
-		public override void HandlePacket(BinaryReader reader, int from)
+		public void HandlePacket(BinaryReader reader, int from)
 		{
 			switch (reader.ReadByte())
 			{
@@ -97,11 +77,11 @@ namespace WireMod
 
 			WireMod.Instance.Logger.Info($"Received Place: name {name}, value {value}, x {x}, y {y}");
 
-			if (name == "")
-			{
-				WireMod.Instance.Logger.Info($"Ignoring last Place message");
-				return;
-			}
+			//if (name == "")
+			//{
+			//	WireMod.Instance.Logger.Info("Ignoring last Place message");
+			//	return;
+			//}
 
 			if (Main.netMode == NetmodeID.Server)
 			{
@@ -110,7 +90,8 @@ namespace WireMod
 			//else
 			//{
 				var device = (Device)Activator.CreateInstance(Type.GetType("WireMod.Devices." + name) ?? throw new InvalidOperationException("Device not found!"));
-				device.LocationRect = new Rectangle(x, y, device.Width, device.Height);
+				//device.LocationRect = new Rectangle(x, y, device.Width, device.Height);
+				device.LocationRect = new Rectangle(x - device.Origin.X, y - device.Origin.Y, device.Width, device.Height);
 
 				device.Value = value;
 				WireMod.PlaceDevice(device, x, y);
@@ -138,7 +119,18 @@ namespace WireMod
 
 			foreach (var device in WireMod.Devices)
 			{
-				this.SendPlace(from, 256, device.GetType().Name, device.Value, device.LocationRect.X, device.LocationRect.Y);
+				this.SendPlace(from, 256, device.GetType().Name, device.Value, device.LocationRect.X + device.Origin.X, device.LocationRect.Y + device.Origin.Y);
+			}
+
+			var wires = WireMod.Pins.Where(p => p.Type == "In" && p.IsConnected()).Select(p => new
+			{
+				src = p.Location,
+				dest = p.ConnectedPin.Location
+			}).ToList();
+
+			foreach (var conn in wires)
+			{
+				this.SendConnect(from, 256, conn.src.X, conn.src.Y, conn.dest.X, conn.dest.Y);
 			}
 		}
 		#endregion
