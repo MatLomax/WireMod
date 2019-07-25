@@ -1,4 +1,6 @@
-﻿using Terraria.DataStructures;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Terraria.DataStructures;
 
 namespace WireMod.Devices
 {
@@ -8,7 +10,6 @@ namespace WireMod.Devices
         public int Num { get; set; }
         public string Type { get; set; }
         public string DataType { get; set; } = "bool";
-        public Pin ConnectedPin { get; set; }
 
         public Point16 Location { get; set; }
 
@@ -20,20 +21,18 @@ namespace WireMod.Devices
             set => this._name = value;
         }
 
-        public bool IsConnected() => this.ConnectedPin != null;
+        public abstract bool IsConnected(Pin pin = null);
 
-        public void Disconnect()
-        {
-            if (!this.IsConnected()) return;
-            this.ConnectedPin.ConnectedPin = null;
-            this.ConnectedPin = null;
-        }
+        public abstract void Connect(Pin pin);
+        public abstract void Disconnect(Pin pin = null);
 
         public abstract string GetValue();
+        public abstract List<string> GetDebug();
     }
 
     internal class PinIn : Pin
     {
+        public Pin ConnectedPin { get; set; }
         private string _value => this.ConnectedPin?.GetValue();
 
         public bool GetBool()
@@ -43,7 +42,29 @@ namespace WireMod.Devices
             return i == 1;
         }
 
+        public override bool IsConnected(Pin pin = null) => this.ConnectedPin != null;
+
+        public override void Connect(Pin pin)
+        {
+            if (this.IsConnected()) this.ConnectedPin.Disconnect(this);
+            this.ConnectedPin = pin;
+        }
+
+        public override void Disconnect(Pin pin = null)
+        {
+            if (!this.IsConnected()) return;
+            this.ConnectedPin.Disconnect(this);
+            this.ConnectedPin = null;
+        }
+
         public override string GetValue() => this._value;
+
+        public override List<string> GetDebug()
+        {
+            return this.IsConnected()
+                ? new List<string> { $"{this.Name} [{(this.DataType == "bool" ? (this.GetValue() == "1" ? "True" : (this.GetValue() == "0" ? "False" : "Disconnected")) : this.GetValue())}] => {this.ConnectedPin.Device.Name} {this.ConnectedPin.Name}" }
+                : new List<string> { $"{this.Name} (Disconnected)" };
+        }
 
         public PinIn(Device device)
         {
@@ -54,6 +75,7 @@ namespace WireMod.Devices
 
     internal class PinOut : Pin
     {
+        public List<Pin> ConnectedPins { get; set; } = new List<Pin>();
         private string _value => (this.Device is IOutput ? ((IOutput)this.Device).Output() : "");
 
         public PinOut(Device device)
@@ -62,6 +84,57 @@ namespace WireMod.Devices
             this.Type = "Out";
         }
 
+        public override void Connect(Pin pin)
+        {
+            this.ConnectedPins.Add(pin);
+        }
+
+        public override void Disconnect(Pin pin = null)
+        {
+            if (!this.IsConnected()) return;
+
+            if (pin != null)
+            {
+                if (this.ConnectedPins.Contains(pin)) this.ConnectedPins.Remove(pin);
+                
+                return;
+            }
+
+            this.ConnectedPins.ForEach(p =>
+            {
+                if (p.IsConnected()) p.Disconnect();
+            });
+        }
+
         public override string GetValue() => this._value;
+
+        public override List<string> GetDebug()
+        {
+            var lines = new List<string>();
+
+            if (this.IsConnected())
+            {
+                foreach (var pin in this.ConnectedPins)
+                {
+                    lines.Add($"{this.Name} [{(this.DataType == "bool" ? (this.GetValue() == "1" ? "True" : (this.GetValue() == "0" ? "False" : "Disconnected")) : this.GetValue())}] => {pin.Device.Name} {pin.Name}");
+                }
+            }
+            else
+            {
+                lines.Add($"{this.Name} (Disconnected) [{(this.DataType == "bool" ? (this.GetValue() == "1" ? "True" : (this.GetValue() == "0" ? "False" : "Disconnected")) : this.GetValue())}]");
+            }
+            
+            return lines;
+        }
+
+        public override bool IsConnected(Pin pin = null)
+        {
+            if (pin == null)
+            {
+                return this.ConnectedPins.Count > 0;
+            }
+
+            return this.ConnectedPins.Contains(pin);
+        }
     }
 }

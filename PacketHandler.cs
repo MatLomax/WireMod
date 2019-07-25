@@ -125,7 +125,7 @@ namespace WireMod
 			var wires = WireMod.Pins.Where(p => p.Type == "In" && p.IsConnected()).Select(p => new
 			{
 				src = p.Location,
-				dest = p.ConnectedPin.Location
+				dest = ((PinIn)p).ConnectedPin.Location
 			}).ToList();
 
 			foreach (var conn in wires)
@@ -194,10 +194,8 @@ namespace WireMod
 			var dest = WireMod.GetDevicePin(destX, destY);
 			if (src == null || dest == null) return;
 
-			src.Disconnect();
-			dest.Disconnect();
-			src.ConnectedPin = dest;
-			dest.ConnectedPin = src;
+			src.Connect(dest);
+			dest.Connect(src);
 			//}
 		}
 		#endregion

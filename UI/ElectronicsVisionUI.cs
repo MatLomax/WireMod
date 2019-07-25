@@ -51,14 +51,15 @@ namespace WireMod.UI
 				var pinRect = new Rectangle((int)pin.Location.ToWorldCoordinates(0, 0).X, (int)pin.Location.ToWorldCoordinates(0, 0).Y, 16, 16);
 				if (!screenRect.Intersects(pinRect)) continue;
 
-			    var pinScreenRect = new Rectangle(pinRect.X - screenRect.X, pinRect.Y - screenRect.Y, pinRect.Width, pinRect.Height);
-
-                DrawLine(
-					spriteBatch,
-					pin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2(),
-					pin.ConnectedPin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2(),
-					GetWireColor(pin)
-				);
+				foreach (var p in ((PinOut) pin).ConnectedPins)
+				{
+					DrawLine(
+						spriteBatch,
+						pin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2(),
+						p.Location.ToWorldCoordinates() - screenRect.Location.ToVector2(),
+						GetWireColor(pin)
+					);
+				}
 			}
 		}
 

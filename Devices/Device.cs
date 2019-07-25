@@ -54,9 +54,7 @@ namespace WireMod.Devices
             Item.NewItem(this.LocationRect.X * 16, this.LocationRect.Y * 16, 16, 16, WireMod.Instance.ItemType("Microchip"));
         }
 
-        public virtual void OnPlace()
-        {
-        }
+        public virtual void OnPlace() { }
 
         public virtual Rectangle GetSourceRect(int style = -1) => new Rectangle(0, 0, this.Width * 16, this.Height * 16);
 
@@ -93,21 +91,33 @@ namespace WireMod.Devices
 
             foreach (var pin in this.Pins.Values.SelectMany(p => p.Values))
             {
-                if (pin.IsConnected())
-                {
-                    lines.Add(($"{pin.Name} [{(pin.DataType == "bool" ? (pin.GetValue() == "1" ? "True" : (pin.GetValue() == "0" ? "False" : "Disconnected")) : pin.GetValue())}] => {pin.ConnectedPin.Device.Name} {pin.ConnectedPin.Name}", /*pin.Key == pin ? highlightColor :*/ defaultColor));
-                }
-                else
-                {
-                    if (pin.Type == "Out")
-                    {
-                        lines.Add(($"{pin.Name} (Disconnected) [{(pin.DataType == "bool" ? (pin.GetValue() == "1" ? "True" : (pin.GetValue() == "0" ? "False" : "Disconnected")) : pin.GetValue())}]", /*pin.Key == pin ? highlightColor :*/ defaultColor));
-                    }
-                    else
-                    {
-                        lines.Add(($"{pin.Name} (Disconnected)", /*pin.Key == pin ? highlightColor :*/ defaultColor));
-                    }
-                }
+                lines.AddRange(pin.GetDebug().Select(d => (d, defaultColor)));
+
+                //if (pin.IsConnected())
+                //{
+                //    if (pin.Type == "Out")
+                //    {
+                //        foreach (var p in ((PinOut) pin).ConnectedPins)
+                //        {
+                //            lines.Add(($"{pin.Name} [{(pin.DataType == "bool" ? (pin.GetValue() == "1" ? "True" : (pin.GetValue() == "0" ? "False" : "Disconnected")) : pin.GetValue())}] => {p.Device.Name} {p.Name}", /*pin.Key == pin ? highlightColor :*/ defaultColor));
+                //        }
+                //    }
+                //    else
+                //    {
+                //        lines.Add(($"{pin.Name} [{(pin.DataType == "bool" ? (pin.GetValue() == "1" ? "True" : (pin.GetValue() == "0" ? "False" : "Disconnected")) : pin.GetValue())}] => {((PinIn)pin).ConnectedPin.Device.Name} {((PinIn)pin).ConnectedPin.Name}", /*pin.Key == pin ? highlightColor :*/ defaultColor));
+                //    }
+                //}
+                //else
+                //{
+                //    if (pin.Type == "Out")
+                //    {
+                //        lines.Add(($"{pin.Name} (Disconnected) [{(pin.DataType == "bool" ? (pin.GetValue() == "1" ? "True" : (pin.GetValue() == "0" ? "False" : "Disconnected")) : pin.GetValue())}]", /*pin.Key == pin ? highlightColor :*/ defaultColor));
+                //    }
+                //    else
+                //    {
+                //        lines.Add(($"{pin.Name} (Disconnected)", /*pin.Key == pin ? highlightColor :*/ defaultColor));
+                //    }
+                //}
             }
 
             return lines;

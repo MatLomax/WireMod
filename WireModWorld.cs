@@ -16,7 +16,7 @@ namespace WireMod
 			var wires = WireMod.Pins.Where(p => p.Type == "In" && p.IsConnected()).Select(p => new TagCompound
 			{
 				["src"] = p.Location,
-				["dest"] = p.ConnectedPin.Location
+				["dest"] = ((PinIn)p).ConnectedPin.Location
 			}).ToList();
 			
 			return new TagCompound
@@ -45,8 +45,8 @@ namespace WireMod
 				var dest = WireMod.GetDevicePin(conn.Get<Point16>("dest"));
 				if (src == null || dest == null) continue;
 
-				src.ConnectedPin = dest;
-				dest.ConnectedPin = src;
+				src.Connect(dest);
+				dest.Connect(src);
 			}
 		}
 	}

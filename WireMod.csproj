@@ -36,6 +36,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Devices\Constants\StringConstant.cs" />
     <Compile Include="Devices\Filters\Filter.cs" />
+    <Compile Include="Devices\Maths\Modulo.cs" />
     <Compile Include="Devices\Maths\Divide.cs" />
     <Compile Include="Devices\Maths\Multiply.cs" />
     <Compile Include="Devices\Maths\Subtract.cs" />
@@ -102,8 +103,10 @@
     <Content Include="Images\Add.png" />
     <Content Include="Images\Icons\DeleteIcon.png" />
     <Content Include="Images\Divide.png" />
+    <Content Include="Images\Icons\ModuloIcon.png" />
     <Content Include="Images\Icons\NoneIcon.png" />
     <Content Include="Images\Icons\StringConstantIcon.png" />
+    <Content Include="Images\Modulo.png" />
     <Content Include="Images\Multiply.png" />
     <Content Include="Images\StringConstant.png" />
     <Content Include="Images\Subtract.png" />

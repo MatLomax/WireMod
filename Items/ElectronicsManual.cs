@@ -138,15 +138,20 @@ namespace WireMod.Items
                         return false;
                     }
 
-                    if (this.ConnectingPin.Device.Pins.SelectMany(p => p.Value.Values).Any(p => p.ConnectedPin?.Device == pin.Device))
+                    if (this.ConnectingPin.Device.Pins.SelectMany(p => p.Value.Values).Any(p =>
+                    {
+                        return p.Type == "In"
+                            ? ((PinIn) p).ConnectedPin?.Device == pin.Device
+                            : ((PinOut) p).ConnectedPins.Any(cp => ((PinIn) cp).ConnectedPin?.Device == pin.Device);
+                    }))
                     {
                         Main.NewText("Cancelled - circular connection detected");
                         this.ConnectingPin = null;
                         return false;
                     }
 
-                    this.ConnectingPin.ConnectedPin = pin;
-                    pin.ConnectedPin = this.ConnectingPin;
+                    this.ConnectingPin.Connect(pin);
+                    pin.Connect(this.ConnectingPin);
 
                     if (Main.netMode == NetmodeID.MultiplayerClient)
                     {
