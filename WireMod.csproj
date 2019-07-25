@@ -40,10 +40,12 @@
     <Compile Include="Devices\Maths\Multiply.cs" />
     <Compile Include="Devices\Maths\Subtract.cs" />
     <Compile Include="Devices\Maths\Add.cs" />
+    <Compile Include="Devices\Sensors\NPCDistanceSensor.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Items\MicrochipItem.cs" />
     <Compile Include="Items\ElectronicsManual.cs" />
     <Compile Include="PacketHandler.cs" />
+    <Compile Include="UI\ElectronicsManualButton.cs" />
     <Compile Include="UI\ElectronicsVisionUI.cs" />
     <Compile Include="UI\ElectronicsManualUI.cs" />
     <Compile Include="UI\DebuggerUI.cs" />

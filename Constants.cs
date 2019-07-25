@@ -35,6 +35,7 @@ namespace WireMod
                 "Subtract",
                 "Multiply",
                 "Divide",
+                "Modulo",
             },
             new List<string>
             {
@@ -74,6 +75,7 @@ namespace WireMod
             { "Subtract", "Subtract Operation" },
             { "Multiply", "Multiply Operation" },
             { "Divide", "Divide Operation" },
+            { "Modulo", "Modulo Operation" },
             { "LessThan", "Less Than (<) Comparer" },
             { "GreaterThan", "Greater Than (>) Comparer" },
             { "TrueConstant", "Constant True Value" },

@@ -34,11 +34,11 @@ namespace WireMod.UI
 			}
 			else if (hovering)
 			{
-				this.SetVisibility(0.5f, 0.5f);
+				this.SetVisibility(0.75f, 0.75f);
 			}
 			else
 			{
-				this.SetVisibility(0.25f, 0.25f);
+				this.SetVisibility(0.5f, 0.5f);
 			}
 
 			if (hovering)
