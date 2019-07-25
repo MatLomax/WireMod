@@ -44,8 +44,7 @@ namespace WireMod
             },
             new List<string>
             {
-                "TrueConstant",
-                "FalseConstant",
+                "BooleanConstant",
                 "NumberConstant",
                 "StringConstant",
                 "TeamColorConstant",
@@ -78,8 +77,7 @@ namespace WireMod
             { "Modulo", "Modulo Operation" },
             { "LessThan", "Less Than (<) Comparer" },
             { "GreaterThan", "Greater Than (>) Comparer" },
-            { "TrueConstant", "Constant True Value" },
-            { "FalseConstant", "Constant False Value" },
+            { "BooleanConstant", "Constant Boolean Value" },
             { "NumberConstant", "Constant Number Value" },
             { "StringConstant", "Constant String Value" },
             { "TeamColorConstant", "Constant Team Color Value" },
