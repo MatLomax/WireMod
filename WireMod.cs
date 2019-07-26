@@ -21,9 +21,6 @@ namespace WireMod
         internal UserInterface ElectronicsVisionUserInterface;
         internal UserInterface DebuggerUserInterface;
 
-        //internal ElectronicsManualUI ElectronicsManualUI;
-        //internal ElectronicsVisionUI ElectronicsVisionUI;
-
 
         public WireMod()
         {
@@ -35,18 +32,10 @@ namespace WireMod
             Terraria.ModLoader.IO.TagSerializer.AddSerializer(new DeviceSerializer());
 
             if (Main.netMode == NetmodeID.Server) return;
-            //if (Main.dedServ) return;
-
-            //this.ElectronicsManualUI = new ElectronicsManualUI();
-            //this.ElectronicsManualUI.Activate();
-            //this.ElectronicsVisionUI = new ElectronicsVisionUI();
-            //this.ElectronicsVisionUI.Activate();
 
             this.ElectronicsManualUserInterface = new UserInterface();
-            //this.ElectronicsManualUserInterface.SetState(this.ElectronicsManualUI);
             
             this.ElectronicsVisionUserInterface = new UserInterface();
-            //this.ElectronicsVisionUserInterface.SetState(this.ElectronicsVisionUI);
 
             this.DebuggerUserInterface = new UserInterface();
         }

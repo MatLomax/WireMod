@@ -25,7 +25,7 @@ namespace WireMod.Items
             recipe.AddIngredient(ItemID.Wire);
             recipe.AddIngredient(ItemID.Actuator);
             recipe.AddIngredient(ItemID.CopperCoin);
-            recipe.AddTile(TileID.TinkerersWorkbench);
+            recipe.AddTile(TileID.WorkBenches);
             recipe.SetResult(this);
             recipe.AddRecipe();
         }
