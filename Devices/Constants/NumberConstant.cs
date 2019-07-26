@@ -12,7 +12,7 @@ namespace WireMod.Devices
             this.Name = "Constant Number";
 
             this.ValueType = "int";
-            this.Value = WorldGen.genRand.Next(1, 100).ToString();
+            this.Value = "0";
 
             this.PinLayout = new List<PinDesign>
             {
@@ -20,12 +20,17 @@ namespace WireMod.Devices
             };
         }
 
-        public string Output() => this.Value;
+        public string Output(Pin pin = null) => this.Value;
 
         public override void OnRightClick(Pin pin = null)
         {
             // TODO: Take user input
-            this.Value = WorldGen.genRand.Next(1, 100).ToString();
+            if (!int.TryParse(this.Value, out var value)) return;
+
+            value += 10;
+            value %= 100;
+
+            this.Value = value.ToString();
 
             if (Main.netMode == NetmodeID.MultiplayerClient)
             {

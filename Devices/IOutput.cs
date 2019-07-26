@@ -2,6 +2,6 @@
 {
     public interface IOutput
     {
-        string Output();
+        string Output(Pin pin = null);
     }
 }

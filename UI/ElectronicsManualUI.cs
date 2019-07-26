@@ -14,7 +14,7 @@ namespace WireMod.UI
 	{
 		public static bool Visible { get; set; }
 
-		public static UIPanel BackgroundPanel;
+		private DragableUIPanel BackgroundPanel;
 
 		public float OffsetX = 200f;
 		public float OffsetY = 0f;
@@ -29,7 +29,7 @@ namespace WireMod.UI
 
 		public override void OnInitialize()
 		{
-			BackgroundPanel = new UIPanel();
+			BackgroundPanel = new DragableUIPanel();
 			BackgroundPanel.Left.Set(((Main.screenWidth - PanelWidth) / 2) + OffsetX, 0f);
 			BackgroundPanel.Top.Set(((Main.screenHeight - PanelHeight) / 2) + OffsetY, 0f);
 			BackgroundPanel.Width.Set(PanelWidth, 0f);
@@ -47,8 +47,6 @@ namespace WireMod.UI
 				uiTitle.Height.Set(textHeight, 0f);
 				uiTitle.Top.Set(currentY, 0f);
 				BackgroundPanel.Append(uiTitle);
-
-				//currentY += textHeight;
 
 				var i = 0;
 				foreach (var tool in Constants.Tools[cat])
@@ -94,8 +92,6 @@ namespace WireMod.UI
 		{
 			base.DrawSelf(spriteBatch);
 
-			if (BackgroundPanel.ContainsPoint(Main.MouseScreen)) Main.LocalPlayer.mouseInterface = true;
-
 			var modPlayer = Main.LocalPlayer.GetModPlayer<WireModPlayer>();
 			if (modPlayer != null && modPlayer.ShowPreview) this.DrawPreview(spriteBatch);
 		}
@@ -118,10 +114,7 @@ namespace WireMod.UI
 			var offsetMouseTile = new Point16(mouseTile.X - dev.Origin.X, mouseTile.Y - dev.Origin.Y);
 			//Main.NewText($"Offset Mouse Tile: X {offsetMouseTile.X}, Y {offsetMouseTile.Y}");
 
-			var offsetMouseWorld = new Point16(
-				(int)(offsetMouseTile.X * 16 * Main.GameZoomTarget),
-				(int)(offsetMouseTile.Y * 16 * Main.GameZoomTarget)
-			);
+			var offsetMouseWorld = new Point16(offsetMouseTile.X * 16, offsetMouseTile.Y * 16);
 			//Main.NewText($"Offset Mouse World: X {offsetMouseWorld.X}, Y {offsetMouseWorld.Y}");
 
 			var offsetMouseScreen = new Point16(offsetMouseWorld.X - screenRect.X, offsetMouseWorld.Y - screenRect.Y);
@@ -129,12 +122,7 @@ namespace WireMod.UI
 
 			var texture = WireMod.Instance.GetTexture($"Images/{dev.GetType().Name}");
 
-			var deviceScreenRect = new Rectangle(
-				offsetMouseScreen.X,
-				offsetMouseScreen.Y,
-				(int)(dev.Width * 16 * Main.GameZoomTarget),
-				(int)(dev.Height * 16 * Main.GameZoomTarget)
-			);
+			var deviceScreenRect = new Rectangle(offsetMouseScreen.X, offsetMouseScreen.Y, dev.Width * 16, dev.Height * 16);
 
 			spriteBatch.Draw(texture, deviceScreenRect, dev.GetSourceRect(0), Color.White * 0.5f);
 		}

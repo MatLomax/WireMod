@@ -1,4 +1,5 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace WireMod.Items
 {
@@ -16,6 +17,17 @@ namespace WireMod.Items
             item.maxStack = 99;
             item.consumable = true;
             item.value = 50;
+        }
+
+        public override void AddRecipes()
+        {
+            var recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.Wire);
+            recipe.AddIngredient(ItemID.Actuator);
+            recipe.AddIngredient(ItemID.CopperCoin);
+            recipe.AddTile(TileID.TinkerersWorkbench);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
         }
     }
 }

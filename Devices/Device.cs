@@ -82,42 +82,17 @@ namespace WireMod.Devices
             var defaultColor = Color.Black;
             var titleColor = Color.DarkBlue;
             var highlightColor = Color.Red;
+            var (x, y) = WireMod.Instance.GetMouseTilePosition();
 
             var lines = new List<(string, Color)>
             {
-                ($"{this.Name}           X: {this.Location.X}, Y: {this.Location.Y}", titleColor),
+                ($"{this.Name}      X: {x}, Y: {y}", titleColor),
                 ($"-----------------", defaultColor),
             };
 
             foreach (var pin in this.Pins.Values.SelectMany(p => p.Values))
             {
-                lines.AddRange(pin.GetDebug().Select(d => (d, defaultColor)));
-
-                //if (pin.IsConnected())
-                //{
-                //    if (pin.Type == "Out")
-                //    {
-                //        foreach (var p in ((PinOut) pin).ConnectedPins)
-                //        {
-                //            lines.Add(($"{pin.Name} [{(pin.DataType == "bool" ? (pin.GetValue() == "1" ? "True" : (pin.GetValue() == "0" ? "False" : "Disconnected")) : pin.GetValue())}] => {p.Device.Name} {p.Name}", /*pin.Key == pin ? highlightColor :*/ defaultColor));
-                //        }
-                //    }
-                //    else
-                //    {
-                //        lines.Add(($"{pin.Name} [{(pin.DataType == "bool" ? (pin.GetValue() == "1" ? "True" : (pin.GetValue() == "0" ? "False" : "Disconnected")) : pin.GetValue())}] => {((PinIn)pin).ConnectedPin.Device.Name} {((PinIn)pin).ConnectedPin.Name}", /*pin.Key == pin ? highlightColor :*/ defaultColor));
-                //    }
-                //}
-                //else
-                //{
-                //    if (pin.Type == "Out")
-                //    {
-                //        lines.Add(($"{pin.Name} (Disconnected) [{(pin.DataType == "bool" ? (pin.GetValue() == "1" ? "True" : (pin.GetValue() == "0" ? "False" : "Disconnected")) : pin.GetValue())}]", /*pin.Key == pin ? highlightColor :*/ defaultColor));
-                //    }
-                //    else
-                //    {
-                //        lines.Add(($"{pin.Name} (Disconnected)", /*pin.Key == pin ? highlightColor :*/ defaultColor));
-                //    }
-                //}
+                lines.AddRange(pin.GetDebug().Select(d => (d, pin.Location == new Point16(x, y) ? highlightColor : defaultColor)));
             }
 
             return lines;
@@ -140,7 +115,6 @@ namespace WireMod.Devices
         public override Device Deserialize(TagCompound tag)
         {
             var device = (Device)Activator.CreateInstance(Type.GetType("WireMod.Devices." + tag.GetString("name")) ?? throw new InvalidOperationException("Device not found!"));
-            //device.LocationRect = new Rectangle(tag.GetInt("x") - device.Origin.X, tag.GetInt("y") - device.Origin.Y, device.Width, device.Height);
             device.LocationRect = new Rectangle(tag.GetInt("x"), tag.GetInt("y"), device.Width, device.Height);
             device.Value = tag.GetString("value");
             

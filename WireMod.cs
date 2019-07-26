@@ -21,8 +21,8 @@ namespace WireMod
         internal UserInterface ElectronicsVisionUserInterface;
         internal UserInterface DebuggerUserInterface;
 
-        internal ElectronicsManualUI ElectronicsManualUI;
-        internal ElectronicsVisionUI ElectronicsVisionUI;
+        //internal ElectronicsManualUI ElectronicsManualUI;
+        //internal ElectronicsVisionUI ElectronicsVisionUI;
 
 
         public WireMod()
@@ -83,20 +83,20 @@ namespace WireMod
             var mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
             if (mouseTextIndex != -1)
             {
-                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+                layers.Insert(mouseTextIndex - 1, new LegacyGameInterfaceLayer(
                     "WireMod: Devices",
                     delegate
                     {
-                        if (ElectronicsManualUI.Visible)
-                        {
-                            this.ElectronicsManualUserInterface?.Draw(Main.spriteBatch, new GameTime());
-                            ElectronicsManualUI.Visible = false;
-                        }
-
                         if (ElectronicsVisionUI.Visible)
                         {
                             this.ElectronicsVisionUserInterface?.Draw(Main.spriteBatch, new GameTime());
                             ElectronicsVisionUI.Visible = false;
+                        }
+
+                        if (ElectronicsManualUI.Visible)
+                        {
+                            this.ElectronicsManualUserInterface?.Draw(Main.spriteBatch, new GameTime());
+                            ElectronicsManualUI.Visible = false;
                         }
 
                         if (DebuggerUI.Visible)
@@ -127,12 +127,12 @@ namespace WireMod
 
         public (int X, int Y) GetMouseTilePosition()
         {
-            var zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+            var zero = /*Main.drawToScreen ? */Vector2.Zero/* : new Vector2(Main.offScreenRange)*/;
             var (x, y) = this.GetMouseWorldPosition();
 
             return (
-                (int)((x / 16 / Main.GameZoomTarget) - zero.X),
-                (int)((y / 16 / Main.GameZoomTarget) - zero.Y)
+                (int)((x / 16) - zero.X),
+                (int)((y / 16) - zero.Y)
             );
         }
 

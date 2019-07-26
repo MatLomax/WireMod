@@ -59,6 +59,7 @@ namespace WireMod
             {
                 "PlayerDistanceSensor",
                 "NPCDistanceSensor",
+                "TimeSensor",
             },
         };
 
@@ -86,6 +87,7 @@ namespace WireMod
             { "OutputSign", "Output Sign" },
             { "PlayerDistanceSensor", "Nearest Player Distance Sensor" },
             { "NPCDistanceSensor", "Nearest NPC Distance Sensor" },
+            { "TimeSensor", "Time Sensor - basically a glorified clock" },
         };
     }
 }

@@ -6,18 +6,20 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using WireMod.Devices;
 using WireMod.UI;
+using ColorSlidersSet = On.Terraria.DataStructures.ColorSlidersSet;
 
 namespace WireMod.Items
 {
     internal class ElectronicsManual : ModItem
     {
-        private Pin ConnectingPin;
+        private Pin _connectingPin;
 
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Electronics Manual");
             Tooltip.SetDefault("Grants use of WireMod functionality");
         }
+
         public override void SetDefaults()
         {
             item.CloneDefaults(ItemID.ActuationRod);
@@ -26,18 +28,29 @@ namespace WireMod.Items
             item.noMelee = true;
         }
 
+        public override void AddRecipes()
+        {
+            var recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.Wire, 50);
+            recipe.AddIngredient(ItemID.Book);
+            recipe.AddTile(TileID.TinkerersWorkbench);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
+        }
+
         public override bool AltFunctionUse(Player player) => true;
 
         public override void HoldItem(Player player)
         {
             if (Main.netMode == NetmodeID.Server) return;
+            if (player != Main.LocalPlayer) return;
 
             var modPlayer = player.GetModPlayer<WireModPlayer>();
 
-            WireMod.Instance.ElectronicsManualUserInterface.SetState(new ElectronicsManualUI());
+            WireMod.Instance.ElectronicsManualUserInterface.SetState(modPlayer.ElectronicsManualUI);
             ElectronicsManualUI.Visible = true;
 
-            WireMod.Instance.ElectronicsVisionUserInterface.SetState(new ElectronicsVisionUI());
+            WireMod.Instance.ElectronicsVisionUserInterface.SetState(modPlayer.ElectronicsVisionUI);
             ElectronicsVisionUI.Visible = true;
 
             modPlayer.ShowPreview = false;
@@ -62,12 +75,10 @@ namespace WireMod.Items
         public override bool CanUseItem(Player player)
         {
             if (Main.netMode == NetmodeID.Server) return false;
+            if (player != Main.LocalPlayer) return false;
 
             var modPlayer = player.GetModPlayer<WireModPlayer>(WireMod.Instance);
 
-            // Replace this - does not work with zoom
-            //var x = (int)(Main.MouseWorld.X / 16f);
-            //var y = (int)(Main.MouseWorld.Y / 16f);
             var (x, y) = WireMod.Instance.GetMouseTilePosition();
             var device = WireMod.GetDevice(x, y);
 
@@ -110,35 +121,35 @@ namespace WireMod.Items
 
                     #region Connect Wires
                     // Connect wires
-                    if (this.ConnectingPin == null)
+                    if (this._connectingPin == null)
                     {
                         Main.NewText("Connecting...");
-                        this.ConnectingPin = pin;
+                        this._connectingPin = pin;
                         return true;
                     }
 
-                    if (this.ConnectingPin.Type == pin.Type)
+                    if (this._connectingPin.Type == pin.Type)
                     {
                         Main.NewText("Cancelled - must connect a PinIn to a PinOut (or vice versa)");
-                        this.ConnectingPin = null;
+                        this._connectingPin = null;
                         return false;
                     }
 
-                    if (this.ConnectingPin.Device == pin.Device)
+                    if (this._connectingPin.Device == pin.Device)
                     {
                         Main.NewText("Cancelled - cannot connect to same device");
-                        this.ConnectingPin = null;
+                        this._connectingPin = null;
                         return false;
                     }
 
-                    if (this.ConnectingPin.DataType != pin.DataType)
+                    if (this._connectingPin.DataType != pin.DataType)
                     {
                         Main.NewText("Cancelled - cannot connect different data types");
-                        this.ConnectingPin = null;
+                        this._connectingPin = null;
                         return false;
                     }
 
-                    if (this.ConnectingPin.Device.Pins.SelectMany(p => p.Value.Values).Any(p =>
+                    if (this._connectingPin.Device.Pins.SelectMany(p => p.Value.Values).Any(p =>
                     {
                         return p.Type == "In"
                             ? ((PinIn) p).ConnectedPin?.Device == pin.Device
@@ -146,19 +157,19 @@ namespace WireMod.Items
                     }))
                     {
                         Main.NewText("Cancelled - circular connection detected");
-                        this.ConnectingPin = null;
+                        this._connectingPin = null;
                         return false;
                     }
 
-                    this.ConnectingPin.Connect(pin);
-                    pin.Connect(this.ConnectingPin);
+                    this._connectingPin.Connect(pin);
+                    pin.Connect(this._connectingPin);
 
                     if (Main.netMode == NetmodeID.MultiplayerClient)
                     {
-                        WireMod.PacketHandler.SendConnect(256, Main.myPlayer, this.ConnectingPin.Location.X, this.ConnectingPin.Location.Y, pin.Location.X, pin.Location.Y);
+                        WireMod.PacketHandler.SendConnect(256, Main.myPlayer, this._connectingPin.Location.X, this._connectingPin.Location.Y, pin.Location.X, pin.Location.Y);
                     }
 
-                    this.ConnectingPin = null;
+                    this._connectingPin = null;
 
                     return true;
                     #endregion
@@ -212,111 +223,6 @@ namespace WireMod.Items
             modPlayer.PlacingDevice = null;
             modPlayer.ToolCategoryMode = 0;
             modPlayer.ToolMode = 0;
-
-            return true;
-        }
-
-        public override bool UseItem(Player player)
-        {
-            ////Main.NewText("Begin");
-            //this.usingItem = (this.usingItem + 1) % 3;
-
-            //if (this.usingItem > 0) return true;
-
-            //var ent = mod.GetTileEntity<DeviceEntity>();
-
-            //var point = new Point16((int)(Main.MouseWorld.X / 16f), (int)(Main.MouseWorld.Y / 16f));
-            //var drp = ent.GetTileDevice(point);
-
-            //// No device found
-            //if (drp.DeviceRef == null)
-            //{
-            //    ent.CurrentDevice = null;
-            //    ent.CurrentPin = null;
-            //    return true;
-            //}
-
-            //// Right Click
-            //if (player.altFunctionUse == 2)
-            //{
-            //    // TODO: Add Right Click device non-pin behaviour
-            //    if (drp.Pin == null)
-            //    {
-            //        ent.CurrentDevice = null;
-            //        ent.CurrentPin = null;
-            //        //Main.NewText($"No pin found");
-            //        return true;
-            //    }
-
-            //    if (!drp.Pin.IsConnected()) return true;
-
-            //    //Main.NewText($"Disconnected: Pin{drp.Pin.Type}{drp.Pin.Num} <=> Pin{drp.Pin.ConnectedPin.Type}{drp.Pin.ConnectedPin.Num}");
-            //    drp.Pin.ConnectedPin.ConnectedPin = null;
-            //    drp.Pin.ConnectedPin = null;
-            //    ent.CurrentDevice = null;
-
-            //    mod.GetTileEntity<DeviceEntity>().Changes = true;
-
-            //    return true;
-            //}
-
-            //// Left Click
-            //if (drp.Pin != null)
-            //{
-            //    // Found Pin
-            //    if (ent.CurrentPin == null)
-            //    {
-            //        if (!drp.Pin.IsConnected())
-            //        {
-            //            ent.CurrentDevice = drp.DeviceRef.Device;
-            //            ent.CurrentPin = drp.Pin;
-            //            Main.NewText($"Connecting Pin{drp.Pin.Type}{drp.Pin.Num}...");
-            //        }
-            //        else
-            //        {
-            //            //Main.NewText($"Pin{drp.Pin.Type}{drp.Pin.Num} [{(drp.Pin.DataType == "bool" ? (drp.Pin.GetValue() == "1" ? "True" : "False") : drp.Pin.GetValue())}] => Connected to [{drp.Pin.ConnectedPin.Device.Name}]#{drp.Pin.ConnectedPin.Device.Ref} Pin{drp.Pin.ConnectedPin.Type}{drp.Pin.ConnectedPin.Num}");
-            //        }
-            //    }
-            //    else
-            //    {
-            //        if (ent.CurrentDevice == drp.DeviceRef.Device)
-            //        {
-            //            if (ent.CurrentPin != drp.Pin)
-            //            {
-            //                Main.NewText($"Cancelled - Same device");
-            //                ent.CurrentDevice = null;
-            //                ent.CurrentPin = null;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            if (drp.Pin.Type == ent.CurrentPin.Type)
-            //            {
-            //                Main.NewText($"Must connect a PinOut to a PinIn (and vice versa)");
-            //                return true;
-            //            }
-            //            else
-            //            {
-            //                if (drp.Pin.IsConnected())
-            //                {
-            //                    Main.NewText($"Target pin is already connected");
-            //                    return true;
-            //                }
-            //                else
-            //                {
-            //                    drp.Pin.ConnectedPin = ent.CurrentPin;
-            //                    ent.CurrentPin.ConnectedPin = drp.Pin;
-
-            //                    ent.CurrentDevice = null;
-            //                    ent.CurrentPin = null;
-
-            //                    mod.GetTileEntity<DeviceEntity>().Changes = true;
-            //                    //Main.NewText($"Connected: [{drp.Pin.Device.Name}]#{drp.Pin.Device.Ref} Pin{drp.Pin.Type}{drp.Pin.Num} <=> [{drp.Pin.ConnectedPin.Device.Name}]#{drp.Pin.ConnectedPin.Device.Ref} Pin{drp.Pin.ConnectedPin.Type}{drp.Pin.ConnectedPin.Num}");
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
 
             return true;
         }

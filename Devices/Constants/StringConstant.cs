@@ -19,7 +19,7 @@ namespace WireMod.Devices
             };
         }
 
-        public string Output() => this.Value;
+        public string Output(Pin pin = null) => this.Value;
 
 	    public override void OnRightClick(Pin pin = null)
 	    {

@@ -76,7 +76,7 @@ namespace WireMod.Devices
     internal class PinOut : Pin
     {
         public List<Pin> ConnectedPins { get; set; } = new List<Pin>();
-        private string _value => (this.Device is IOutput ? ((IOutput)this.Device).Output() : "");
+        private string _value => (this.Device is IOutput ? ((IOutput)this.Device).Output(this) : "");
 
         public PinOut(Device device)
         {

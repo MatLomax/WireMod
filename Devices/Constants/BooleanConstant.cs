@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 
 namespace WireMod.Devices
 {
@@ -17,12 +19,17 @@ namespace WireMod.Devices
 			};
 		}
 
-		public string Output() => this.Value;
+		public string Output(Pin pin = null) => this.Value;
 
 		public override void OnRightClick(Pin pin = null)
 		{
 			if (!int.TryParse(this.Value, out var value)) return;
 			this.Value = (value == 0 ? 1 : 0).ToString();
+
+			if (Main.netMode == NetmodeID.MultiplayerClient)
+			{
+				WireMod.PacketHandler.SendChangeValue(256, Main.myPlayer, this.Location.X, this.Location.Y, this.Value);
+			}
 		}
 
 		public override Rectangle GetSourceRect(int style = -1)

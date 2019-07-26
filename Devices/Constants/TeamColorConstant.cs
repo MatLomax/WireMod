@@ -20,7 +20,7 @@ namespace WireMod.Devices
             };
         }
 
-        public string Output() => this.Value;
+        public string Output(Pin pin = null) => this.Value;
 
         public override void OnRightClick(Pin pin = null)
         {
@@ -41,6 +41,14 @@ namespace WireMod.Devices
             var output = style == -1 ? tc : style + 1;
 
             return new Rectangle(output * (this.Width * 16), 0, this.Width * 16, this.Height * 16);
+        }
+
+        public override List<(string Line, Color Color)> Debug()
+        {
+            var debug = base.Debug();
+            debug.Add(("----------------", Color.Black));
+            debug.Add(("Right Click to toggle value", Color.Red));
+            return debug;
         }
     }
 }

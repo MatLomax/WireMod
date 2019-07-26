@@ -19,9 +19,9 @@ namespace WireMod.Devices.Filters
             };
         }
 
-        public string Output() => this.GetOutput().ToString();
+        public string Output(Pin pin = null) => this.GetOutput(pin).ToString();
 
-        private int GetOutput()
+        private int GetOutput(Pin pin = null)
         {
             if (!this.Pins["In"][0].IsConnected()) return -1;
             if (this.Pins["In"][0].DataType != "bool") return -1;
