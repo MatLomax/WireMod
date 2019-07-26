@@ -39,6 +39,7 @@ namespace WireMod
             },
             new List<string>
             {
+                "Equals",
                 "LessThan",
                 "GreaterThan",
             },
@@ -76,6 +77,7 @@ namespace WireMod
             { "Multiply", "Multiply Operation" },
             { "Divide", "Divide Operation" },
             { "Modulo", "Modulo Operation" },
+            { "Equals", "Equals (=) Comparer" },
             { "LessThan", "Less Than (<) Comparer" },
             { "GreaterThan", "Greater Than (>) Comparer" },
             { "BooleanConstant", "Constant Boolean Value" },
