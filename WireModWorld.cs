@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Terraria;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using WireMod.Devices;
@@ -30,12 +28,7 @@ namespace WireMod
 			foreach (var device in tag.Get<List<Device>>("devices"))
 			{
 				mod.Logger.Info($"Loading device \"{device.Name}\": X {device.LocationRect.X}, Y: {device.LocationRect.Y}");
-
-				//if (Main.netMode == NetmodeID.Server)
-				//{
-				//	WireMod.PacketHandler.SendPlace(-1, -1, device.Name, device.Value, device.LocationRect.X, device.LocationRect.Y);
-				//}
-
+				
 				WireMod.PlaceDevice(device, device.LocationRect.X, device.LocationRect.Y);
 			}
 

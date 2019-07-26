@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 using Terraria.DataStructures;
 
 namespace WireMod.Devices

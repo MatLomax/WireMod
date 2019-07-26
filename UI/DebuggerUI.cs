@@ -11,28 +11,27 @@ namespace WireMod.UI
     internal class DebuggerUI : UIState
     {
 		public static bool Visible { get; set; }
+        
+        private readonly List<(string Line, Color Color)> _lines;
 
-        private readonly string Title;
-        private readonly List<(string Line, Color Color)> Text;
-
-        public DebuggerUI(string title, List<(string, Color)> text = null)
+        public DebuggerUI(List<(string, Color)> lines = null)
         {
-            this.Title = title;
-            this.Text = text;
+            this._lines = lines;
         }
         
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
             base.DrawSelf(spriteBatch);
 
+            if (this._lines == null) return;
+
             var offset = new Vector2(16, 16);
             
             const int padding = 10;
             const int border = 2;
 
-            var width = Text?.Max(t => (int)ChatManager.GetStringSize(Main.fontMouseText, t.Line, Vector2.One).X) + padding * 2 ?? 100;
-            var height = this.Text == null ? 100 : (int)this.Text.ToList().Sum(t => Main.fontMouseText.MeasureString(t.Line).Y) + padding * 2;
-            //var zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+            var width = this._lines.Max(t => (int)ChatManager.GetStringSize(Main.fontMouseText, t.Line, Vector2.One).X) + padding * 2;
+            var height = (int)this._lines.ToList().Sum(t => Main.fontMouseText.MeasureString(t.Line).Y) + padding * 2;
 
             var x = Main.MouseScreen.X - (width + offset.X);
             var y = Main.MouseScreen.Y + offset.Y;
@@ -41,7 +40,7 @@ namespace WireMod.UI
             spriteBatch.Draw(Main.magicPixel, new Rectangle((int)x + border, (int)y + border, width, height), null, Color.White, 0f, new Vector2(0, 0), SpriteEffects.None, 0f);
 
             var i = 0;
-            foreach ((string line, Color color) in this.Text)
+            foreach ((string line, Color color) in this._lines)
             {
                 var lineHeight = Main.fontMouseText.MeasureString(line).Y;
                 Utils.DrawBorderStringFourWay(spriteBatch, Main.fontMouseText, line, x + padding, y + padding + (lineHeight * i) + padding, color, Color.White, new Vector2(0.3f), i > 0 ? 0.75f : 1f);

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.ModLoader.IO;
 
 namespace WireMod.Devices
 {
@@ -28,10 +26,6 @@ namespace WireMod.Devices
         public List<PinDesign> PinLayout { get; set; } = new List<PinDesign>();
 
         // Instance
-        //public Player Player { get; set; }
-        //public int Ref { get; set; }
-
-        //public (Dictionary<int, PinIn> In, Dictionary<int, PinOut> Out) Pins = (new Dictionary<int, PinIn>(), new Dictionary<int, PinOut>());
         public Dictionary<string, Dictionary<int, Pin>> Pins = new Dictionary<string, Dictionary<int, Pin>>
         {
             {"In", new Dictionary<int, Pin>()},
@@ -87,7 +81,7 @@ namespace WireMod.Devices
             var lines = new List<(string, Color)>
             {
                 ($"{this.Name}      X: {x}, Y: {y}", titleColor),
-                ($"-----------------", defaultColor),
+                ("-----------------", defaultColor),
             };
 
             foreach (var pin in this.Pins.Values.SelectMany(p => p.Values))
@@ -96,29 +90,6 @@ namespace WireMod.Devices
             }
 
             return lines;
-        }
-    }
-
-    public class DeviceSerializer : TagSerializer<Device, TagCompound>
-    {
-        public override TagCompound Serialize(Device device)
-        {
-            return new TagCompound
-            {
-                ["name"] = device.GetType().Name,
-                ["x"] = device.LocationRect.X + device.Origin.X,
-                ["y"] = device.LocationRect.Y + device.Origin.Y,
-                ["value"] = device.Value,
-            };
-        }
-
-        public override Device Deserialize(TagCompound tag)
-        {
-            var device = (Device)Activator.CreateInstance(Type.GetType("WireMod.Devices." + tag.GetString("name")) ?? throw new InvalidOperationException("Device not found!"));
-            device.LocationRect = new Rectangle(tag.GetInt("x"), tag.GetInt("y"), device.Width, device.Height);
-            device.Value = tag.GetString("value");
-            
-            return device;
         }
     }
 }

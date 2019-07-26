@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.UI.Elements;
-using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.UI;
 using Terraria.UI.Chat;
@@ -14,7 +13,7 @@ namespace WireMod.UI
 	{
 		public static bool Visible { get; set; }
 
-		private DragableUIPanel BackgroundPanel;
+		private DragableUIPanel _panel;
 
 		public float OffsetX = 200f;
 		public float OffsetY = 0f;
@@ -29,12 +28,12 @@ namespace WireMod.UI
 
 		public override void OnInitialize()
 		{
-			BackgroundPanel = new DragableUIPanel();
-			BackgroundPanel.Left.Set(((Main.screenWidth - PanelWidth) / 2) + OffsetX, 0f);
-			BackgroundPanel.Top.Set(((Main.screenHeight - PanelHeight) / 2) + OffsetY, 0f);
-			BackgroundPanel.Width.Set(PanelWidth, 0f);
-			BackgroundPanel.Height.Set(PanelHeight, 0f);
-			BackgroundPanel.BorderColor = new Color(0, 0, 0, 0);
+			this._panel = new DragableUIPanel();
+			this._panel.Left.Set(((Main.screenWidth - PanelWidth) / 2) + OffsetX, 0f);
+			this._panel.Top.Set(((Main.screenHeight - PanelHeight) / 2) + OffsetY, 0f);
+			this._panel.Width.Set(PanelWidth, 0f);
+			this._panel.Height.Set(PanelHeight, 0f);
+			this._panel.BorderColor = new Color(0, 0, 0, 0);
 
 			var textHeight = ChatManager.GetStringSize(Main.fontMouseText, Constants.ToolCategories[0], new Vector2(0, 0)).Y;
 
@@ -46,7 +45,7 @@ namespace WireMod.UI
 				var uiTitle = new UIText(Constants.ToolCategories[cat]);
 				uiTitle.Height.Set(textHeight, 0f);
 				uiTitle.Top.Set(currentY, 0f);
-				BackgroundPanel.Append(uiTitle);
+				this._panel.Append(uiTitle);
 
 				var i = 0;
 				foreach (var tool in Constants.Tools[cat])
@@ -61,6 +60,7 @@ namespace WireMod.UI
 						currentX += this.ButtonSize + this.InnerPadding;
 					}
 
+					// TODO: Issue #6: Remove need for separate device icons
 					var button = new ElectronicsManualButton(tool, WireMod.Instance.GetTexture($"Images/Icons/{tool}Icon"))
 					{
 						ToolCat = cat,
@@ -72,8 +72,8 @@ namespace WireMod.UI
 					button.Left.Set(currentX, 0f);
 					button.Top.Set(currentY - (this.ButtonSize / 2), 0f);
 					button.SetVisibility(0f, 0.25f);
-					
-					BackgroundPanel.Append(button);
+
+					this._panel.Append(button);
 
 					i++;
 				}
@@ -82,9 +82,9 @@ namespace WireMod.UI
 				currentX = this.Padding;
 			}
 
-			BackgroundPanel.Height.Set(currentY + this.Padding, 0f);
+			this._panel.Height.Set(currentY + this.Padding, 0f);
 
-			this.Append(BackgroundPanel);
+			this.Append(this._panel);
 			Recalculate();
 		}
 
@@ -107,18 +107,10 @@ namespace WireMod.UI
 
 			var screenRect = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
 
-			//var mouseTile = new Point16((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16);
 			var mouseTile = WireMod.Instance.GetMouseTilePosition();
-			//Main.NewText($"Mouse Tile: X {mouseTile.X}, Y {mouseTile.Y}");
-
 			var offsetMouseTile = new Point16(mouseTile.X - dev.Origin.X, mouseTile.Y - dev.Origin.Y);
-			//Main.NewText($"Offset Mouse Tile: X {offsetMouseTile.X}, Y {offsetMouseTile.Y}");
-
 			var offsetMouseWorld = new Point16(offsetMouseTile.X * 16, offsetMouseTile.Y * 16);
-			//Main.NewText($"Offset Mouse World: X {offsetMouseWorld.X}, Y {offsetMouseWorld.Y}");
-
 			var offsetMouseScreen = new Point16(offsetMouseWorld.X - screenRect.X, offsetMouseWorld.Y - screenRect.Y);
-			//Main.NewText($"Offset Mouse Screen: X {offsetMouseScreen.X}, Y {offsetMouseScreen.Y}");
 
 			var texture = WireMod.Instance.GetTexture($"Images/{dev.GetType().Name}");
 

@@ -46,7 +46,6 @@ namespace WireMod
             foreach (var device in Devices.Where(d => d.Pins["Out"].Count > 0)) device.Pins["Out"][0].GetValue();
 
             if (Main.netMode == NetmodeID.Server) return;
-            //if (Main.dedServ) return;
 
             if (DebuggerUI.Visible)
             {
@@ -67,7 +66,6 @@ namespace WireMod
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
             if (Main.netMode == NetmodeID.Server) return;
-            //if (Main.dedServ) return;
 
             var mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
             if (mouseTextIndex != -1)
@@ -106,8 +104,6 @@ namespace WireMod
 
         public (float X, float Y) GetMouseWorldPosition()
         {
-            //var zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-
             return (
                 Main.mouseX + Main.screenPosition.X,
                 Main.mouseY + Main.screenPosition.Y
@@ -116,16 +112,16 @@ namespace WireMod
 
         public (int X, int Y) GetMouseTilePosition()
         {
-            var zero = /*Main.drawToScreen ? */Vector2.Zero/* : new Vector2(Main.offScreenRange)*/;
             var (x, y) = this.GetMouseWorldPosition();
 
             return (
-                (int)((x / 16) - zero.X),
-                (int)((y / 16) - zero.Y)
+                (int)(x / 16),
+                (int)(y / 16)
             );
         }
 
-        // For lack of a better place to put this...
+
+        // For lack of a better place to put all this...
 
         public static List<Device> Devices = new List<Device>();
         public static List<Pin> Pins = new List<Pin>();
@@ -169,7 +165,6 @@ namespace WireMod
 
             foreach (var pinDesign in device.PinLayout)
             {
-                //Main.NewText(pin.Type + pin.Num);
                 var pin = device.Pins[pinDesign.Type][pinDesign.Num];
                 pin.Location = new Point16(device.LocationRect.X + pinDesign.Offset.X, device.LocationRect.Y + pinDesign.Offset.Y);
                 Pins.Add(pin);
@@ -201,7 +196,6 @@ namespace WireMod
 
             Devices.Remove(device);
         }
-
         #endregion
     }
 }

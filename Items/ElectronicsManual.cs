@@ -1,12 +1,10 @@
 ﻿using System.Linq;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WireMod.Devices;
 using WireMod.UI;
-using ColorSlidersSet = On.Terraria.DataStructures.ColorSlidersSet;
 
 namespace WireMod.Items
 {
@@ -67,7 +65,7 @@ namespace WireMod.Items
                 var dev = WireMod.GetDevice(WireMod.Instance.GetMouseTilePosition());
                 if (dev == null) return;
 
-                WireMod.Instance.DebuggerUserInterface.SetState(new DebuggerUI(dev.Name, dev.Debug()));
+                WireMod.Instance.DebuggerUserInterface.SetState(new DebuggerUI(dev.Debug()));
                 DebuggerUI.Visible = true;
             }
         }
