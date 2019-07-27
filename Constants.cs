@@ -13,6 +13,7 @@ namespace WireMod
             "Constants",
             "Outputs",
             "Sensors",
+            "Other",
         };
 
         public static readonly List<List<string>> Tools = new List<List<string>>
@@ -62,6 +63,10 @@ namespace WireMod
                 "NPCDistanceSensor",
                 "TimeSensor",
             },
+            new List<string>
+            {
+                "Repulsor"
+            },
         };
 
         public static readonly Dictionary<string, string> ToolNames = new Dictionary<string, string>
@@ -90,6 +95,7 @@ namespace WireMod
             { "PlayerDistanceSensor", "Nearest Player Distance Sensor" },
             { "NPCDistanceSensor", "Nearest NPC Distance Sensor" },
             { "TimeSensor", "Time Sensor - basically a glorified clock" },
+            { "Repulsor", "Repulsor (USE WITH CAUTION)" },
         };
     }
 }
