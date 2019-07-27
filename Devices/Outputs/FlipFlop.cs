@@ -53,9 +53,9 @@ namespace WireMod.Devices
             return in0;
         }
 
-        public override List<(string Line, Color Color)> Debug()
+        public override List<(string Line, Color Color)> Debug(Pin pin = null)
         {
-            var debug = base.Debug();
+            var debug = base.Debug(pin);
 
             debug.Add(("------------------------", Color.Black));
             debug.Add(($"Stored Value: {this.Value}", Color.Purple));

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 
@@ -50,6 +51,8 @@ namespace WireMod.Devices
 
         public virtual void OnPlace() { }
 
+        public virtual void Draw(SpriteBatch spriteBatch) { }
+
         public virtual Rectangle GetSourceRect(int style = -1) => new Rectangle(0, 0, this.Width * 16, this.Height * 16);
 
         public void SetPins()
@@ -71,7 +74,7 @@ namespace WireMod.Devices
             }
         }
 
-        public virtual List<(string Line, Color Color)> Debug()
+        public virtual List<(string Line, Color Color)> Debug(Pin pin = null)
         {
             var defaultColor = Color.Black;
             var titleColor = Color.DarkBlue;
@@ -84,9 +87,9 @@ namespace WireMod.Devices
                 ("-----------------", defaultColor),
             };
 
-            foreach (var pin in this.Pins.Values.SelectMany(p => p.Values))
+            foreach (var p in this.Pins.Values.SelectMany(p => p.Values))
             {
-                lines.AddRange(pin.GetDebug().Select(d => (d, pin.Location == new Point16(x, y) ? highlightColor : defaultColor)));
+                lines.AddRange(p.GetDebug().Select(d => (d, p == pin ? highlightColor : defaultColor)));
             }
 
             return lines;

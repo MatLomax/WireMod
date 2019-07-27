@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -36,6 +37,19 @@ namespace WireMod.Devices
             {
 		        WireMod.PacketHandler.SendChangeValue(256, Main.myPlayer, this.Location.X, this.Location.Y, this.Value);
             }
+        }
+
+        public override List<(string Line, Color Color)> Debug(Pin pin = null)
+        {
+            var debug = base.Debug(pin);
+
+            if (pin == null)
+            {
+                debug.Add(("----------------", Color.Black));
+                debug.Add(("Right Click to change value", Color.Red));
+            }
+
+            return debug;
         }
     }
 }

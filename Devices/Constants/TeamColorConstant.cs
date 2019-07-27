@@ -43,11 +43,16 @@ namespace WireMod.Devices
             return new Rectangle(output * (this.Width * 16), 0, this.Width * 16, this.Height * 16);
         }
 
-        public override List<(string Line, Color Color)> Debug()
+        public override List<(string Line, Color Color)> Debug(Pin pin = null)
         {
-            var debug = base.Debug();
-            debug.Add(("----------------", Color.Black));
-            debug.Add(("Right Click to toggle value", Color.Red));
+            var debug = base.Debug(pin);
+
+            if (pin == null)
+            {
+                debug.Add(("----------------", Color.Black));
+                debug.Add(("Right Click to toggle value", Color.Red));
+            }
+            
             return debug;
         }
     }

@@ -62,10 +62,13 @@ namespace WireMod.Items
             }
             else
             {
-                var dev = WireMod.GetDevice(WireMod.Instance.GetMouseTilePosition());
+                var point = WireMod.Instance.GetMouseTilePosition();
+                var dev = WireMod.GetDevice(point);
                 if (dev == null) return;
 
-                WireMod.Instance.DebuggerUserInterface.SetState(new DebuggerUI(dev.Debug()));
+                var pin = WireMod.GetDevicePin(point.X, point.Y);
+
+                WireMod.Instance.DebuggerUserInterface.SetState(new DebuggerUI(dev.Debug(pin)));
                 DebuggerUI.Visible = true;
             }
         }

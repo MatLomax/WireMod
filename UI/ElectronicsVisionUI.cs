@@ -34,6 +34,7 @@ namespace WireMod.UI
 
 				var texture = WireMod.Instance.GetTexture($"Images/{device.GetType().Name}");
 				spriteBatch.Draw(texture, new Vector2(deviceScreenRect.X, deviceScreenRect.Y), device.GetSourceRect(), Color.White, 0f, new Vector2(0, 0), Main.UIScale, SpriteEffects.None, 0f);
+				device.Draw(spriteBatch);
 			}
 		}
 
