@@ -28,6 +28,7 @@ namespace WireMod.Devices
             if (this.Pins["In"][0].DataType != "int" || this.Pins["In"][1].DataType != "int") return -1;
             if (!int.TryParse(this.Pins["In"][0].GetValue(), out var in0)) return -1;
             if (!int.TryParse(this.Pins["In"][1].GetValue(), out var in1)) return -1;
+            if (in1 == 0) return 0; // Divide by zero protection
             return in0 / in1;
         }
     }
