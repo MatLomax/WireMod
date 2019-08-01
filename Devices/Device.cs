@@ -39,7 +39,8 @@ namespace WireMod.Devices
         //public Point16 Location { get; set; }
         public Rectangle LocationRect { get; set; }
 
-        public Point16 Location => this.LocationRect != default(Rectangle) ? new Point16(this.LocationRect.X, this.LocationRect.Y) : default(Point16);
+        public Point16 LocationTile => this.LocationRect != default(Rectangle) ? new Point16(this.LocationRect.X, this.LocationRect.Y) : default(Point16);
+        public Point16 LocationWorld => this.LocationRect != default(Rectangle) ? new Point16(this.LocationRect.X * 16, this.LocationRect.Y * 16) : default(Point16);
 
         public virtual void OnRightClick(Pin pin = null) { }
 

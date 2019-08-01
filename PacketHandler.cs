@@ -11,6 +11,8 @@ namespace WireMod
 {
 	internal class DevicePacketHandler
 	{
+		private readonly bool _debug = true;
+
 		public const byte Place = 1;
 		public const byte Remove = 2;
 		public const byte Connect = 3;
@@ -75,13 +77,13 @@ namespace WireMod
 			var y = reader.ReadInt32();
 			var value = reader.ReadString();
 
-			WireMod.Instance.Logger.Info($"{from} Received Place: name {name}, value {value}, x {x}, y {y}");
+			if (this._debug) WireMod.Instance.Logger.Info($"{from} Received Place: name {name}, value {value}, x {x}, y {y}");
 
 			var device = (Device)Activator.CreateInstance(Type.GetType("WireMod.Devices." + name) ?? throw new InvalidOperationException("Device not found!"));
 
 			if (!WireMod.CanPlace(device, x, y))
 			{
-				WireMod.Instance.Logger.Error($"{from} Place: Cannot place device at: x {x}, y {y}");
+				if (this._debug) WireMod.Instance.Logger.Error($"{from} Place: Cannot place device at: x {x}, y {y}");
 			}
 
 			if (Main.netMode == NetmodeID.Server)
@@ -109,7 +111,7 @@ namespace WireMod
 		{
 			from = reader.ReadInt32();
 
-			WireMod.Instance.Logger.Info($"{from} Received Request from {Main.player[from].name}");
+			if (this._debug) WireMod.Instance.Logger.Info($"{from} Received Request from {Main.player[from].name}");
 
 			if (Main.netMode != NetmodeID.Server) return;
 
@@ -145,11 +147,11 @@ namespace WireMod
 			var x = reader.ReadInt32();
 			var y = reader.ReadInt32();
 
-			WireMod.Instance.Logger.Info($"{from} Received Remove: x {x}, y {y}");
+			if (this._debug) WireMod.Instance.Logger.Info($"{from} Received Remove: x {x}, y {y}");
 
 			if (!WireMod.Devices.Any(d => d.LocationRect.Intersects(new Rectangle(x, y, 1, 1))))
 			{
-				WireMod.Instance.Logger.Error($"{from} Remove: No device found at: x {x}, y {y}");
+				if (this._debug) WireMod.Instance.Logger.Error($"{from} Remove: No device found at: x {x}, y {y}");
 			}
 
 			if (Main.netMode == NetmodeID.Server)
@@ -181,19 +183,19 @@ namespace WireMod
 			var destX = reader.ReadInt32();
 			var destY = reader.ReadInt32();
 
-			WireMod.Instance.Logger.Info($"{from} Received Connect: srcX {srcX}, srcY {srcY}, destX {destX}, destY {destY}");
+			if (this._debug) WireMod.Instance.Logger.Info($"{from} Received Connect: srcX {srcX}, srcY {srcY}, destX {destX}, destY {destY}");
 
 			var src = WireMod.GetDevicePin(srcX, srcY);
 			if (src == null)
 			{
-				WireMod.Instance.Logger.Error($"{from} Connect: No pin found at: x {srcX}, y {srcY}");
+				if (this._debug) WireMod.Instance.Logger.Error($"{from} Connect: No pin found at: x {srcX}, y {srcY}");
 				return;
 			}
 
 			var dest = WireMod.GetDevicePin(destX, destY);
 			if (dest == null)
 			{
-				WireMod.Instance.Logger.Error($"{from} Connect: No pin found at: x {srcX}, y {srcY}");
+				if (this._debug) WireMod.Instance.Logger.Error($"{from} Connect: No pin found at: x {srcX}, y {srcY}");
 				return;
 			}
 
@@ -223,12 +225,12 @@ namespace WireMod
 			var x = reader.ReadInt32();
 			var y = reader.ReadInt32();
 
-			WireMod.Instance.Logger.Info($"{from} Received Disconnect: x {x}, y {y}");
+			if (this._debug) WireMod.Instance.Logger.Info($"{from} Received Disconnect: x {x}, y {y}");
 
 			var src = WireMod.GetDevicePin(x, y);
 			if (src == null)
 			{
-				WireMod.Instance.Logger.Error($"{from} Disconnect: No pin found at: x {x}, y {y}");
+				if (this._debug) WireMod.Instance.Logger.Error($"{from} Disconnect: No pin found at: x {x}, y {y}");
 				return;
 			}
 
@@ -257,7 +259,7 @@ namespace WireMod
 			var y = reader.ReadInt32();
 			var value = reader.ReadString();
 
-			WireMod.Instance.Logger.Info($"{from} Received ChangeValue: x {x}, y {y}, value {value}");
+			if (this._debug) WireMod.Instance.Logger.Info($"{from} Received ChangeValue: x {x}, y {y}, value {value}");
 
 			if (Main.netMode == NetmodeID.Server)
 			{
@@ -267,7 +269,7 @@ namespace WireMod
 			var device = WireMod.GetDevice(x, y);
 			if (device == null)
 			{
-				WireMod.Instance.Logger.Error($"{from} ChangeValue: No device found at: x {x}, y {y}");
+				if (this._debug) WireMod.Instance.Logger.Error($"{from} ChangeValue: No device found at: x {x}, y {y}");
 				return;
 			}
 
@@ -294,7 +296,7 @@ namespace WireMod
 			var x = reader.ReadInt32();
 			var y = reader.ReadInt32();
 
-			WireMod.Instance.Logger.Info($"{from} Received TripWire: x {x}, y {y}");
+			if (this._debug) WireMod.Instance.Logger.Info($"{from} Received TripWire: x {x}, y {y}");
 			
 			Wiring.TripWire(x, y, 1, 1);
 		}

@@ -15,7 +15,7 @@ namespace WireMod.Devices
             this.Name = "Repulsor";
             this.Width = 3;
             this.Height = 3;
-            this.Origin = new Point16(1, 0);
+            this.Origin = new Point16(1, 1);
             this.Value = "Player";
 
             this.PinLayout = new List<PinDesign>
@@ -37,46 +37,18 @@ namespace WireMod.Devices
 
             var pixels = 16;
             var screenRect = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
-
-
+            
             var deviceWorldRect = new Rectangle((int)(this.LocationRect.X * pixels), (int)(this.LocationRect.Y * pixels), (int)(this.Width * pixels), (int)(this.Height * pixels));
             if (!deviceWorldRect.Intersects(screenRect)) return;
 
             var deviceScreenRect = new Rectangle(deviceWorldRect.X - screenRect.X, deviceWorldRect.Y - screenRect.Y, deviceWorldRect.Width, deviceWorldRect.Height);
 
-            var circle = this.createCircle(maxDistance * 2);
+            var circle = Helpers.CreateCircle(maxDistance * 2);
             var pos = new Vector2(deviceScreenRect.X + (deviceScreenRect.Width / 2) - maxDistance, deviceScreenRect.Y + (deviceScreenRect.Height / 2) - maxDistance);
 
             spriteBatch.Draw(circle, pos, Color.LightBlue * 0.25f);
         }
-
-        private Texture2D createCircle(int diameter)
-        {
-            var texture = new Texture2D(Main.graphics.GraphicsDevice, diameter, diameter);
-            var colorData = new Color[diameter * diameter];
-
-            var radius = diameter / 2f;
-            
-            for (var x = 0; x < diameter; x++)
-            {
-                for (var y = 0; y < diameter; y++)
-                {
-                    var index = x * diameter + y;
-                    if (new Vector2(x - radius, y - radius).LengthSquared() <= radius * radius)
-                    {
-                        colorData[index] = Color.LightBlue;
-                    }
-                    else
-                    {
-                        colorData[index] = Color.Transparent;
-                    }
-                }
-            }
-
-            texture.SetData(colorData);
-            return texture;
-        }
-
+        
         public string Output(Pin pin = null) => this.GetOutput().ToString();
 
         private int GetOutput()
@@ -89,8 +61,13 @@ namespace WireMod.Devices
             var player = Main.player.OrderBy(p => (p.position - this.LocationRect.Location.ToWorldCoordinates()).Length()).FirstOrDefault();
             var npc = Main.npc.OrderBy(p => (p.position - this.LocationRect.Location.ToWorldCoordinates()).Length()).FirstOrDefault();
 
-            if (this.Value == "Player" && player == null) return 0;
-            if (this.Value == "NPC" && npc == null) return 0;
+            switch (this.Value)
+            {
+                case "Player" when player == null:
+                    return 0;
+                case "NPC" when npc == null:
+                    return 0;
+            }
 
             Vector2 direction;
             bool pLeft;
@@ -117,7 +94,7 @@ namespace WireMod.Devices
 
             if (distance > maxDistance) return 0;
 
-            var power = (Math.Max(1, maxDistance / Math.Abs(distance)))/* - 1*/;
+            var power = Math.Max(1, maxDistance / Math.Abs(distance));
 
             var left = direction.X < 0;
             var up = direction.Y < 0;

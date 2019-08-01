@@ -83,9 +83,8 @@ namespace WireMod.UI
 		{
 			var edge = end - start;
 			var angle = (float)Math.Atan2(edge.Y, edge.X);
-			var zero = /*Main.drawToScreen ?*/ Vector2.Zero /*: new Vector2(Main.offScreenRange)*/;
 
-			var line = new Rectangle((int)(start.X + zero.X), (int)(start.Y + zero.Y), (int)edge.Length(), 3);
+			var line = new Rectangle((int)start.X + 1, (int)start.Y, (int)edge.Length(), 3);
 			spriteBatch.Draw(Main.magicPixel, line, null, color, angle, new Vector2(0, 0), SpriteEffects.None, 1f);
 		}
 	}

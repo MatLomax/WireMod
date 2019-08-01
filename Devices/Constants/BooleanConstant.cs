@@ -30,7 +30,7 @@ namespace WireMod.Devices
 			
 			if (Main.netMode == NetmodeID.MultiplayerClient)
 			{
-				WireMod.PacketHandler.SendChangeValue(256, Main.myPlayer, this.Location.X, this.Location.Y, this.Value);
+				WireMod.PacketHandler.SendChangeValue(256, Main.myPlayer, this.LocationTile.X, this.LocationTile.Y, this.Value);
 			}
 		}
 
