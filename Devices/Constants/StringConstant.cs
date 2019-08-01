@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using WireMod.UI;
 
 namespace WireMod.Devices
 {
@@ -24,14 +25,19 @@ namespace WireMod.Devices
 
 	    public override void OnRightClick(Pin pin = null)
 	    {
-			// TODO: Take user input
-
-		    this.Value = Main.player[Main.myPlayer]?.name ?? "";
-
-            if (Main.netMode == NetmodeID.MultiplayerClient)
+		    var input = new UserInputUI(this.Value);
+		    input.OnSave += (s, e) =>
 		    {
-			    WireMod.PacketHandler.SendChangeValue(256, Main.myPlayer, this.Location.X, this.Location.Y, this.Value);
-		    }
+			    this.Value = input.Value;
+
+			    if (Main.netMode == NetmodeID.MultiplayerClient)
+			    {
+				    WireMod.PacketHandler.SendChangeValue(256, Main.myPlayer, this.LocationTile.X, this.LocationTile.Y, this.Value);
+			    }
+			};
+
+			WireMod.Instance.UserInputUserInterface.SetState(input);
+			UserInputUI.Visible = true;
 	    }
 
 	    public override List<(string Line, Color Color)> Debug(Pin pin = null)

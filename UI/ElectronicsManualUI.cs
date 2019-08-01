@@ -15,7 +15,7 @@ namespace WireMod.UI
 
 		private DragableUIPanel _panel;
 
-		public float OffsetX = 200f;
+		public float OffsetX = 300f;
 		public float OffsetY = 0f;
 		public float PanelWidth = 250f;
 		public float PanelHeight = 320f;
@@ -29,10 +29,8 @@ namespace WireMod.UI
 		public override void OnInitialize()
 		{
 			this._panel = new DragableUIPanel();
-			this._panel.Left.Set(((Main.screenWidth - PanelWidth) / 2) + OffsetX, 0f);
-			this._panel.Top.Set(((Main.screenHeight - PanelHeight) / 2) + OffsetY, 0f);
-			this._panel.Width.Set(PanelWidth, 0f);
-			this._panel.Height.Set(PanelHeight, 0f);
+			this._panel.Left.Set(((Main.screenWidth - this.PanelWidth) / 2) + this.OffsetX, 0f);
+			this._panel.Width.Set(this.PanelWidth, 0f);
 			this._panel.BorderColor = new Color(0, 0, 0, 0);
 
 			var textHeight = ChatManager.GetStringSize(Main.fontMouseText, Constants.ToolCategories[0], new Vector2(0, 0)).Y;
@@ -83,6 +81,7 @@ namespace WireMod.UI
 			}
 
 			this._panel.Height.Set(currentY + this.Padding, 0f);
+			this._panel.Top.Set(((Main.screenHeight - this.PanelHeight) / 2) + this.OffsetY, 0f);
 
 			this.Append(this._panel);
 			Recalculate();

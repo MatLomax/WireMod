@@ -20,6 +20,7 @@ namespace WireMod
         internal UserInterface ElectronicsManualUserInterface;
         internal UserInterface ElectronicsVisionUserInterface;
         internal UserInterface DebuggerUserInterface;
+        internal UserInterface UserInputUserInterface;
 
 
         public WireMod()
@@ -34,10 +35,9 @@ namespace WireMod
             if (Main.netMode == NetmodeID.Server) return;
 
             this.ElectronicsManualUserInterface = new UserInterface();
-            
             this.ElectronicsVisionUserInterface = new UserInterface();
-
             this.DebuggerUserInterface = new UserInterface();
+            this.UserInputUserInterface = new UserInterface();
         }
 
         public override void UpdateUI(GameTime gameTime)
@@ -60,6 +60,11 @@ namespace WireMod
             if (ElectronicsVisionUI.Visible)
             {
                 this.ElectronicsVisionUserInterface.Update(gameTime);
+            }
+
+            if (UserInputUI.Visible)
+            {
+                this.UserInputUserInterface.Update(gameTime);
             }
         }
 
@@ -90,6 +95,11 @@ namespace WireMod
                         {
                             this.DebuggerUserInterface?.Draw(Main.spriteBatch, new GameTime());
                             DebuggerUI.Visible = false;
+                        }
+
+                        if (UserInputUI.Visible)
+                        {
+                            this.UserInputUserInterface?.Draw(Main.spriteBatch, new GameTime());
                         }
 
                         return true;

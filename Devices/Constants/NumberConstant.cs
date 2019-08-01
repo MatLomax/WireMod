@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using WireMod.UI;
 
 namespace WireMod.Devices
 {
@@ -26,17 +27,25 @@ namespace WireMod.Devices
         public override void OnRightClick(Pin pin = null)
         {
             // TODO: Take user input
-            if (!int.TryParse(this.Value, out var value)) return;
-
-            value += 10;
-            value %= 100;
-
-            this.Value = value.ToString();
-
-            if (Main.netMode == NetmodeID.MultiplayerClient)
+            var input = new UserInputUI(this.Value);
+            input.OnSave += (s, e) =>
             {
-		        WireMod.PacketHandler.SendChangeValue(256, Main.myPlayer, this.Location.X, this.Location.Y, this.Value);
-            }
+                if (!int.TryParse(input.Value, out var value))
+                {
+                    Main.NewText($"Could not parse '{input.Value}' as an integer");
+                    return;
+                }
+
+                this.Value = input.Value;
+
+                if (Main.netMode == NetmodeID.MultiplayerClient)
+                {
+                    WireMod.PacketHandler.SendChangeValue(256, Main.myPlayer, this.LocationTile.X, this.LocationTile.Y, this.Value);
+                }
+            };
+
+            WireMod.Instance.UserInputUserInterface.SetState(input);
+            UserInputUI.Visible = true;
         }
 
         public override List<(string Line, Color Color)> Debug(Pin pin = null)
