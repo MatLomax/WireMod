@@ -13,7 +13,7 @@ namespace WireMod
             "Constants",
             "Outputs",
             "Sensors",
-            "Other",
+            "Experimental",
         };
 
         public static readonly List<List<string>> Tools = new List<List<string>>
@@ -22,7 +22,7 @@ namespace WireMod
             {
                 "None",
                 "Wiring",
-                "Delete"
+                "Delete",
             },
             new List<string>
             {
@@ -62,10 +62,12 @@ namespace WireMod
                 "PlayerDistanceSensor",
                 "NPCDistanceSensor",
                 "TimeSensor",
+                "NPCCounter",
             },
             new List<string>
             {
-                "Repulsor"
+                "Repulsor",
+                "Spawner",
             },
         };
 
@@ -95,7 +97,9 @@ namespace WireMod
             { "PlayerDistanceSensor", "Nearest Player Distance Sensor" },
             { "NPCDistanceSensor", "Nearest NPC Distance Sensor" },
             { "TimeSensor", "Time Sensor - basically a glorified clock" },
+            { "NPCCounter", "Count nearby NPCs" },
             { "Repulsor", "Repulsor (USE WITH CAUTION)" },
+            { "Spawner", "NPC Spawner (USE WITH CAUTION)" },
         };
     }
 }
