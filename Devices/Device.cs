@@ -14,10 +14,11 @@ namespace WireMod.Devices
         public int Width { get; set; } = 1;
         public int Height { get; set; } = 2;
 
+        public Dictionary<string, string> Settings { get; set; } = new Dictionary<string, string>
+        {
+        };
 
-        public string Value { get; set; } = "";
-        public string ValueType { get; set; }
-        
+        public string RightClickHelp { get; set; }
 
         /// <summary>
         /// Local origin location, almost always the 'chip' part of the 'tile'.
@@ -36,7 +37,6 @@ namespace WireMod.Devices
         /// <summary>
         /// Location of this device in the world (Tile Co-ords)
         /// </summary>
-        //public Point16 Location { get; set; }
         public Rectangle LocationRect { get; set; }
 
         public Point16 LocationTile => this.LocationRect != default(Rectangle) ? new Point16(this.LocationRect.X, this.LocationRect.Y) : default(Point16);
@@ -93,6 +93,21 @@ namespace WireMod.Devices
                 lines.AddRange(p.GetDebug().Select(d => (d, p == pin ? highlightColor : defaultColor)));
             }
 
+            if (this.Settings.Any())
+            {
+                lines.Add(("-----------------", defaultColor));
+                foreach (var setting in this.Settings)
+                {
+                    lines.Add(($"{setting.Key}: {setting.Value}", Color.Red));
+                }
+            }
+
+            if (!string.IsNullOrEmpty(this.RightClickHelp))
+            {
+                lines.Add(("-----------------", defaultColor));
+                lines.Add((this.RightClickHelp, Color.Red));
+
+            }
             return lines;
         }
     }

@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria.DataStructures;
 
@@ -13,12 +14,13 @@ namespace WireMod.Devices
             this.Width = 3;
             this.Height = 2;
             this.Origin = new Point16(1, 0);
-            this.Value = "int";
+            this.Settings.Add("CompareType", CompareTypes.First());
+            this.RightClickHelp = $"Right Click to change comparison type ({string.Join("/", CompareTypes)})";
 
             this.PinLayout = new List<PinDesign>
             {
-                new PinDesign("In", 0, new Point16(0, 0), this.Value),
-                new PinDesign("In", 1, new Point16(2, 0), this.Value),
+                new PinDesign("In", 0, new Point16(0, 0), this.Settings["CompareType"]),
+                new PinDesign("In", 1, new Point16(2, 0), this.Settings["CompareType"]),
                 new PinDesign("Out", 0, new Point16(1, 1), "bool"),
             };
         }
@@ -30,7 +32,7 @@ namespace WireMod.Devices
             if (!this.Pins["In"][0].IsConnected() || !this.Pins["In"][1].IsConnected()) return -1;
             if (this.Pins["In"][0].DataType != this.Pins["In"][1].DataType) return -1;
 
-            if (this.Value == "int")
+            if (this.Settings["CompareType"] == "int")
             {
                 if (!int.TryParse(this.Pins["In"][0].GetValue(), out var in0)) return -1;
                 if (!int.TryParse(this.Pins["In"][1].GetValue(), out var in1)) return -1;
@@ -42,21 +44,14 @@ namespace WireMod.Devices
 
         public override void OnRightClick(Pin pin = null)
         {
-            this.Value = this.Value == "int" ? "string" : "int";
-            foreach (var p in this.Pins["In"].Values) p.DataType = this.Value;
+            this.Settings["CompareType"] = CompareTypes[(CompareTypes.IndexOf(this.Settings["CompareType"]) + 1) % CompareTypes.Count];
+            foreach (var p in this.Pins["In"].Values) p.DataType = this.Settings["CompareType"];
         }
 
-        public override List<(string Line, Color Color)> Debug(Pin pin = null)
+        private static readonly List<string> CompareTypes = new List<string>
         {
-            var debug = base.Debug(pin);
-
-            if (pin == null)
-            {
-                debug.Add(("----------------", Color.Black));
-                debug.Add(($"Comparing: {this.Value} (Right Click to change)", Color.Red));
-            }
-
-            return debug;
-        }
+            "int",
+            "string",
+        };
     }
 }

@@ -13,8 +13,9 @@ namespace WireMod.Devices
         {
             this.Name = "Constant Number";
 
-            this.ValueType = "int";
-            this.Value = "0";
+            this.Settings.Add("Value", "0");
+
+            this.RightClickHelp = "Right Click to change value";
 
             this.PinLayout = new List<PinDesign>
             {
@@ -22,12 +23,12 @@ namespace WireMod.Devices
             };
         }
 
-        public string Output(Pin pin = null) => this.Value;
+        public string Output(Pin pin = null) => this.Settings["Value"];
 
         public override void OnRightClick(Pin pin = null)
         {
-            // TODO: Take user input
-            var input = new UserInputUI(this.Value);
+            var input = new UserInputUI(this.Settings["Value"]);
+
             input.OnSave += (s, e) =>
             {
                 if (!int.TryParse(input.Value, out var value))
@@ -36,29 +37,16 @@ namespace WireMod.Devices
                     return;
                 }
 
-                this.Value = input.Value;
+                this.Settings["Value"] = input.Value;
 
                 if (Main.netMode == NetmodeID.MultiplayerClient)
                 {
-                    WireMod.PacketHandler.SendChangeValue(256, Main.myPlayer, this.LocationTile.X, this.LocationTile.Y, this.Value);
+                    WireMod.PacketHandler.SendChangeSetting(256, Main.myPlayer, this.LocationTile.X, this.LocationTile.Y, "Value", this.Settings["Value"]);
                 }
             };
 
             WireMod.Instance.UserInputUserInterface.SetState(input);
             UserInputUI.Visible = true;
-        }
-
-        public override List<(string Line, Color Color)> Debug(Pin pin = null)
-        {
-            var debug = base.Debug(pin);
-
-            if (pin == null)
-            {
-                debug.Add(("----------------", Color.Black));
-                debug.Add(("Right Click to change value", Color.Red));
-            }
-
-            return debug;
         }
     }
 }

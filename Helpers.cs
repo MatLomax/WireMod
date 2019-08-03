@@ -20,7 +20,7 @@ namespace WireMod
                     var index = x * diameter + y;
                     if (new Vector2(x - radius, y - radius).LengthSquared() <= radius * radius)
                     {
-                        colorData[index] = Color.LightBlue;
+                        colorData[index] = Color.White;
                     }
                     else
                     {

@@ -214,7 +214,7 @@ namespace WireMod.Items
 
             if (Main.netMode == NetmodeID.MultiplayerClient)
             {
-                WireMod.PacketHandler.SendPlace(256, Main.myPlayer, modPlayer.PlacingDevice.GetType().Name, modPlayer.PlacingDevice.Value ?? "", x, y);
+                WireMod.PacketHandler.SendPlace(256, Main.myPlayer, modPlayer.PlacingDevice.GetType().Name, modPlayer.PlacingDevice.Settings, x, y);
             }
 
             // Consume a microchip

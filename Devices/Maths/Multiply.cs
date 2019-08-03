@@ -25,7 +25,6 @@ namespace WireMod.Devices
         private int GetOutput()
         {
             if (!this.Pins["In"][0].IsConnected() || !this.Pins["In"][1].IsConnected()) return -1;
-            if (this.Pins["In"][0].DataType != "int" || this.Pins["In"][1].DataType != "int") return -1;
             if (!int.TryParse(this.Pins["In"][0].GetValue(), out var in0)) return -1;
             if (!int.TryParse(this.Pins["In"][1].GetValue(), out var in1)) return -1;
             return in0 * in1;

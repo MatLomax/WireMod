@@ -13,11 +13,11 @@ namespace WireMod.UI
 
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
-			this.DrawDevices(spriteBatch);
-			this.DrawWires(spriteBatch);
+			DrawDevices(spriteBatch);
+			DrawWires(spriteBatch);
 		}
 
-		private void DrawDevices(SpriteBatch spriteBatch)
+		private static void DrawDevices(SpriteBatch spriteBatch)
 		{
 		    var pixels = 16/* * Main.UIScale*/;
 
@@ -38,7 +38,7 @@ namespace WireMod.UI
 			}
 		}
 
-		private void DrawWires(SpriteBatch spriteBatch)
+		private static void DrawWires(SpriteBatch spriteBatch)
 		{
 			var screenRect = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
 
@@ -49,7 +49,8 @@ namespace WireMod.UI
 
 				var pinRect = new Rectangle((int)pin.Location.ToWorldCoordinates(0, 0).X, (int)pin.Location.ToWorldCoordinates(0, 0).Y, 16, 16);
 				if (!screenRect.Intersects(pinRect)) continue;
-
+				
+				
 				foreach (var p in ((PinOut) pin).ConnectedPins)
 				{
 					DrawLine(
@@ -58,8 +59,27 @@ namespace WireMod.UI
 						p.Location.ToWorldCoordinates() - screenRect.Location.ToVector2(),
 						GetWireColor(pin)
 					);
+
+					DrawWireDot(spriteBatch, p.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
 				}
+
+				DrawWireDot(spriteBatch, pin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
 			}
+		}
+
+		private static void DrawWireDot(SpriteBatch spriteBatch, Vector2 position)
+		{
+			spriteBatch.Draw(Helpers.CreateCircle(10), position - new Vector2(5, 5), Color.Black * 0.5f);
+			spriteBatch.Draw(Helpers.CreateCircle(5), position - new Vector2(3, 3), Color.White);
+		}
+
+		private static void DrawLine(SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color)
+		{
+			var edge = end - start;
+			var angle = (float)Math.Atan2(edge.Y, edge.X);
+
+			var line = new Rectangle((int)start.X + 1, (int)start.Y, (int)edge.Length(), 3);
+			spriteBatch.Draw(Main.magicPixel, line, null, color, angle, new Vector2(0, 0), SpriteEffects.None, 1f);
 		}
 
 		private static Color GetWireColor(Pin pin)
@@ -77,15 +97,6 @@ namespace WireMod.UI
 			}
 
 			return Color.White;
-		}
-
-		private static void DrawLine(SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color)
-		{
-			var edge = end - start;
-			var angle = (float)Math.Atan2(edge.Y, edge.X);
-
-			var line = new Rectangle((int)start.X + 1, (int)start.Y, (int)edge.Length(), 3);
-			spriteBatch.Draw(Main.magicPixel, line, null, color, angle, new Vector2(0, 0), SpriteEffects.None, 1f);
 		}
 	}
 }

@@ -7,6 +7,7 @@ namespace WireMod.Devices
     {
         public NotGate()
         {
+            // TODO: Reshape int tall 1x3 shape
             this.Name = "NOT Gate";
             this.Width = 2;
             this.Height = 2;
@@ -24,7 +25,6 @@ namespace WireMod.Devices
         private int GetOutput()
         {
             if (!this.Pins["In"][0].IsConnected()) return -1;
-            if (this.Pins["In"][0].DataType != "bool") return -1;
             if (!int.TryParse(this.Pins["In"][0].GetValue(), out var in0)) return -1;
             return in0 == 1 ? 0 : 1;
         }

@@ -24,7 +24,6 @@ namespace WireMod.Devices.Filters
         private int GetOutput(Pin pin = null)
         {
             if (!this.Pins["In"][0].IsConnected()) return -1;
-            if (this.Pins["In"][0].DataType != "bool") return -1;
             if (!int.TryParse(this.Pins["In"][0].GetValue(), out var in0)) return -1;
             return in0 == 1 ? 1 : 0;
         }

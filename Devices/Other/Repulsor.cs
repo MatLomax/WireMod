@@ -16,7 +16,10 @@ namespace WireMod.Devices
             this.Width = 3;
             this.Height = 3;
             this.Origin = new Point16(1, 1);
-            this.Value = "Player";
+            
+            this.Settings.Add("TargetType", "Players");
+
+            this.RightClickHelp = $"Right Click to change targetting type ({string.Join("/", TargetTypes)})";
 
             this.PinLayout = new List<PinDesign>
             {
@@ -61,25 +64,25 @@ namespace WireMod.Devices
             var player = Main.player.OrderBy(p => (p.position - this.LocationRect.Location.ToWorldCoordinates()).Length()).FirstOrDefault();
             var npc = Main.npc.OrderBy(p => (p.position - this.LocationRect.Location.ToWorldCoordinates()).Length()).FirstOrDefault();
 
-            switch (this.Value)
+            switch (this.Settings["TargetType"])
             {
-                case "Player" when player == null:
+                case "Players" when player == null:
                     return 0;
-                case "NPC" when npc == null:
+                case "NPCs" when npc == null:
                     return 0;
             }
 
             Vector2 direction;
             bool pLeft;
             bool pUp;
-            switch (this.Value)
+            switch (this.Settings["TargetType"])
             {
-                case "NPC":
+                case "NPCs":
                     direction = npc.position - this.LocationRect.Location.ToWorldCoordinates();
                     pLeft = npc.velocity.X < 0;
                     pUp = npc.velocity.Y < 0;
                     break;
-                case "Player":
+                case "Players":
                 default:
                     direction = player.position - this.LocationRect.Location.ToWorldCoordinates();
                     pLeft = player.velocity.X < 0;
@@ -113,13 +116,13 @@ namespace WireMod.Devices
                 ? Math.Max(maxVelocity * -1, direction.Y * power)
                 : Math.Min(maxVelocity, direction.Y * power);
 
-            switch (this.Value)
+            switch (this.Settings["TargetType"])
             {
-                case "NPC":
+                case "NPCs":
                     npc.velocity.X += x;
                     npc.velocity.Y += y;
                     break;
-                case "Player":
+                case "Players":
                 default:
                     player.velocity.X += x;
                     player.velocity.Y += y;
@@ -132,17 +135,13 @@ namespace WireMod.Devices
 
         public override void OnRightClick(Pin pin = null)
         {
-            this.Value = (this.Value == "Player") ? "NPC" : "Player";
+            this.Settings["TargetType"] = TargetTypes[(TargetTypes.IndexOf(this.Settings["TargetType"]) + 1) % TargetTypes.Count];
         }
 
-        public override List<(string Line, Color Color)> Debug(Pin pin = null)
+        private static readonly List<string> TargetTypes = new List<string>
         {
-            var debug = base.Debug(pin);
-
-            debug.Add(("----------------", Color.Black));
-            debug.Add(($"Targetting: {this.Value}s", Color.Red));
-
-            return debug;
-        }
+            "Players",
+            "NPCs",
+        };
     }
 }

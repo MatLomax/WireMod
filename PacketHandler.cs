@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -15,7 +16,7 @@ namespace WireMod
 		public const byte Remove = 2;
 		public const byte Connect = 3;
 		public const byte Disconnect = 4;
-		public const byte ChangeValue = 5;
+		public const byte ChangeSetting = 5;
 		public const byte TripWire = 6;
 		public const byte Request = 7;
 
@@ -43,8 +44,8 @@ namespace WireMod
 				case Disconnect:
 					ReceiveDisconnect(reader, from);
 					break;
-				case ChangeValue:
-					ReceiveChangeValue(reader, from);
+				case ChangeSetting:
+					ReceiveChangeSetting(reader, from);
 					break;
 				case TripWire:
 					ReceiveTripWire(reader, from);
@@ -56,14 +57,20 @@ namespace WireMod
 		}
 
 		#region Place
-		public void SendPlace(int to, int from, string name, string value, int x, int y)
+		public void SendPlace(int to, int from, string name, Dictionary<string, string> settings, int x, int y)
 		{
 			var packet = GetPacket(Place, from);
 
 			packet.Write(name);
 			packet.Write(x);
 			packet.Write(y);
-			packet.Write(value);
+			packet.Write(settings.Count);
+
+			foreach (var setting in settings)
+			{
+				packet.Write(setting.Key);
+				packet.Write(setting.Value);
+			}
 
 			packet.Send(to, from);
 		}
@@ -73,9 +80,8 @@ namespace WireMod
 			var name = reader.ReadString();
 			var x = reader.ReadInt32();
 			var y = reader.ReadInt32();
-			var value = reader.ReadString();
 
-			if (WireMod.Debug) WireMod.Instance.Logger.Info($"{from} Received Place: name {name}, value {value}, x {x}, y {y}");
+			if (WireMod.Debug) WireMod.Instance.Logger.Info($"{from} Received Place: name {name}, x {x}, y {y}");
 
 			var device = (Device)Activator.CreateInstance(Type.GetType("WireMod.Devices." + name) ?? throw new InvalidOperationException("Device not found!"));
 
@@ -84,13 +90,23 @@ namespace WireMod
 				if (WireMod.Debug) WireMod.Instance.Logger.Error($"{from} Place: Cannot place device at: x {x}, y {y}");
 			}
 
+			var settingCount = reader.ReadInt32();
+			var settings = new Dictionary<string, string>();
+			for (var i = 0; i < settingCount; i++)
+			{
+				var key = reader.ReadString();
+				var value = reader.ReadString();
+
+				settings.Add(key, value);
+			}
+
 			if (Main.netMode == NetmodeID.Server)
 			{
-				SendPlace(-1, from, name, value, x, y);
+				SendPlace(-1, from, name, settings, x, y);
 			}
 
 			device.LocationRect = new Rectangle(x - device.Origin.X, y - device.Origin.Y, device.Width, device.Height);
-			device.Value = value;
+			device.Settings = settings;
 			WireMod.PlaceDevice(device, x, y);
 		}
 		#endregion
@@ -115,7 +131,7 @@ namespace WireMod
 
 			foreach (var device in WireMod.Devices)
 			{
-				this.SendPlace(from, 256, device.GetType().Name, device.Value, device.LocationRect.X + device.Origin.X, device.LocationRect.Y + device.Origin.Y);
+				this.SendPlace(from, 256, device.GetType().Name, device.Settings, device.LocationRect.X + device.Origin.X, device.LocationRect.Y + device.Origin.Y);
 			}
 
 			var wires = WireMod.Pins.Where(p => p.Type == "In" && p.IsConnected()).Select(p => new
@@ -242,26 +258,28 @@ namespace WireMod
 		#endregion
 
 		#region Change Value
-		public void SendChangeValue(int to, int from, int x, int y, string value)
+		public void SendChangeSetting(int to, int from, int x, int y, string key, string value)
 		{
-			var packet = GetPacket(ChangeValue, from);
+			var packet = GetPacket(ChangeSetting, from);
 			packet.Write(x);
 			packet.Write(y);
+			packet.Write(key);
 			packet.Write(value);
 			packet.Send(to, from);
 		}
 
-		public void ReceiveChangeValue(BinaryReader reader, int from)
+		public void ReceiveChangeSetting(BinaryReader reader, int from)
 		{
 			var x = reader.ReadInt32();
 			var y = reader.ReadInt32();
+			var key = reader.ReadString();
 			var value = reader.ReadString();
 
 			if (WireMod.Debug) WireMod.Instance.Logger.Info($"{from} Received ChangeValue: x {x}, y {y}, value {value}");
 
 			if (Main.netMode == NetmodeID.Server)
 			{
-				this.SendChangeValue(-1, from, x, y, value);
+				this.SendChangeSetting(-1, from, x, y, key, value);
 			}
 			
 			var device = WireMod.GetDevice(x, y);
@@ -271,7 +289,7 @@ namespace WireMod
 				return;
 			}
 
-			device.Value = value;
+			device.Settings[key] = value;
 		}
 		#endregion
 

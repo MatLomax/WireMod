@@ -11,8 +11,10 @@ namespace WireMod.Devices
         public TeamColorConstant()
         {
             this.Name = "Team Color Constant";
-            this.Value = ((int)TeamColor.White).ToString();
-            this.ValueType = "TeamColor";
+
+            this.Settings.Add("Value", ((int)TeamColor.White).ToString());
+
+            this.RightClickHelp = "Right Click to toggle value";
 
 			this.PinLayout = new List<PinDesign>
             {
@@ -20,40 +22,27 @@ namespace WireMod.Devices
             };
         }
 
-        public string Output(Pin pin = null) => this.Value;
+        public string Output(Pin pin = null) => this.Settings["Value"];
 
         public override void OnRightClick(Pin pin = null)
         {
-            if (!int.TryParse(this.Value, out var tc)) return;
+            if (!int.TryParse(this.Settings["Value"], out var tc)) return;
 
-            this.Value = ((tc + 1) % 6).ToString();
+            this.Settings["Value"] = ((tc + 1) % 6).ToString();
 
             if (Main.netMode == NetmodeID.MultiplayerClient)
             {
-                WireMod.PacketHandler.SendChangeValue(256, Main.myPlayer, this.LocationTile.X, this.LocationTile.Y, this.Value);
+                WireMod.PacketHandler.SendChangeSetting(256, Main.myPlayer, this.LocationTile.X, this.LocationTile.Y, "Value", this.Settings["Value"]);
             }
         }
 
         public override Rectangle GetSourceRect(int style = -1)
         {
-            if (!int.TryParse(this.Value, out var tc)) return default(Rectangle);
+            if (!int.TryParse(this.Settings["Value"], out var teamcolor)) return default(Rectangle);
 
-            var output = style == -1 ? tc : style + 1;
+            var output = style == -1 ? teamcolor : style + 1;
 
-            return new Rectangle(output * (this.Width * 16), 0, this.Width * 16, this.Height * 16);
-        }
-
-        public override List<(string Line, Color Color)> Debug(Pin pin = null)
-        {
-            var debug = base.Debug(pin);
-
-            if (pin == null)
-            {
-                debug.Add(("----------------", Color.Black));
-                debug.Add(("Right Click to toggle value", Color.Red));
-            }
-            
-            return debug;
+            return new Rectangle(output * this.Width * 16, 0, this.Width * 16, this.Height * 16);
         }
     }
 }
