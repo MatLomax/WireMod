@@ -90,7 +90,7 @@ namespace WireMod.Devices
 
             foreach (var p in this.Pins.Values.SelectMany(p => p.Values))
             {
-                lines.AddRange(p.GetDebug().Select(d => (d, p == pin ? highlightColor : defaultColor)));
+                lines.AddRange(p.GetDebug().Select(d => (d, p == Main.LocalPlayer.GetModPlayer<WireModPlayer>().ConnectingPin ? Color.Green : p == pin ? highlightColor : defaultColor)));
             }
 
             if (this.Settings.Any())

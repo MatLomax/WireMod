@@ -9,6 +9,7 @@ namespace WireMod
 	public class WireModPlayer : ModPlayer
 	{
 		public Device PlacingDevice;
+		public Pin ConnectingPin;
 
 		public bool ShowPreview;
 		public int ToolCategoryMode = 0;

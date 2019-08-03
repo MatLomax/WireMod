@@ -10,8 +10,6 @@ namespace WireMod.Items
 {
     internal class ElectronicsManual : ModItem
     {
-        private Pin _connectingPin;
-
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Electronics Manual");
@@ -45,10 +43,10 @@ namespace WireMod.Items
 
             var modPlayer = player.GetModPlayer<WireModPlayer>();
 
-            WireMod.Instance.ElectronicsManualUserInterface.SetState(modPlayer.ElectronicsManualUI);
+            //WireMod.Instance.ElectronicsManualUserInterface.SetState(modPlayer.ElectronicsManualUI);
             ElectronicsManualUI.Visible = true;
 
-            WireMod.Instance.ElectronicsVisionUserInterface.SetState(modPlayer.ElectronicsVisionUI);
+            //WireMod.Instance.ElectronicsVisionUserInterface.SetState(modPlayer.ElectronicsVisionUI);
             ElectronicsVisionUI.Visible = true;
 
             modPlayer.ShowPreview = false;
@@ -78,7 +76,7 @@ namespace WireMod.Items
             if (Main.netMode == NetmodeID.Server) return false;
             if (player != Main.LocalPlayer) return false;
 
-            var modPlayer = player.GetModPlayer<WireModPlayer>(WireMod.Instance);
+            var modPlayer = player.GetModPlayer<WireModPlayer>();
 
             var (x, y) = WireMod.Instance.GetMouseTilePosition();
             var device = WireMod.GetDevice(x, y);
@@ -106,10 +104,20 @@ namespace WireMod.Items
 
                 if (modPlayer.ToolMode == 1)
                 {
-                    if (pin == null) return true;
-
                     if (player.altFunctionUse == 2)
                     {
+                        if (device == null)
+                        {
+                            modPlayer.ConnectingPin = null;
+                            return false;
+                        }
+
+                        if (pin == null)
+                        {
+                            device.OnRightClick();
+                            return true;
+                        }
+
                         pin.Disconnect();
 
                         if (Main.netMode == NetmodeID.MultiplayerClient)
@@ -122,35 +130,35 @@ namespace WireMod.Items
 
                     #region Connect Wires
                     // Connect wires
-                    if (this._connectingPin == null)
+                    if (modPlayer.ConnectingPin == null)
                     {
                         Main.NewText("Connecting...");
-                        this._connectingPin = pin;
+                        modPlayer.ConnectingPin = pin;
                         return true;
                     }
 
-                    if (this._connectingPin.Type == pin.Type)
+                    if (modPlayer.ConnectingPin.Type == pin.Type)
                     {
                         Main.NewText("Cancelled - must connect a PinIn to a PinOut (or vice versa)");
-                        this._connectingPin = null;
+                        modPlayer.ConnectingPin = null;
                         return false;
                     }
 
-                    if (this._connectingPin.Device == pin.Device)
+                    if (modPlayer.ConnectingPin.Device == pin.Device)
                     {
                         Main.NewText("Cancelled - cannot connect to same device");
-                        this._connectingPin = null;
+                        modPlayer.ConnectingPin = null;
                         return false;
                     }
 
-                    if (this._connectingPin.DataType != pin.DataType)
+                    if (modPlayer.ConnectingPin.DataType != pin.DataType)
                     {
                         Main.NewText("Cancelled - cannot connect different data types");
-                        this._connectingPin = null;
+                        modPlayer.ConnectingPin = null;
                         return false;
                     }
 
-                    if (this._connectingPin.Device.Pins.SelectMany(p => p.Value.Values).Any(p =>
+                    if (modPlayer.ConnectingPin.Device.Pins.SelectMany(p => p.Value.Values).Any(p =>
                     {
                         return p.Type == "In"
                             ? ((PinIn) p).ConnectedPin?.Device == pin.Device
@@ -158,19 +166,19 @@ namespace WireMod.Items
                     }))
                     {
                         Main.NewText("Cancelled - circular connection detected");
-                        this._connectingPin = null;
+                        modPlayer.ConnectingPin = null;
                         return false;
                     }
 
-                    this._connectingPin.Connect(pin);
-                    pin.Connect(this._connectingPin);
+                    modPlayer.ConnectingPin.Connect(pin);
+                    pin.Connect(modPlayer.ConnectingPin);
 
                     if (Main.netMode == NetmodeID.MultiplayerClient)
                     {
-                        WireMod.PacketHandler.SendConnect(256, Main.myPlayer, this._connectingPin.Location.X, this._connectingPin.Location.Y, pin.Location.X, pin.Location.Y);
+                        WireMod.PacketHandler.SendConnect(256, Main.myPlayer, modPlayer.ConnectingPin.Location.X, modPlayer.ConnectingPin.Location.Y, pin.Location.X, pin.Location.Y);
                     }
 
-                    this._connectingPin = null;
+                    modPlayer.ConnectingPin = null;
 
                     return true;
                     #endregion

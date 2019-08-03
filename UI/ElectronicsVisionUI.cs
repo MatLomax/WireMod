@@ -65,12 +65,25 @@ namespace WireMod.UI
 
 				DrawWireDot(spriteBatch, pin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
 			}
+
+			// Draw connecting wire
+			var modPlayer = Main.LocalPlayer.GetModPlayer<WireModPlayer>();
+			if (modPlayer.ConnectingPin == null) return;
+
+			DrawLine(
+				spriteBatch,
+				modPlayer.ConnectingPin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2(),
+				Main.MouseScreen,
+				GetWireColor(modPlayer.ConnectingPin)
+			);
+
+			DrawWireDot(spriteBatch, modPlayer.ConnectingPin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
 		}
 
 		private static void DrawWireDot(SpriteBatch spriteBatch, Vector2 position)
 		{
-			spriteBatch.Draw(Helpers.CreateCircle(10), position - new Vector2(5, 5), Color.Black * 0.5f);
-			spriteBatch.Draw(Helpers.CreateCircle(5), position - new Vector2(3, 3), Color.White);
+			spriteBatch.Draw(Helpers.CreateCircle(10), position - new Vector2(5, 5), Color.Black * 0.25f);
+			spriteBatch.Draw(Helpers.CreateCircle(5), position - new Vector2(3, 3), Color.White * 0.5f);
 		}
 
 		private static void DrawLine(SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color)

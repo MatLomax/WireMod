@@ -56,7 +56,7 @@ namespace WireMod.Devices
 		{
 			if (this.LocationRect == default(Rectangle)) return;
 			if (!this.Pins["In"][1].IsConnected() || !int.TryParse(this.Pins["In"][1].GetValue(), out var distance)) return;
-			if (distance == 0) return;
+			if (distance < 1) return;
 
 			var pixels = 16;
 			var screenRect = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);

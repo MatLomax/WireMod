@@ -23,6 +23,8 @@ namespace WireMod
         internal UserInterface DebuggerUserInterface;
         internal UserInterface UserInputUserInterface;
 
+        internal ElectronicsManualUI ElectronicsManualUI = new ElectronicsManualUI();
+        internal ElectronicsVisionUI ElectronicsVisionUI = new ElectronicsVisionUI();
 
         public WireMod()
         {
@@ -39,12 +41,28 @@ namespace WireMod
             this.ElectronicsVisionUserInterface = new UserInterface();
             this.DebuggerUserInterface = new UserInterface();
             this.UserInputUserInterface = new UserInterface();
+
+            this.ElectronicsManualUI.Activate();
+            this.ElectronicsManualUserInterface.SetState(this.ElectronicsManualUI);
+
+            this.ElectronicsVisionUI.Activate();
+            this.ElectronicsVisionUserInterface.SetState(this.ElectronicsVisionUI);
         }
 
         public override void UpdateUI(GameTime gameTime)
         {
             // TODO: Fix this bullshit
             foreach (var device in Devices.Where(d => d.Pins["Out"].Count > 0)) device.Pins["Out"][0].GetValue();
+
+            //var modPlayer = Main.LocalPlayer.GetModPlayer<WireModPlayer>();
+            if (Main.LocalPlayer.name != "")
+            {
+                if (Main.LocalPlayer.HeldItem.Name != "Electronics Manual")
+                {
+                    ElectronicsManualUI.Visible = false;
+                    ElectronicsVisionUI.Visible = false;
+                }
+            }
 
             if (Main.netMode == NetmodeID.Server) return;
 
@@ -83,13 +101,12 @@ namespace WireMod
                         if (ElectronicsVisionUI.Visible)
                         {
                             this.ElectronicsVisionUserInterface?.Draw(Main.spriteBatch, new GameTime());
-                            ElectronicsVisionUI.Visible = false;
                         }
 
                         if (ElectronicsManualUI.Visible)
                         {
                             this.ElectronicsManualUserInterface?.Draw(Main.spriteBatch, new GameTime());
-                            ElectronicsManualUI.Visible = false;
+                            //ElectronicsManualUI.Visible = false;
                         }
 
                         if (DebuggerUI.Visible)

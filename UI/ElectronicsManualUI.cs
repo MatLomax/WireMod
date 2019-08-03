@@ -17,7 +17,7 @@ namespace WireMod.UI
 
 		public float OffsetX = 300f;
 		public float OffsetY = 0f;
-		public float PanelWidth = 250f;
+		public float PanelWidth = 260f;
 		public float PanelHeight = 320f;
 		public float ButtonSize = 32f;
 		public float Padding = 20f;
@@ -38,12 +38,19 @@ namespace WireMod.UI
 			var currentY = 0f;
 			var currentX = this.Padding;
 
+			var uiTitle = new UIText("Electronics Manual", 1.5f);
+			uiTitle.Height.Set(textHeight, 0f);
+			uiTitle.Top.Set(currentY, 0f);
+			this._panel.Append(uiTitle);
+
+			currentY += 40;
+
 			for (var cat = 0; cat < Constants.ToolCategories.Count; cat++)
 			{
-				var uiTitle = new UIText(Constants.ToolCategories[cat]);
-				uiTitle.Height.Set(textHeight, 0f);
-				uiTitle.Top.Set(currentY, 0f);
-				this._panel.Append(uiTitle);
+				var uiCatTitle = new UIText(Constants.ToolCategories[cat]);
+				uiCatTitle.Height.Set(textHeight, 0f);
+				uiCatTitle.Top.Set(currentY, 0f);
+				this._panel.Append(uiCatTitle);
 
 				var i = 0;
 				foreach (var tool in Constants.Tools[cat])

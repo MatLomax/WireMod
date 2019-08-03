@@ -52,6 +52,9 @@ namespace WireMod.UI
 					base.DrawSelf(spriteBatch);
 					return;
 				}
+
+				modPlayer.PlacingDevice = null;
+				modPlayer.ConnectingPin = null;
 				
 				modPlayer.ToolCategoryMode = this.ToolCat;
 				modPlayer.ToolMode = this.Tool;
