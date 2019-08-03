@@ -12,7 +12,6 @@ namespace WireMod.Devices
 
         public Point16 Location { get; set; }
 
-
         private string _name = "";
         public string Name
         {

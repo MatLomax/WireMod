@@ -31,7 +31,13 @@ namespace WireMod.Devices
 		{
 			if (!int.TryParse(this.Pins["In"][1].GetValue(), out var distance)) return -2;
 
+			return this.GetNPCs(distance).Count();
+		}
+
+		private IEnumerable<NPC> GetNPCs(int distance)
+		{
 			var npc = Main.npc.Select(n => n);
+			var pos = this.LocationRect.Location.ToWorldCoordinates();
 
 			if (this.Pins["In"][0].IsConnected() && int.TryParse(this.Pins["In"][0].GetValue(), out var hostile))
 			{
@@ -42,8 +48,8 @@ namespace WireMod.Devices
 			{
 				npc = npc.Where(n => n.townNPC == (character == 1));
 			}
-			
-			return npc.Count(n => (this.LocationRect.Location.ToWorldCoordinates() - n.position).Length() < distance);
+
+			return npc.Where(n => (pos - n.position).Length() < distance && (pos - n.position).Length() > 1);
 		}
 
 		public override void Draw(SpriteBatch spriteBatch)
@@ -64,6 +70,23 @@ namespace WireMod.Devices
 			var pos = new Vector2(deviceScreenRect.X + (deviceScreenRect.Width / 2) - distance, deviceScreenRect.Y + (deviceScreenRect.Height / 2) - distance);
 
 			spriteBatch.Draw(circle, pos, Color.LightGreen * 0.25f);
+		}
+
+		public override List<(string Line, Color Color)> Debug(Pin pin = null)
+		{
+			var debug = base.Debug(pin);
+
+			if (pin == null)
+			{
+				if (int.TryParse(this.Pins["In"][1].GetValue(), out var distance))
+				{
+					debug.Add(("----------------", Color.Black));
+
+					debug.AddRange(this.GetNPCs(distance).Select(npc => ($"NPC: {npc.FullName}", Color.Red)));
+				}
+			}
+
+			return debug;
 		}
 	}
 }

@@ -15,6 +15,7 @@ namespace WireMod
     internal class WireMod : Mod
     {
         internal static WireMod Instance;
+        internal const bool Debug = true;
         internal static DevicePacketHandler PacketHandler = new DevicePacketHandler();
 
         internal UserInterface ElectronicsManualUserInterface;
