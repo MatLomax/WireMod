@@ -36,7 +36,7 @@ namespace WireMod.Devices
 
 		private IEnumerable<NPC> GetNPCs(int distance)
 		{
-			var npc = Main.npc.Select(n => n);
+			var npc = Main.npc.Select(n => n).Where(n => n.life > 0 && !n.dontCountMe);
 			var pos = this.LocationRect.Location.ToWorldCoordinates();
 
 			if (this.Pins["In"][0].IsConnected() && int.TryParse(this.Pins["In"][0].GetValue(), out var hostile))

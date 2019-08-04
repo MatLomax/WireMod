@@ -33,14 +33,13 @@ namespace WireMod.Devices
         {
             if (!int.TryParse(this.Settings["Value"], out var val)) return -1;
             if (!this.Pins["In"][0].IsConnected()) return -1;
-            if (this.Pins["In"][0].DataType != "bool") return -1;
             if (!int.TryParse(this.Pins["In"][0].GetValue(), out var in0)) return -1;
 
             if ((in0 <= 0 && val > 0) || (in0 > 0 && val <= 0))
             {
                 if (this.Settings["Trigger"] == Triggers[2] ||                   // Enter and Exit
-                    (in0 == 1 && this.Settings["Trigger"] == Triggers[1]) ||     // Enter
-                    (in0 == 0 && this.Settings["Trigger"] == Triggers[0]))       // Exit
+                    (in0 == 1 && this.Settings["Trigger"] == Triggers[1]) ||     // Enter Only
+                    (in0 == 0 && this.Settings["Trigger"] == Triggers[0]))       // Exit Only
                 {
                     Wiring.blockPlayerTeleportationForOneIteration = true;
 
@@ -67,8 +66,8 @@ namespace WireMod.Devices
 
         private static readonly List<string> Triggers = new List<string>
         {
-            "Exit",
-            "Enter",
+            "Exit Only",
+            "Enter Only",
             "Enter and Exit"
         };
     }

@@ -3,9 +3,9 @@ using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
 
-namespace WireMod.UI
+namespace WireMod.UI.Elements
 {
-	internal class DragableUIPanel : UIPanel
+	public class DragableUIPanel : UIPanel
 	{
 		private Vector2 _offset;
 		public bool Dragging;

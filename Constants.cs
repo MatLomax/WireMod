@@ -54,8 +54,9 @@ namespace WireMod
             new List<string>
             {
                 "OutputLamp",
-                "OutputSign",
+                //"OutputSign",
                 "FlipFlop",
+                "Trigger",
             },
             new List<string>
             {
@@ -93,7 +94,8 @@ namespace WireMod
             { "TeamColorConstant", "Constant Team Color Value" },
             { "FlipFlop", "Flip/Flop" },
             { "OutputLamp", "Output Lamp" },
-            { "OutputSign", "Output Sign" },
+            //{ "OutputSign", "Output Sign" },
+            { "Trigger", "Trigger Output" },
             { "PlayerDistanceSensor", "Nearest Player Distance Sensor" },
             { "NPCDistanceSensor", "Nearest NPC Distance Sensor" },
             { "TimeSensor", "Time Sensor - basically a glorified clock" },

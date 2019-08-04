@@ -11,6 +11,9 @@ namespace WireMod.UI
 	{
 		public static bool Visible { get; set; }
 
+		public static float DeviceVisibility { get; set; } = 1f;
+		public static float WireVisibility { get; set; } = 0.75f;
+
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
 			DrawDevices(spriteBatch);
@@ -33,7 +36,7 @@ namespace WireMod.UI
 				var deviceScreenRect = new Rectangle(deviceWorldRect.X - screenRect.X, deviceWorldRect.Y - screenRect.Y, deviceWorldRect.Width, deviceWorldRect.Height);
 
 				var texture = WireMod.Instance.GetTexture($"Images/{device.GetType().Name}");
-				spriteBatch.Draw(texture, new Vector2(deviceScreenRect.X, deviceScreenRect.Y), device.GetSourceRect(), Color.White, 0f, new Vector2(0, 0), Main.UIScale, SpriteEffects.None, 0f);
+				spriteBatch.Draw(texture, new Vector2(deviceScreenRect.X, deviceScreenRect.Y), device.GetSourceRect(), Color.White * DeviceVisibility, 0f, new Vector2(0, 0), Main.UIScale, SpriteEffects.None, 0f);
 				device.Draw(spriteBatch);
 			}
 		}
@@ -82,8 +85,8 @@ namespace WireMod.UI
 
 		private static void DrawWireDot(SpriteBatch spriteBatch, Vector2 position)
 		{
-			spriteBatch.Draw(Helpers.CreateCircle(10), position - new Vector2(5, 5), Color.Black * 0.25f);
-			spriteBatch.Draw(Helpers.CreateCircle(5), position - new Vector2(3, 3), Color.White * 0.5f);
+			spriteBatch.Draw(Helpers.CreateCircle(10), position - new Vector2(5, 5), Color.Black * 0.25f * WireVisibility);
+			spriteBatch.Draw(Helpers.CreateCircle(5), position - new Vector2(3, 3), Color.White * 0.5f * WireVisibility);
 		}
 
 		private static void DrawLine(SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color)
@@ -92,7 +95,7 @@ namespace WireMod.UI
 			var angle = (float)Math.Atan2(edge.Y, edge.X);
 
 			var line = new Rectangle((int)start.X + 1, (int)start.Y, (int)edge.Length(), 3);
-			spriteBatch.Draw(Main.magicPixel, line, null, color, angle, new Vector2(0, 0), SpriteEffects.None, 1f);
+			spriteBatch.Draw(Main.magicPixel, line, null, color * WireVisibility, angle, new Vector2(0, 0), SpriteEffects.None, 1f);
 		}
 
 		private static Color GetWireColor(Pin pin)

@@ -50,7 +50,7 @@ namespace WireMod.Items
             ElectronicsVisionUI.Visible = true;
 
             modPlayer.ShowPreview = false;
-            
+
             if (modPlayer.PlacingDevice != null)
             {
                 if (modPlayer.ToolCategoryMode > 0)
@@ -82,7 +82,7 @@ namespace WireMod.Items
             var device = WireMod.GetDevice(x, y);
 
             var pin = WireMod.Pins.FirstOrDefault(p => p.Location == new Point16(x, y));
-            
+
             // Wiring tools
             if (modPlayer.ToolCategoryMode == 0)
             {
@@ -128,6 +128,8 @@ namespace WireMod.Items
                         return true;
                     }
 
+                    if (pin == null) return false;
+
                     #region Connect Wires
                     // Connect wires
                     if (modPlayer.ConnectingPin == null)
@@ -137,7 +139,7 @@ namespace WireMod.Items
                         return true;
                     }
 
-                    if (modPlayer.ConnectingPin.Type == pin.Type)
+                    if (modPlayer.ConnectingPin.Type == pin?.Type)
                     {
                         Main.NewText("Cancelled - must connect a PinIn to a PinOut (or vice versa)");
                         modPlayer.ConnectingPin = null;
@@ -161,8 +163,8 @@ namespace WireMod.Items
                     if (modPlayer.ConnectingPin.Device.Pins.SelectMany(p => p.Value.Values).Any(p =>
                     {
                         return p.Type == "In"
-                            ? ((PinIn) p).ConnectedPin?.Device == pin.Device
-                            : ((PinOut) p).ConnectedPins.Any(cp => ((PinIn) cp).ConnectedPin?.Device == pin.Device);
+                            ? ((PinIn)p).ConnectedPin?.Device == pin.Device
+                            : ((PinOut)p).ConnectedPins.Any(cp => ((PinIn)cp).ConnectedPin?.Device == pin.Device);
                     }))
                     {
                         Main.NewText("Cancelled - circular connection detected");

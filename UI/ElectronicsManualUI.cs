@@ -6,6 +6,7 @@ using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.UI;
 using Terraria.UI.Chat;
+using WireMod.UI.Elements;
 
 namespace WireMod.UI
 {
@@ -13,7 +14,7 @@ namespace WireMod.UI
 	{
 		public static bool Visible { get; set; }
 
-		private DragableUIPanel _panel;
+		public DragableUIPanel Panel;
 
 		public float OffsetX = 300f;
 		public float OffsetY = 0f;
@@ -28,10 +29,10 @@ namespace WireMod.UI
 
 		public override void OnInitialize()
 		{
-			this._panel = new DragableUIPanel();
-			this._panel.Left.Set(((Main.screenWidth - this.PanelWidth) / 2) + this.OffsetX, 0f);
-			this._panel.Width.Set(this.PanelWidth, 0f);
-			this._panel.BorderColor = new Color(0, 0, 0, 0);
+			this.Panel = new DragableUIPanel();
+			this.Panel.Left.Set(((Main.screenWidth - this.PanelWidth) / 2) + this.OffsetX, 0f);
+			this.Panel.Width.Set(this.PanelWidth, 0f);
+			this.Panel.BorderColor = new Color(0, 0, 0, 0);
 
 			var textHeight = ChatManager.GetStringSize(Main.fontMouseText, Constants.ToolCategories[0], new Vector2(0, 0)).Y;
 
@@ -41,7 +42,7 @@ namespace WireMod.UI
 			var uiTitle = new UIText("Electronics Manual", 1.5f);
 			uiTitle.Height.Set(textHeight, 0f);
 			uiTitle.Top.Set(currentY, 0f);
-			this._panel.Append(uiTitle);
+			this.Panel.Append(uiTitle);
 
 			currentY += 40;
 
@@ -50,7 +51,7 @@ namespace WireMod.UI
 				var uiCatTitle = new UIText(Constants.ToolCategories[cat]);
 				uiCatTitle.Height.Set(textHeight, 0f);
 				uiCatTitle.Top.Set(currentY, 0f);
-				this._panel.Append(uiCatTitle);
+				this.Panel.Append(uiCatTitle);
 
 				var i = 0;
 				foreach (var tool in Constants.Tools[cat])
@@ -78,7 +79,7 @@ namespace WireMod.UI
 					button.Top.Set(currentY - (this.ButtonSize / 2), 0f);
 					button.SetVisibility(0f, 0.25f);
 
-					this._panel.Append(button);
+					this.Panel.Append(button);
 
 					i++;
 				}
@@ -87,10 +88,10 @@ namespace WireMod.UI
 				currentX = this.Padding;
 			}
 
-			this._panel.Height.Set(currentY + this.Padding, 0f);
-			this._panel.Top.Set(((Main.screenHeight - this.PanelHeight) / 2) + this.OffsetY, 0f);
+			this.Panel.Height.Set(currentY + this.Padding, 0f);
+			this.Panel.Top.Set(((Main.screenHeight - this.PanelHeight) / 2) + this.OffsetY, 0f);
 
-			this.Append(this._panel);
+			this.Append(this.Panel);
 			Recalculate();
 		}
 
@@ -113,8 +114,8 @@ namespace WireMod.UI
 
 			var screenRect = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
 
-			var mouseTile = WireMod.Instance.GetMouseTilePosition();
-			var offsetMouseTile = new Point16(mouseTile.X - dev.Origin.X, mouseTile.Y - dev.Origin.Y);
+			var (x, y) = WireMod.Instance.GetMouseTilePosition();
+			var offsetMouseTile = new Point16(x - dev.Origin.X, y - dev.Origin.Y);
 			var offsetMouseWorld = new Point16(offsetMouseTile.X * 16, offsetMouseTile.Y * 16);
 			var offsetMouseScreen = new Point16(offsetMouseWorld.X - screenRect.X, offsetMouseWorld.Y - screenRect.Y);
 

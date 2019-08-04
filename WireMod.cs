@@ -54,13 +54,17 @@ namespace WireMod
             // TODO: Fix this bullshit
             foreach (var device in Devices.Where(d => d.Pins["Out"].Count > 0)) device.Pins["Out"][0].GetValue();
 
-            //var modPlayer = Main.LocalPlayer.GetModPlayer<WireModPlayer>();
             if (Main.LocalPlayer.name != "")
             {
                 if (Main.LocalPlayer.HeldItem.Name != "Electronics Manual")
                 {
+                    // Reset
                     ElectronicsManualUI.Visible = false;
                     ElectronicsVisionUI.Visible = false;
+
+                    var modPlayer = Main.LocalPlayer.GetModPlayer<WireModPlayer>();
+                    modPlayer.ToolCategoryMode = 0;
+                    modPlayer.ToolMode = 0;
                 }
             }
 
