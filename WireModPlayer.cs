@@ -1,8 +1,8 @@
 ﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using WireMod.Devices;
-using WireMod.UI;
 
 namespace WireMod
 {
@@ -15,21 +15,29 @@ namespace WireMod
 		public int ToolCategoryMode = 0;
 		public int ToolMode = 0;
 
-		public ElectronicsManualUI ElectronicsManualUI { get; set; }
-		public ElectronicsVisionUI ElectronicsVisionUI { get; set; }
-		
 		public override void OnEnterWorld(Player p)
 		{
 			base.OnEnterWorld(p);
-
-			this.ElectronicsManualUI = new ElectronicsManualUI();
-			this.ElectronicsVisionUI = new ElectronicsVisionUI();
 			
 			// Send sync request
 			if (Main.netMode == NetmodeID.MultiplayerClient)
 			{
 				WireMod.PacketHandler.SendRequest(256, Main.myPlayer);
 			}
+		}
+
+		public override TagCompound Save()
+		{
+			return new TagCompound
+			{
+				["menuPosX"] = WireMod.Instance.ElectronicsManualUI.Panel.Left.Pixels,
+				["menuPosY"] = WireMod.Instance.ElectronicsManualUI.Panel.Top.Pixels,
+			};
+		}
+		public override void Load(TagCompound tag)
+		{
+			WireMod.Instance.ElectronicsManualUI.Panel.Left.Set(tag.GetFloat("menuPosX"), 0f);
+			WireMod.Instance.ElectronicsManualUI.Panel.Top.Set(tag.GetFloat("menuPosY"), 0f);
 		}
 	}
 }
