@@ -40,19 +40,20 @@ namespace WireMod.Devices
         public Rectangle LocationRect { get; set; }
 
         public Point16 LocationTile => this.LocationRect != default(Rectangle) ? new Point16(this.LocationRect.X, this.LocationRect.Y) : default(Point16);
-        public Point16 LocationWorld => this.LocationRect != default(Rectangle) ? new Point16(this.LocationRect.X * 16, this.LocationRect.Y * 16) : default(Point16);
+        public Vector2 LocationWorld => this.LocationRect != default(Rectangle) ? new Vector2(this.LocationRect.X * 16, this.LocationRect.Y * 16) : default(Vector2);
 
         public virtual void OnRightClick(Pin pin = null) { }
 
         public virtual void OnKill()
         {
             // Drop a microchip at the device's location
-            Item.NewItem(this.LocationRect.X * 16, this.LocationRect.Y * 16, 16, 16, WireMod.Instance.ItemType("Microchip"));
+            Item.NewItem((int)this.LocationWorld.X, (int)this.LocationWorld.Y, 16, 16, WireMod.Instance.ItemType("MicrochipItem"));
         }
 
         public virtual void OnPlace() { }
 
         public virtual void Draw(SpriteBatch spriteBatch) { }
+        public virtual void Update(GameTime gameTime) { }
 
         public virtual Rectangle GetSourceRect(int style = -1) => new Rectangle(0, 0, this.Width * 16, this.Height * 16);
 

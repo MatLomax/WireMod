@@ -39,50 +39,26 @@ namespace WireMod.UI
             var textbox = new UIInputTextField(this.Value, "Enter a value");
             textbox.OnTextChange += (s, e) => { this.Value = textbox.Text; };
             //textbox.OnSave += this.Save;
-            textbox.OnCancel += this.Close;
+            textbox.OnCancel += (sender, args) =>
+            {
+                WireMod.Instance.UserInputUserInterface.SetState(null);
+                Visible = false;
+            };
 
             this._panel.Append(textbox);
 
-            var button = new UIImageButton(WireMod.Instance.GetTexture("UI/Icons/pencil"));
-            button.Width.Set(32f, 0f);
-            button.Height.Set(32f, 0f);
-            button.Top.Set(50f, 0f);
-
-            button.OnClick += (e, el) =>
+            var button = new UIClickableButton("Save", (evt, element) =>
             {
                 this.OnSave?.Invoke(this, EventArgs.Empty);
                 WireMod.Instance.UserInputUserInterface.SetState(null);
                 Visible = false;
-			};
+            });
 
+            button.Top.Set(50f, 0f);
+            
             this._panel.Append(button);
 
             this.Append(this._panel);
         }
-
-        private void Save(object sender, EventArgs e)
-        {
-            this.Close(sender, e);
-        }
-
-        private void Close(object sender, EventArgs e)
-        {
-            WireMod.Instance.UserInputUserInterface.SetState(null);
-            Visible = false;
-        }
-
-
-        //protected override void DrawSelf(SpriteBatch spriteBatch)
-        //{
-        //    base.DrawSelf(spriteBatch);
-
-        //    var hovering = Main.mouseX > reforgeX - 15 && Main.mouseX < reforgeX + 15 && Main.mouseY > reforgeY - 15 && Main.mouseY < reforgeY + 15 && !PlayerInput.IgnoreMouseInterface;
-
-        //    if (!Main.mouseLeftRelease || !Main.mouseLeft)
-        //    {
-
-        //    }
-        //}
-
     }
 }

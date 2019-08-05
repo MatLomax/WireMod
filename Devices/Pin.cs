@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Terraria.DataStructures;
 
 namespace WireMod.Devices
@@ -32,12 +33,11 @@ namespace WireMod.Devices
     {
         public Pin ConnectedPin { get; set; }
         private string _value => this.ConnectedPin?.GetValue();
-
-        public bool GetBool()
+        
+        public PinIn(Device device)
         {
-            if (!this.IsConnected()) return false;
-            if (!int.TryParse(this._value, out var i)) return false;
-            return i == 1;
+            this.Device = device;
+            this.Type = "In";
         }
 
         public override bool IsConnected(Pin pin = null) => this.ConnectedPin != null;
@@ -64,11 +64,6 @@ namespace WireMod.Devices
                 : new List<string> { $"{this.Name} (Disconnected)" };
         }
 
-        public PinIn(Device device)
-        {
-            this.Device = device;
-            this.Type = "In";
-        }
     }
 
     internal class PinOut : Pin
@@ -80,6 +75,16 @@ namespace WireMod.Devices
         {
             this.Device = device;
             this.Type = "Out";
+        }
+
+        public override bool IsConnected(Pin pin = null)
+        {
+            if (pin == null)
+            {
+                return this.ConnectedPins.Count > 0;
+            }
+
+            return this.ConnectedPins.Contains(pin);
         }
 
         public override void Connect(Pin pin)
@@ -98,10 +103,18 @@ namespace WireMod.Devices
                 return;
             }
 
-            this.ConnectedPins.ForEach(p =>
+            try
             {
-                if (p.IsConnected()) p.Disconnect();
-            });
+                this.ConnectedPins.ForEach(p =>
+                {
+                    if (p.IsConnected()) p.Disconnect();
+                });
+            }
+            catch (InvalidOperationException)
+            {
+                // Ignore 'collection changed' errors, works fine.
+            }
+            
         }
 
         public override string GetValue() => this._value;
@@ -123,16 +136,6 @@ namespace WireMod.Devices
             }
             
             return lines;
-        }
-
-        public override bool IsConnected(Pin pin = null)
-        {
-            if (pin == null)
-            {
-                return this.ConnectedPins.Count > 0;
-            }
-
-            return this.ConnectedPins.Contains(pin);
         }
     }
 }

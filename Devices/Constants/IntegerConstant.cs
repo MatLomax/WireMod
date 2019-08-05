@@ -6,11 +6,11 @@ using WireMod.UI;
 
 namespace WireMod.Devices
 {
-    internal class NumberConstant : Device, IOutput
+    internal class IntegerConstant : Device, IOutput
     {
-        public NumberConstant()
+        public IntegerConstant()
         {
-            this.Name = "Constant Number";
+            this.Name = "Constant Integer";
 
             this.Settings.Add("Value", "0");
 

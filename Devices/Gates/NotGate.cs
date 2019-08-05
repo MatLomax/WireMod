@@ -7,16 +7,15 @@ namespace WireMod.Devices
     {
         public NotGate()
         {
-            // TODO: Reshape int tall 1x3 shape
             this.Name = "NOT Gate";
-            this.Width = 2;
-            this.Height = 2;
-            this.Origin = new Point16(1, 0);
+            this.Width = 1;
+            this.Height = 3;
+            this.Origin = new Point16(0, 1);
 
             this.PinLayout = new List<PinDesign>
             {
                 new PinDesign("In", 0, new Point16(0, 0), "bool"),
-                new PinDesign("Out", 0, new Point16(1, 1), "bool"),
+                new PinDesign("Out", 0, new Point16(0, 2), "bool"),
             };
         }
 

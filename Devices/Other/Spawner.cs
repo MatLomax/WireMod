@@ -40,7 +40,7 @@ namespace WireMod.Devices
             }
 
             // TODO: Figure out what the difference AI options do
-            var npcId = NPC.NewNPC(this.LocationWorld.X, this.LocationWorld.Y, id, 0, WorldGen.genRand.Next(100), WorldGen.genRand.Next(100));
+            var npcId = NPC.NewNPC((int)this.LocationWorld.X, (int)this.LocationWorld.Y, id, 0, WorldGen.genRand.Next(100), WorldGen.genRand.Next(100));
             var npc = Main.npc[npcId];
         }
 

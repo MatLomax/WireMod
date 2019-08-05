@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -19,8 +20,10 @@ namespace WireMod.Devices
             this.Origin = new Point16(1, 1);
 
             this.Settings.Add("Value", "-1");
+            this.Settings.Add("TriggerType", "All");
+            this.Settings.Add("TriggerTarget", "0");
 
-            this.RightClickHelp = "Right Click to reset trigger";
+            this.RightClickHelp = "Right Click to toggle trigger type";
 
             this.PinLayout = new List<PinDesign>
             {
@@ -42,7 +45,7 @@ namespace WireMod.Devices
             {
                 if (reset == 1) this._reset = true;
             }
-            
+
             if (trigger > 0 && val <= 0 && this._reset)
             {
                 this._reset = false;
@@ -50,13 +53,32 @@ namespace WireMod.Devices
                 if (!this.Pins["Out"][0].IsConnected())
                 {
                     this.Settings["Value"] = trigger.ToString();
-                    return 1;
+                    return 0;
                 }
 
+                var pins = ((PinOut)this.Pins["Out"][0]).ConnectedPins.Where(p => p.Device is ITriggered).ToList();
+                if (!int.TryParse(this.Settings["TriggerTarget"], out var target)) return 0;
+
                 // Trigger connected devices
-                foreach (var pin in ((PinOut)this.Pins["Out"][0]).ConnectedPins)
+                if (this.Settings["TriggerType"] == "All")
                 {
-                    if (pin.Device is ITriggered triggered) triggered.Trigger(pin);
+                    pins.ForEach(pin =>
+                    {
+                        ((ITriggered)pin.Device).Trigger(pin);
+                    });
+                    this.Settings["TriggerTarget"] = "0";
+                }
+                else if (this.Settings["TriggerType"] == "Sequential")
+                {
+                    var pin = pins[(target + 1) % pins.Count];
+                    ((ITriggered)pin.Device).Trigger(pin);
+                    this.Settings["TriggerTarget"] = pins.IndexOf(pin).ToString();
+                }
+                else if (this.Settings["TriggerType"] == "Random")
+                {
+                    var pin = pins[WorldGen.genRand.Next(0, pins.Count)];
+                    ((ITriggered)pin.Device).Trigger(pin);
+                    this.Settings["TriggerTarget"] = pins.IndexOf(pin).ToString();
                 }
 
                 this.Settings["Value"] = trigger.ToString();
@@ -72,16 +94,23 @@ namespace WireMod.Devices
             return 0;
         }
 
-        public override void OnRightClick(Pin pin = null)
-        {
-            this._reset = true;
-        }
-
         public override List<(string Line, Color Color)> Debug(Pin pin = null)
         {
             var debug = base.Debug(pin);
             debug.Add(($"Reset: {(this._reset ? "True" : "False")}", Color.Black));
             return debug;
         }
+
+        public override void OnRightClick(Pin pin = null)
+        {
+            this.Settings["TriggerType"] = TriggerTypes[(TriggerTypes.IndexOf(this.Settings["TriggerType"]) + 1) % TriggerTypes.Count];
+        }
+
+        private static readonly List<string> TriggerTypes = new List<string>
+        {
+            "All",
+            "Sequential",
+            "Random",
+        };
     }
 }

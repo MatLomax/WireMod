@@ -10,9 +10,9 @@ namespace WireMod
             "Logic Gates",
             "Maths",
             "Comparison",
-            "Constants",
+            "Basic Inputs",
+            "Sensor Inputs",
             "Outputs",
-            "Sensors",
             "Experimental",
         };
 
@@ -47,9 +47,10 @@ namespace WireMod
             new List<string>
             {
                 "BooleanConstant",
-                "NumberConstant",
+                "IntegerConstant",
                 "StringConstant",
                 "TeamColorConstant",
+                "RandomInt",
             },
             new List<string>
             {
@@ -69,6 +70,7 @@ namespace WireMod
             {
                 "Repulsor",
                 "Spawner",
+                "Buffer",
             },
         };
 
@@ -89,9 +91,10 @@ namespace WireMod
             { "LessThan", "Less Than (<) Comparer" },
             { "GreaterThan", "Greater Than (>) Comparer" },
             { "BooleanConstant", "Constant Boolean Value" },
-            { "NumberConstant", "Constant Number Value" },
+            { "IntegerConstant", "Constant Number Value" },
             { "StringConstant", "Constant String Value" },
             { "TeamColorConstant", "Constant Team Color Value" },
+            { "RandomInt", "Random Integer Value" },
             { "FlipFlop", "Flip/Flop" },
             { "OutputLamp", "Output Lamp" },
             //{ "OutputSign", "Output Sign" },
@@ -102,6 +105,7 @@ namespace WireMod
             { "NPCCounter", "Count nearby NPCs" },
             { "Repulsor", "Repulsor (USE WITH CAUTION)" },
             { "Spawner", "NPC Spawner (USE WITH CAUTION)" },
+            { "Buffer", "Buffer (USE WITH CAUTION)" },
         };
     }
 }

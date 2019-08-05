@@ -51,6 +51,8 @@ namespace WireMod
 
         public override void UpdateUI(GameTime gameTime)
         {
+            foreach (var device in Devices) device.Update(gameTime);
+
             // TODO: Fix this bullshit
             foreach (var device in Devices.Where(d => d.Pins["Out"].Count > 0)) device.Pins["Out"][0].GetValue();
 
