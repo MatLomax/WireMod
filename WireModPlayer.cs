@@ -10,6 +10,7 @@ namespace WireMod
 	{
 		public Device PlacingDevice;
 		public Pin ConnectingPin;
+		public Wire PlacingWire;
 
 		public bool ShowPreview;
 		public int ToolCategoryMode = 0;

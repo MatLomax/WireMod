@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.UI;
 using WireMod.Devices;
 
@@ -22,9 +25,9 @@ namespace WireMod.UI
 
 		private static void DrawDevices(SpriteBatch spriteBatch)
 		{
-		    var pixels = 16/* * Main.UIScale*/;
+			var pixels = 16/* * Main.UIScale*/;
 
-            var screenRect = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
+			var screenRect = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
 
 			foreach (var device in WireMod.Devices)
 			{
@@ -52,30 +55,52 @@ namespace WireMod.UI
 
 				var pinRect = new Rectangle((int)pin.Location.ToWorldCoordinates(0, 0).X, (int)pin.Location.ToWorldCoordinates(0, 0).Y, 16, 16);
 				if (!screenRect.Intersects(pinRect)) continue;
-				
-				
-				foreach (var p in ((PinOut) pin).ConnectedPins)
+
+				foreach (var p in ((PinOut)pin).ConnectedPins)
 				{
-					DrawLine(
-						spriteBatch,
-						pin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2(),
-						p.Location.ToWorldCoordinates() - screenRect.Location.ToVector2(),
-						GetWireColor(pin)
-					);
+					var pinWire = pin.Wires.FirstOrDefault(w => w.StartPin == p || w.EndPin == p);
 
-					DrawWireDot(spriteBatch, p.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
+					if (pinWire == null) continue;
+
+					var points = pinWire.GetPoints(pin);
+
+					for (var i = 0; i < points.Count - 1; i++)
+					{
+						DrawLine(
+							spriteBatch,
+							points[i].ToWorldCoordinates() - screenRect.Location.ToVector2(),
+							points[i + 1].ToWorldCoordinates() - screenRect.Location.ToVector2(),
+							GetWireColor(pin)
+						);
+					}
+
+					DrawWireDot(spriteBatch, pinWire.StartPin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
+					DrawWireDot(spriteBatch, pinWire.EndPin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
 				}
-
-				DrawWireDot(spriteBatch, pin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
 			}
 
-			// Draw connecting wire
+			// Draw trailing wire to mouse
 			var modPlayer = Main.LocalPlayer.GetModPlayer<WireModPlayer>();
 			if (modPlayer.ConnectingPin == null) return;
 
+			var placingPoints = modPlayer.PlacingWire.GetPoints();
+
+			if (placingPoints.Count > 1)
+			{
+				for (var i = 0; i < placingPoints.Count - 1; i++)
+				{
+					DrawLine(
+						spriteBatch,
+						placingPoints[i].ToWorldCoordinates() - screenRect.Location.ToVector2(),
+						placingPoints[i + 1].ToWorldCoordinates() - screenRect.Location.ToVector2(),
+						GetWireColor(modPlayer.ConnectingPin)
+					);
+				}
+			}
+
 			DrawLine(
 				spriteBatch,
-				modPlayer.ConnectingPin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2(),
+				placingPoints.Last().ToWorldCoordinates() - screenRect.Location.ToVector2(),
 				Main.MouseScreen,
 				GetWireColor(modPlayer.ConnectingPin)
 			);

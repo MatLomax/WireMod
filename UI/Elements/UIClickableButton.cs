@@ -48,11 +48,8 @@ namespace WireMod.UI.Elements
 
             Recalculate();
 
-            this.MinWidth = this._uiText.MinWidth;
-            this.MinHeight = this._uiText.MinHeight;
-
-            this.Width.Set(this._uiText.Width.Pixels + 2, 0f);
-            this.Height.Set(this._uiText.Height.Pixels + 2, 0f);
+            this.MinWidth.Set(this._uiText.MinWidth.Pixels + 20, 0f);
+            this.MinHeight.Set(this._uiText.MinHeight.Pixels + 20, 0f);
         }
     }
 }

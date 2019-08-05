@@ -42,11 +42,8 @@ namespace WireMod.Items
             if (player != Main.LocalPlayer) return;
 
             var modPlayer = player.GetModPlayer<WireModPlayer>();
-
-            //WireMod.Instance.ElectronicsManualUserInterface.SetState(modPlayer.ElectronicsManualUI);
+            
             ElectronicsManualUI.Visible = true;
-
-            //WireMod.Instance.ElectronicsVisionUserInterface.SetState(modPlayer.ElectronicsVisionUI);
             ElectronicsVisionUI.Visible = true;
 
             modPlayer.ShowPreview = false;
@@ -109,6 +106,7 @@ namespace WireMod.Items
                         if (device == null)
                         {
                             modPlayer.ConnectingPin = null;
+                            modPlayer.PlacingWire = null;
                             return false;
                         }
 
@@ -128,7 +126,11 @@ namespace WireMod.Items
                         return true;
                     }
 
-                    if (pin == null) return false;
+                    if (pin == null)
+                    {
+                        modPlayer.PlacingWire.Points.Add(new Point16(x, y));
+                        return false;
+                    }
 
                     #region Connect Wires
                     // Connect wires
@@ -136,13 +138,16 @@ namespace WireMod.Items
                     {
                         Main.NewText("Connecting...");
                         modPlayer.ConnectingPin = pin;
+                        modPlayer.PlacingWire = new Wire(pin);
+
                         return true;
                     }
 
-                    if (modPlayer.ConnectingPin.Type == pin?.Type)
+                    if (modPlayer.ConnectingPin.Type == pin.Type)
                     {
                         Main.NewText("Cancelled - must connect a PinIn to a PinOut (or vice versa)");
                         modPlayer.ConnectingPin = null;
+                        modPlayer.PlacingWire = null;
                         return false;
                     }
 
@@ -150,6 +155,7 @@ namespace WireMod.Items
                     {
                         Main.NewText("Cancelled - cannot connect to same device");
                         modPlayer.ConnectingPin = null;
+                        modPlayer.PlacingWire = null;
                         return false;
                     }
 
@@ -157,6 +163,7 @@ namespace WireMod.Items
                     {
                         Main.NewText("Cancelled - cannot connect different data types");
                         modPlayer.ConnectingPin = null;
+                        modPlayer.PlacingWire = null;
                         return false;
                     }
 
@@ -169,18 +176,21 @@ namespace WireMod.Items
                     {
                         Main.NewText("Cancelled - circular connection detected");
                         modPlayer.ConnectingPin = null;
+                        modPlayer.PlacingWire = null;
                         return false;
                     }
 
-                    modPlayer.ConnectingPin.Connect(pin);
-                    pin.Connect(modPlayer.ConnectingPin);
+                    modPlayer.PlacingWire.EndPin = pin;
+                    modPlayer.ConnectingPin.Connect(pin, modPlayer.PlacingWire);
+                    pin.Connect(modPlayer.ConnectingPin, modPlayer.PlacingWire);
 
                     if (Main.netMode == NetmodeID.MultiplayerClient)
                     {
-                        WireMod.PacketHandler.SendConnect(256, Main.myPlayer, modPlayer.ConnectingPin.Location.X, modPlayer.ConnectingPin.Location.Y, pin.Location.X, pin.Location.Y);
+                        WireMod.PacketHandler.SendConnect(256, Main.myPlayer, modPlayer.ConnectingPin.Location.X, modPlayer.ConnectingPin.Location.Y, pin.Location.X, pin.Location.Y, modPlayer.PlacingWire);
                     }
 
                     modPlayer.ConnectingPin = null;
+                    modPlayer.PlacingWire = null;
 
                     return true;
                     #endregion
@@ -232,6 +242,8 @@ namespace WireMod.Items
 
             // Reset
             modPlayer.PlacingDevice = null;
+            modPlayer.ConnectingPin = null;
+            modPlayer.PlacingWire = null;
             modPlayer.ToolCategoryMode = 0;
             modPlayer.ToolMode = 0;
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
 using WireMod.UI.Elements;
 

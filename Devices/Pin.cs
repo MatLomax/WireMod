@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria.DataStructures;
 
 namespace WireMod.Devices
@@ -13,6 +14,8 @@ namespace WireMod.Devices
 
         public Point16 Location { get; set; }
 
+        public List<Wire> Wires { get; set; } = new List<Wire>();
+
         private string _name = "";
         public string Name
         {
@@ -22,11 +25,13 @@ namespace WireMod.Devices
 
         public abstract bool IsConnected(Pin pin = null);
 
-        public abstract void Connect(Pin pin);
+        public abstract void Connect(Pin pin, Wire wire);
         public abstract void Disconnect(Pin pin = null);
 
         public abstract string GetValue();
         public abstract List<string> GetDebug();
+
+        public Wire GetWire(Pin connectedPin) => this.Wires.FirstOrDefault(w => w.StartPin == this && w.EndPin == connectedPin || w.StartPin == connectedPin && w.EndPin == this);
     }
 
     internal class PinIn : Pin
@@ -42,15 +47,20 @@ namespace WireMod.Devices
 
         public override bool IsConnected(Pin pin = null) => this.ConnectedPin != null;
 
-        public override void Connect(Pin pin)
+        public override void Connect(Pin pin, Wire wire)
         {
             if (this.IsConnected()) this.ConnectedPin.Disconnect(this);
             this.ConnectedPin = pin;
+            this.Wires.Add(wire);
         }
 
         public override void Disconnect(Pin pin = null)
         {
             if (!this.IsConnected()) return;
+
+            this.Wires.RemoveAll(w => w.StartPin == this && w.EndPin == this.ConnectedPin);
+            this.Wires.RemoveAll(w => w.StartPin == this.ConnectedPin && w.EndPin == this);
+
             this.ConnectedPin.Disconnect(this);
             this.ConnectedPin = null;
         }
@@ -63,7 +73,6 @@ namespace WireMod.Devices
                 ? new List<string> { $"{this.Name} [{(this.DataType == "bool" ? (this.GetValue() == "1" ? "True" : (this.GetValue() == "0" ? "False" : "Disconnected")) : this.GetValue())}] => {this.ConnectedPin.Device.Name} {this.ConnectedPin.Name}" }
                 : new List<string> { $"{this.Name} (Disconnected)" };
         }
-
     }
 
     internal class PinOut : Pin
@@ -87,9 +96,10 @@ namespace WireMod.Devices
             return this.ConnectedPins.Contains(pin);
         }
 
-        public override void Connect(Pin pin)
+        public override void Connect(Pin pin, Wire wire)
         {
             this.ConnectedPins.Add(pin);
+            this.Wires.Add(wire);
         }
 
         public override void Disconnect(Pin pin = null)
@@ -108,6 +118,9 @@ namespace WireMod.Devices
                 this.ConnectedPins.ForEach(p =>
                 {
                     if (p.IsConnected()) p.Disconnect();
+
+                    this.Wires.RemoveAll(w => w.StartPin == this && w.EndPin == p);
+                    this.Wires.RemoveAll(w => w.StartPin == p && w.EndPin == this);
                 });
             }
             catch (InvalidOperationException)
@@ -115,6 +128,7 @@ namespace WireMod.Devices
                 // Ignore 'collection changed' errors, works fine.
             }
             
+
         }
 
         public override string GetValue() => this._value;

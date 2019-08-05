@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WireMod.Devices;
@@ -11,7 +12,7 @@ using WireMod.Devices;
 namespace WireMod
 {
 	internal class DevicePacketHandler
-	{ 
+	{
 		public const byte Place = 1;
 		public const byte Remove = 2;
 		public const byte Connect = 3;
@@ -137,12 +138,13 @@ namespace WireMod
 			var wires = WireMod.Pins.Where(p => p.Type == "In" && p.IsConnected()).Select(p => new
 			{
 				src = p.Location,
-				dest = ((PinIn)p).ConnectedPin.Location
+				dest = ((PinIn)p).ConnectedPin.Location,
+				wire = p.GetWire(((PinIn)p).ConnectedPin)
 			}).ToList();
 
 			foreach (var conn in wires)
 			{
-				this.SendConnect(from, 256, conn.src.X, conn.src.Y, conn.dest.X, conn.dest.Y);
+				this.SendConnect(from, 256, conn.src.X, conn.src.Y, conn.dest.X, conn.dest.Y, conn.wire);
 			}
 		}
 		#endregion
@@ -178,7 +180,7 @@ namespace WireMod
 		#endregion
 
 		#region Connect
-		public void SendConnect(int to, int from, int srcX, int srcY, int destX, int destY)
+		public void SendConnect(int to, int from, int srcX, int srcY, int destX, int destY, Wire wire)
 		{
 			var packet = GetPacket(Connect, from);
 
@@ -186,6 +188,13 @@ namespace WireMod
 			packet.Write(srcY);
 			packet.Write(destX);
 			packet.Write(destY);
+
+			packet.Write(wire.Points.Count);
+			foreach (var point in wire.Points)
+			{
+				packet.Write(point.X);
+				packet.Write(point.Y);
+			}
 
 			packet.Send(to, from);
 		}
@@ -213,13 +222,25 @@ namespace WireMod
 				return;
 			}
 
+			var pointsCount = reader.ReadInt32();
+			var points = new List<Point16>();
+			for (var i = 0; i < pointsCount; i++)
+			{
+				var x = reader.ReadInt32();
+				var y = reader.ReadInt32();
+
+				points.Add(new Point16(x, y));
+			}
+
+			var wire = new Wire(src) { EndPin = dest, Points = points };
+
 			if (Main.netMode == NetmodeID.Server)
 			{
-				this.SendConnect(-1, from, srcX, srcY, destX, destY);
+				this.SendConnect(-1, from, srcX, srcY, destX, destY, wire);
 			}
-			
-			src.Connect(dest);
-			dest.Connect(src);
+
+			src.Connect(dest, wire);
+			dest.Connect(src, wire);
 		}
 		#endregion
 
@@ -281,7 +302,7 @@ namespace WireMod
 			{
 				this.SendChangeSetting(-1, from, x, y, key, value);
 			}
-			
+
 			var device = WireMod.GetDevice(x, y);
 			if (device == null)
 			{
@@ -313,7 +334,7 @@ namespace WireMod
 			var y = reader.ReadInt32();
 
 			if (WireMod.Debug) WireMod.Instance.Logger.Info($"{from} Received TripWire: x {x}, y {y}");
-			
+
 			Wiring.TripWire(x, y, 1, 1);
 		}
 		#endregion
