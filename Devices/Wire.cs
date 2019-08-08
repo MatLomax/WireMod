@@ -34,9 +34,9 @@ namespace WireMod.Devices
             else
             {
                 if (this.EndPin == null) return points;
-                if (ends) points.Add(this.EndPin.Location);
-                foreach (var p in this.Points) points.Insert(ends ? 1 : 0, p);
                 if (ends) points.Add(start.Location);
+                foreach (var p in this.Points) points.Insert(ends ? 1 : 0, p);
+                if (ends) points.Add(this.StartPin.Location);
             }
 
             return points;
