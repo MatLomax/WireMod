@@ -13,6 +13,7 @@ namespace WireMod.Devices
         {
             this.StartPin = startPin;
         }
+
         public Wire(Pin startPin, Pin endPin, List<Point16> points)
         {
             this.StartPin = startPin;

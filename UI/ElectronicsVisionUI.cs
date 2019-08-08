@@ -114,12 +114,12 @@ namespace WireMod.UI
 			spriteBatch.Draw(Helpers.CreateCircle(5), position - new Vector2(3, 3), Color.White * 0.5f * WireVisibility);
 		}
 
-		private static void DrawLine(SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color)
+		private static void DrawLine(SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color, int thickness = 3)
 		{
 			var edge = end - start;
 			var angle = (float)Math.Atan2(edge.Y, edge.X);
 
-			var line = new Rectangle((int)start.X + 1, (int)start.Y, (int)edge.Length(), 3);
+			var line = new Rectangle((int)start.X + (thickness / 2), (int)start.Y, (int)edge.Length(), thickness);
 			spriteBatch.Draw(Main.magicPixel, line, null, color * WireVisibility, angle, new Vector2(0, 0), SpriteEffects.None, 1f);
 		}
 
