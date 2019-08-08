@@ -15,7 +15,7 @@ namespace WireMod
 			{
 				["src"] = p.Location,
 				["dest"] = ((PinIn)p).ConnectedPin.Location,
-				["points"] = p.GetWire(((PinIn)p).ConnectedPin).Points,
+				["points"] = p.GetWire(((PinIn)p).ConnectedPin).GetPoints(p, false),
 			}).ToList();
 			
 			return new TagCompound

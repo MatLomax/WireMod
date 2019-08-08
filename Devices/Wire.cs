@@ -20,23 +20,23 @@ namespace WireMod.Devices
             this.Points = points;
         }
 
-        public List<Point16> GetPoints(Pin start = null)
+        public List<Point16> GetPoints(Pin start = null, bool ends = true)
         {
             if (start == null) start = this.StartPin;
 
             var points = new List<Point16>();
             if (start == this.StartPin)
             {
-                points.Add(start.Location);
+                if (ends) points.Add(start.Location);
                 points.AddRange(this.Points);
-                if (this.EndPin != null) points.Add(this.EndPin.Location);
+                if (ends && this.EndPin != null) points.Add(this.EndPin.Location);
             }
             else
             {
                 if (this.EndPin == null) return points;
-                points.Add(this.EndPin.Location);
-                foreach (var p in this.Points) points.Insert(1, p);
-                points.Add(this.StartPin.Location);
+                if (ends) points.Add(this.EndPin.Location);
+                foreach (var p in this.Points) points.Insert(ends ? 1 : 0, p);
+                if (ends) points.Add(start.Location);
             }
 
             return points;

@@ -68,15 +68,9 @@ namespace WireMod.Devices
                     });
                     this.Settings["TriggerTarget"] = "0";
                 }
-                else if (this.Settings["TriggerType"] == "Sequential")
+                else 
                 {
-                    var pin = pins[(target + 1) % pins.Count];
-                    ((ITriggered)pin.Device).Trigger(pin);
-                    this.Settings["TriggerTarget"] = pins.IndexOf(pin).ToString();
-                }
-                else if (this.Settings["TriggerType"] == "Random")
-                {
-                    var pin = pins[WorldGen.genRand.Next(0, pins.Count)];
+                    var pin = this.Settings["TriggerType"] == "Sequential" ? pins[(target + 1) % pins.Count] : pins[WorldGen.genRand.Next(0, pins.Count)];
                     ((ITriggered)pin.Device).Trigger(pin);
                     this.Settings["TriggerTarget"] = pins.IndexOf(pin).ToString();
                 }
@@ -85,7 +79,7 @@ namespace WireMod.Devices
                 return 1;
             }
 
-            if ((trigger <= 0 && val > 0) && !this.Pins["In"][1].IsConnected())
+            if (trigger <= 0 && val > 0 && !this.Pins["In"][1].IsConnected())
             {
                 this._reset = true;
             }

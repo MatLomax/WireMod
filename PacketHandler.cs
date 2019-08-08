@@ -9,6 +9,8 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using WireMod.Devices;
 
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
+
 namespace WireMod
 {
 	internal class DevicePacketHandler
@@ -192,8 +194,8 @@ namespace WireMod
 			packet.Write(wire.Points.Count);
 			foreach (var point in wire.Points)
 			{
-				packet.Write(point.X);
-				packet.Write(point.Y);
+				packet.Write((int)point.X);
+				packet.Write((int)point.Y);
 			}
 
 			packet.Send(to, from);
@@ -205,6 +207,19 @@ namespace WireMod
 			var srcY = reader.ReadInt32();
 			var destX = reader.ReadInt32();
 			var destY = reader.ReadInt32();
+
+			var pointsCount = reader.ReadInt32();
+			var points = new List<Point16>();
+			if (pointsCount > 0)
+			{
+				for (var i = 0; i < pointsCount; i++)
+				{
+					var x = reader.ReadInt32();
+					var y = reader.ReadInt32();
+
+					points.Add(new Point16(x, y));
+				}
+			}
 
 			if (WireMod.Debug) WireMod.Instance.Logger.Info($"{from} Received Connect: srcX {srcX}, srcY {srcY}, destX {destX}, destY {destY}");
 
@@ -221,18 +236,8 @@ namespace WireMod
 				if (WireMod.Debug) WireMod.Instance.Logger.Error($"{from} Connect: No pin found at: x {srcX}, y {srcY}");
 				return;
 			}
-
-			var pointsCount = reader.ReadInt32();
-			var points = new List<Point16>();
-			for (var i = 0; i < pointsCount; i++)
-			{
-				var x = reader.ReadInt32();
-				var y = reader.ReadInt32();
-
-				points.Add(new Point16(x, y));
-			}
-
-			var wire = new Wire(src) { EndPin = dest, Points = points };
+			
+			var wire = new Wire(src, dest, points);
 
 			if (Main.netMode == NetmodeID.Server)
 			{

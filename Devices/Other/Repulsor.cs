@@ -8,13 +8,13 @@ using Terraria.DataStructures;
 
 namespace WireMod.Devices
 {
-    internal class Repulsor : Device, IOutput
+    internal class Repulsor : Device
     {
         public Repulsor()
         {
             this.Name = "Repulsor";
             this.Width = 3;
-            this.Height = 3;
+            this.Height = 2;
             this.Origin = new Point16(1, 1);
             
             this.Settings.Add("TargetType", "Players");
@@ -26,7 +26,6 @@ namespace WireMod.Devices
                 new PinDesign("In", 0, new Point16(1, 0), "bool", "Armed"),
                 new PinDesign("In", 1, new Point16(0, 1), "int", "Velocity"),
                 new PinDesign("In", 2, new Point16(2, 1), "int", "Distance"),
-                new PinDesign("Out", 0, new Point16(1, 2), "bool", "IsActive"),
             };
         }
 
@@ -51,15 +50,13 @@ namespace WireMod.Devices
 
             spriteBatch.Draw(circle, pos, Color.LightBlue * 0.25f);
         }
-        
-        public string Output(Pin pin = null) => this.GetOutput().ToString();
 
-        private int GetOutput()
+        public override void Update(GameTime gameTime)
         {
-            if (!this.Pins["In"][0].IsConnected()) return -1;
-            if (!int.TryParse(this.Pins["In"][0].GetValue(), out var armed)) return -2;
+            if (!this.Pins["In"][0].IsConnected()) return;
+            if (!int.TryParse(this.Pins["In"][0].GetValue(), out var armed)) return;
 
-            if (armed == 0) return 0;
+            if (armed == 0) return;
 
             var player = Main.player.OrderBy(p => (p.position - this.LocationRect.Location.ToWorldCoordinates()).Length()).FirstOrDefault();
             var npc = Main.npc.OrderBy(p => (p.position - this.LocationRect.Location.ToWorldCoordinates()).Length()).FirstOrDefault();
@@ -67,9 +64,9 @@ namespace WireMod.Devices
             switch (this.Settings["TargetType"])
             {
                 case "Players" when player == null:
-                    return 0;
+                    return;
                 case "NPCs" when npc == null:
-                    return 0;
+                    return;
             }
 
             Vector2 direction;
@@ -92,10 +89,10 @@ namespace WireMod.Devices
 
             var distance = direction.Length();
 
-            if (!this.Pins["In"][1].IsConnected() || !int.TryParse(this.Pins["In"][1].GetValue(), out var maxVelocity)) return -2;
-            if (!this.Pins["In"][2].IsConnected() || !int.TryParse(this.Pins["In"][2].GetValue(), out var maxDistance)) return -2;
+            if (!this.Pins["In"][1].IsConnected() || !int.TryParse(this.Pins["In"][1].GetValue(), out var maxVelocity)) return;
+            if (!this.Pins["In"][2].IsConnected() || !int.TryParse(this.Pins["In"][2].GetValue(), out var maxDistance)) return;
 
-            if (distance > maxDistance) return 0;
+            if (distance > maxDistance) return;
 
             var power = Math.Max(1, maxDistance / Math.Abs(distance));
 
@@ -106,7 +103,7 @@ namespace WireMod.Devices
             if (left && pLeft && up && pUp
                 || left && pLeft && !up && !pUp
                 || !left && !pLeft && up && pUp
-                || !left && !pLeft && !up && !pUp) return 0;
+                || !left && !pLeft && !up && !pUp) return;
 
             var x = left
                 ? Math.Max(maxVelocity * -1, direction.X * power)
@@ -128,9 +125,6 @@ namespace WireMod.Devices
                     player.velocity.Y += y;
                     break;
             }
-            
-
-            return 1;
         }
 
         public override void OnRightClick(Pin pin = null)
