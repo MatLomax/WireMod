@@ -29,7 +29,7 @@ namespace WireMod.Devices
 
 		private int GetOutput()
 		{
-			if (!int.TryParse(this.Pins["In"][1].GetValue(), out var distance)) return -2;
+			if (!int.TryParse(this.Pins["In"][0].GetValue(), out var distance)) return -2;
 
 			return this.GetNPCs(distance).Count();
 		}

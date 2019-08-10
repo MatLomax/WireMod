@@ -16,8 +16,8 @@ namespace WireMod.Devices
             this.Width = 3;
             this.Height = 2;
             this.Origin = new Point16(1, 1);
-            
-            this.Settings.Add("TargetType", "Players");
+
+            this.Settings.Add("TargetType", TargetTypes.First());
 
             this.RightClickHelp = $"Right Click to change targetting type ({string.Join("/", TargetTypes)})";
 
@@ -53,72 +53,48 @@ namespace WireMod.Devices
 
             if (armed == 0) return;
 
-            var player = Main.player.OrderBy(p => (p.position - this.LocationRect.Location.ToWorldCoordinates()).Length()).FirstOrDefault();
-            var npc = Main.npc.OrderBy(p => (p.position - this.LocationRect.Location.ToWorldCoordinates()).Length()).FirstOrDefault();
-
-            switch (this.Settings["TargetType"])
-            {
-                case "Players" when player == null:
-                    return;
-                case "NPCs" when npc == null:
-                    return;
-            }
-
-            Vector2 direction;
-            bool pLeft;
-            bool pUp;
-            switch (this.Settings["TargetType"])
-            {
-                case "NPCs":
-                    direction = npc.position - this.LocationRect.Location.ToWorldCoordinates();
-                    pLeft = npc.velocity.X < 0;
-                    pUp = npc.velocity.Y < 0;
-                    break;
-                case "Players":
-                default:
-                    direction = player.position - this.LocationRect.Location.ToWorldCoordinates();
-                    pLeft = player.velocity.X < 0;
-                    pUp = player.velocity.Y < 0;
-                    break;
-            }
-
-            var distance = direction.Length();
-
             if (!this.Pins["In"][1].IsConnected() || !int.TryParse(this.Pins["In"][1].GetValue(), out var maxVelocity)) return;
             if (!this.Pins["In"][2].IsConnected() || !int.TryParse(this.Pins["In"][2].GetValue(), out var maxDistance)) return;
+            
+            var entities = new List<Entity>();
 
-            if (distance > maxDistance) return;
-
-            var power = Math.Max(1, maxDistance / Math.Abs(distance));
-
-            var left = direction.X < 0;
-            var up = direction.Y < 0;
-
-            // Only trigger if target is moving towards the repulsor (prevents multiple triggers)
-            if (left && pLeft && up && pUp
-                || left && pLeft && !up && !pUp
-                || !left && !pLeft && up && pUp
-                || !left && !pLeft && !up && !pUp) return;
-
-            var x = left
-                ? Math.Max(maxVelocity * -1, direction.X * power)
-                : Math.Min(maxVelocity, direction.X * power);
-
-            var y = up
-                ? Math.Max(maxVelocity * -1, direction.Y * power)
-                : Math.Min(maxVelocity, direction.Y * power);
-
-            switch (this.Settings["TargetType"])
+            if (this.Settings["TargetType"] == "All" || this.Settings["TargetType"] == "Players")
             {
-                case "NPCs":
-                    npc.velocity.X += x;
-                    npc.velocity.Y += y;
-                    break;
-                case "Players":
-                default:
-                    player.velocity.X += x;
-                    player.velocity.Y += y;
-                    break;
+                entities.AddRange(Main.player.Select(p => new { player = p, distance = (p.position - this.LocationRect.Location.ToWorldCoordinates()).Length() }).OrderBy(p => p.distance).Select(p => p.player));
+            }
+
+            if (this.Settings["TargetType"] == "All" || this.Settings["TargetType"] == "NPCs")
+            {
+                entities.AddRange(Main.npc.Select(p => new { player = p, distance = (p.position - this.LocationRect.Location.ToWorldCoordinates()).Length() }).OrderBy(p => p.distance).Select(p => p.player));
+            }
+
+            if (!entities.Any()) return;
+
+            foreach (var entity in entities)
+            {
+                var direction = entity.position - this.LocationRect.Location.ToWorldCoordinates();
+                var pLeft = entity.velocity.X < 0;
+                var pUp = entity.velocity.Y < 0;
+
+                var distance = direction.Length();
+
+                if (distance > maxDistance) return;
+
+                var power = Math.Max(1, maxDistance / Math.Abs(distance));
+
+                var left = direction.X < 0;
+                var up = direction.Y < 0;
+
+                var x = left
+                    ? Math.Max(maxVelocity * -1, direction.X * power)
+                    : Math.Min(maxVelocity, direction.X * power);
+
+                var y = up
+                    ? Math.Max(maxVelocity * -1, direction.Y * power)
+                    : Math.Min(maxVelocity, direction.Y * power);
+
+                entity.velocity.X = Math.Max(Math.Min(entity.velocity.X + x, maxVelocity), maxVelocity * -1);
+                entity.velocity.Y = Math.Max(Math.Min(entity.velocity.Y + y, maxVelocity), maxVelocity * -1);
             }
         }
 
@@ -129,6 +105,7 @@ namespace WireMod.Devices
 
         private static readonly List<string> TargetTypes = new List<string>
         {
+            "All",
             "Players",
             "NPCs",
         };
