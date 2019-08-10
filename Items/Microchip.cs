@@ -3,13 +3,8 @@ using Terraria.ModLoader;
 
 namespace WireMod.Items
 {
-    internal class MicrochipItem : ModItem
+    internal class Microchip : ModItem
     {
-        public override void SetStaticDefaults()
-        {
-            item.SetNameOverride("Microchip");
-        }
-
         public override void SetDefaults()
         {
             item.width = 16;

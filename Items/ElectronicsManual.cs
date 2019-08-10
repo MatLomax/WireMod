@@ -63,8 +63,8 @@ namespace WireMod.Items
 
                 var pin = WireMod.GetDevicePin(point.X, point.Y);
 
-                WireMod.Instance.DebuggerUserInterface.SetState(new DebuggerUI(dev.Debug(pin)));
-                DebuggerUI.Visible = true;
+                WireMod.Instance.DebuggerHoverUserInterface.SetState(new HoverDebuggerUI(dev.Debug(pin)));
+                HoverDebuggerUI.Visible = true;
             }
         }
 
@@ -210,6 +210,23 @@ namespace WireMod.Items
 
                     return true;
                 }
+
+                if (modPlayer.ToolMode == 3)
+                {
+                    if (player.altFunctionUse == 2)
+                    {
+                        WireMod.Instance.DebuggerUserInterface.SetState(null);
+                        DebuggerUI.Visible = true;
+
+                        return true;
+                    }
+
+                    // Debug device
+                    if (device == null) return false;
+
+                    WireMod.Instance.DebuggerUserInterface.SetState(new DebuggerUI(device));
+                    DebuggerUI.Visible = true;
+                }
             }
 
             if (device != null) return false;
@@ -218,7 +235,7 @@ namespace WireMod.Items
             var microChipIndex = -1;
             for (var i = 0; i < player.inventory.Length; i++)
             {
-                if (player.inventory[i].type != mod.ItemType<MicrochipItem>()) continue;
+                if (player.inventory[i].type != mod.ItemType<Microchip>()) continue;
 
                 microChipIndex = i;
                 break;

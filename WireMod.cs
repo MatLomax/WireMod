@@ -21,6 +21,7 @@ namespace WireMod
         internal UserInterface ElectronicsManualUserInterface;
         internal UserInterface ElectronicsVisionUserInterface;
         internal UserInterface DebuggerUserInterface;
+        internal UserInterface DebuggerHoverUserInterface;
         internal UserInterface UserInputUserInterface;
 
         internal ElectronicsManualUI ElectronicsManualUI = new ElectronicsManualUI();
@@ -40,6 +41,7 @@ namespace WireMod
             this.ElectronicsManualUserInterface = new UserInterface();
             this.ElectronicsVisionUserInterface = new UserInterface();
             this.DebuggerUserInterface = new UserInterface();
+            this.DebuggerHoverUserInterface = new UserInterface();
             this.UserInputUserInterface = new UserInterface();
 
             this.ElectronicsManualUI.Activate();
@@ -63,6 +65,7 @@ namespace WireMod
                     // Reset
                     ElectronicsManualUI.Visible = false;
                     ElectronicsVisionUI.Visible = false;
+                    DebuggerUI.Visible = false;
 
                     var modPlayer = Main.LocalPlayer.GetModPlayer<WireModPlayer>();
                     modPlayer.ToolCategoryMode = 0;
@@ -75,6 +78,11 @@ namespace WireMod
             if (DebuggerUI.Visible)
             {
                 this.DebuggerUserInterface.Update(gameTime);
+            }
+
+            if (HoverDebuggerUI.Visible)
+            {
+                this.DebuggerHoverUserInterface.Update(gameTime);
             }
 
             if (ElectronicsManualUI.Visible)
@@ -118,7 +126,12 @@ namespace WireMod
                         if (DebuggerUI.Visible)
                         {
                             this.DebuggerUserInterface?.Draw(Main.spriteBatch, new GameTime());
-                            DebuggerUI.Visible = false;
+                        }
+
+                        if (HoverDebuggerUI.Visible)
+                        {
+                            this.DebuggerHoverUserInterface?.Draw(Main.spriteBatch, new GameTime());
+                            HoverDebuggerUI.Visible = false;
                         }
 
                         if (UserInputUI.Visible)

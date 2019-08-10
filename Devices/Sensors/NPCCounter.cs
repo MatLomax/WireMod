@@ -72,7 +72,7 @@ namespace WireMod.Devices
 			spriteBatch.Draw(circle, pos, Color.LightGreen * 0.25f);
 		}
 
-		public override List<(string Line, Color Color)> Debug(Pin pin = null)
+		public override List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
 		{
 			var debug = base.Debug(pin);
 
@@ -80,9 +80,9 @@ namespace WireMod.Devices
 			{
 				if (int.TryParse(this.Pins["In"][1].GetValue(), out var distance))
 				{
-					debug.Add(("----------------", Color.Black));
+					debug.Add(("----------------", Color.Black, 0.75f));
 
-					debug.AddRange(this.GetNPCs(distance).Select(npc => ($"NPC: {npc.FullName}", Color.Red)));
+					debug.AddRange(this.GetNPCs(distance).Select(npc => ($"NPC: {npc.FullName}", Color.Red, 0.75f)));
 				}
 			}
 

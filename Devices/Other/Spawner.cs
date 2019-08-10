@@ -49,14 +49,14 @@ namespace WireMod.Devices
             this.Trigger();
         }
 
-        public override List<(string Line, Color Color)> Debug(Pin pin = null)
+        public override List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
         {
             var debug = base.Debug(pin);
 
             if (pin == null)
             {
-                debug.Add(("----------------", Color.Black));
-                debug.Add(("Right Click to spawn NPC", Color.Red));
+                debug.Add(("----------------", Color.Black, 0.75f));
+                debug.Add(("Right Click to spawn NPC", Color.Red, 0.75f));
             }
 
             return debug;

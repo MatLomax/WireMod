@@ -6,7 +6,7 @@ namespace WireMod
     {
         public static readonly List<string> ToolCategories = new List<string>
         {
-            "Wiring",
+            "Tools",
             "Logic Gates",
             "Maths",
             "Comparison",
@@ -23,6 +23,7 @@ namespace WireMod
                 "None",
                 "Wiring",
                 "Delete",
+                "Debug",
             },
             new List<string>
             {
@@ -79,6 +80,7 @@ namespace WireMod
             { "None", "None" },
             { "Wiring", "Wiring" },
             { "Delete", "Remove Device" },
+            { "Debug", "Debug Device" },
             { "AndGate", "AND Logic Gate" },
             { "OrGate", "OR Logic Gate" },
             { "NotGate", "NOT Logic Gate" },

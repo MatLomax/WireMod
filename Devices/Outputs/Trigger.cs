@@ -86,10 +86,10 @@ namespace WireMod.Devices
             return 0;
         }
 
-        public override List<(string Line, Color Color)> Debug(Pin pin = null)
+        public override List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
         {
             var debug = base.Debug(pin);
-            debug.Add(($"Reset: {(this._reset ? "True" : "False")}", Color.Black));
+            debug.Add(($"Reset: {(this._reset ? "True" : "False")}", Color.Black, 0.75f));
             return debug;
         }
 

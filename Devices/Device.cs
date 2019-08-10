@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using WireMod.Items;
 
 namespace WireMod.Devices
 {
@@ -59,7 +60,7 @@ namespace WireMod.Devices
         public virtual void OnKill()
         {
             // Drop a microchip at the device's location
-            Item.NewItem((int)this.LocationWorld.X, (int)this.LocationWorld.Y, 16, 16, WireMod.Instance.ItemType("MicrochipItem"));
+            Item.NewItem((int)this.LocationWorld.X, (int)this.LocationWorld.Y, 16, 16, WireMod.Instance.ItemType<Microchip>());
         }
 
         public virtual void OnPlace() { }
@@ -88,39 +89,42 @@ namespace WireMod.Devices
             }
         }
 
-        public virtual List<(string Line, Color Color)> Debug(Pin pin = null)
+        public virtual List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
         {
             var defaultColor = Color.Black;
             var titleColor = Color.DarkBlue;
             var highlightColor = Color.Red;
-            var (x, y) = WireMod.Instance.GetMouseTilePosition();
 
-            var lines = new List<(string, Color)>
+            var smallText = 0.75f;
+
+            var lines = new List<(string, Color, float)>
             {
-                ($"{this.Name}      X: {x}, Y: {y}", titleColor),
-                ("-----------------", defaultColor),
+                (this.Name, titleColor, 1f),
+                ($"X: {this.LocationTile.X + this.Origin.X}, Y: {this.LocationTile.Y + this.Origin.Y}", titleColor, 1f),
+                ("-----------------", defaultColor, 1f),
             };
 
             foreach (var p in this.Pins.Values.SelectMany(p => p.Values))
             {
-                lines.AddRange(p.GetDebug().Select(d => (d, p == Main.LocalPlayer.GetModPlayer<WireModPlayer>().ConnectingPin ? Color.Green : p == pin ? highlightColor : defaultColor)));
+                lines.AddRange(p.GetDebug().Select(d => (d, p == Main.LocalPlayer.GetModPlayer<WireModPlayer>().ConnectingPin ? Color.Green : p == pin ? highlightColor : defaultColor, smallText)));
             }
 
             if (this.Settings.Any())
             {
-                lines.Add(("-----------------", defaultColor));
+                lines.Add(("-----------------", defaultColor, smallText));
                 foreach (var setting in this.Settings)
                 {
-                    lines.Add(($"{setting.Key}: {setting.Value}", Color.Red));
+                    lines.Add(($"{setting.Key}: {setting.Value}", Color.Red, smallText));
                 }
             }
 
             if (!string.IsNullOrEmpty(this.RightClickHelp))
             {
-                lines.Add(("-----------------", defaultColor));
-                lines.Add((this.RightClickHelp, Color.Red));
+                lines.Add(("-----------------", defaultColor, smallText));
+                lines.Add((this.RightClickHelp, Color.Blue, smallText));
 
             }
+
             return lines;
         }
     }
