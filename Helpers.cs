@@ -32,5 +32,22 @@ namespace WireMod
             texture.SetData(colorData);
             return texture;
         }
+
+        public static Texture2D CreateRectangle(int width, int height)
+        {
+            var texture = new Texture2D(Main.graphics.GraphicsDevice, width, height);
+            var colorData = new Color[width * height];
+
+            for (var x = 0; x < width; x++)
+            {
+                for (var y = 0; y < height; y++)
+                {
+                    colorData[x * width + y] = Color.White;
+                }
+            }
+
+            texture.SetData(colorData);
+            return texture;
+        }
     }
 }

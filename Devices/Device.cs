@@ -38,9 +38,21 @@ namespace WireMod.Devices
         /// Location of this device in the world (Tile Co-ords)
         /// </summary>
         public Rectangle LocationRect { get; set; }
-
         public Point16 LocationTile => this.LocationRect != default(Rectangle) ? new Point16(this.LocationRect.X, this.LocationRect.Y) : default(Point16);
+
         public Vector2 LocationWorld => this.LocationRect != default(Rectangle) ? new Vector2(this.LocationRect.X * 16, this.LocationRect.Y * 16) : default(Vector2);
+        public Rectangle LocationWorldRect => this.LocationRect != default(Rectangle) ? new Rectangle(this.LocationRect.X * 16, this.LocationRect.Y * 16, this.Width * 16, this.Height * 16) : default(Rectangle);
+
+        public Rectangle LocationScreenRect
+        {
+            get
+            {
+                var screenRect = WireMod.Instance.GetScreenRect();
+                var worldRect = this.LocationWorldRect;
+
+                return !worldRect.Intersects(screenRect) ? default(Rectangle) : new Rectangle(worldRect.X - screenRect.X, worldRect.Y - screenRect.Y, worldRect.Width, worldRect.Height);
+            }
+        }
 
         public virtual void OnRightClick(Pin pin = null) { }
 

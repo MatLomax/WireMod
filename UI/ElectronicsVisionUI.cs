@@ -106,14 +106,41 @@ namespace WireMod.UI
 			DrawWireDot(spriteBatch, modPlayer.ConnectingPin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
 		}
 
-		private static void DrawWireDot(SpriteBatch spriteBatch, Vector2 position)
+		private static void DrawWireDot(SpriteBatch spriteBatch, Vector2 position, int size = 4)
 		{
-			spriteBatch.Draw(Helpers.CreateCircle(10), position - new Vector2(5, 5), Color.Black * 0.25f * WireVisibility);
-			spriteBatch.Draw(Helpers.CreateCircle(5), position - new Vector2(3, 3), Color.White * 0.5f * WireVisibility);
+			spriteBatch.Draw(Helpers.CreateRectangle(size, size), position - new Vector2(size / 2, size / 2), Color.White * 0.5f * WireVisibility);
+			//spriteBatch.Draw(Helpers.CreateCircle(size), position - new Vector2(size / 2, size / 2), Color.White * 0.5f * WireVisibility);
 		}
 
-		private static void DrawLine(SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color, int thickness = 3)
+		private static void DrawLine(SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color, int thickness = 4)
 		{
+
+			if (start.X < end.X)
+			{
+				start.X -= (thickness);
+				start.Y -= (thickness / 2);
+				end.Y -= (thickness / 2);
+			}
+			else if (start.X > end.X)
+			{
+				start.Y += (thickness / 2);
+				end.X -= (thickness);
+				end.Y += (thickness / 2);
+			}
+
+			if (start.Y < end.Y)
+			{
+				start.Y -= (thickness / 2);
+				end.Y += (thickness / 2);
+			}
+			else if (start.Y > end.Y)
+			{
+				start.X -= (thickness);
+				start.Y += (thickness / 2);
+				end.X -= (thickness);
+				end.Y -= (thickness / 2);
+			}
+
 			var edge = end - start;
 			var angle = (float)Math.Atan2(edge.Y, edge.X);
 

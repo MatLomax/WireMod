@@ -154,6 +154,8 @@ namespace WireMod
             );
         }
 
+        public Rectangle GetScreenRect() => new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
+
 
         // For lack of a better place to put all this...
 

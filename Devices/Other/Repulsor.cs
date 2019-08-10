@@ -37,13 +37,8 @@ namespace WireMod.Devices
             if (!int.TryParse(this.Pins["In"][0].GetValue(), out var armed)) return;
             if (armed == 0) return;
 
-            var pixels = 16;
-            var screenRect = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
-            
-            var deviceWorldRect = new Rectangle((int)(this.LocationRect.X * pixels), (int)(this.LocationRect.Y * pixels), (int)(this.Width * pixels), (int)(this.Height * pixels));
-            if (!deviceWorldRect.Intersects(screenRect)) return;
-
-            var deviceScreenRect = new Rectangle(deviceWorldRect.X - screenRect.X, deviceWorldRect.Y - screenRect.Y, deviceWorldRect.Width, deviceWorldRect.Height);
+            var deviceScreenRect = this.LocationScreenRect;
+            if (deviceScreenRect == default(Rectangle)) return;
 
             var circle = Helpers.CreateCircle(maxDistance * 2);
             var pos = new Vector2(deviceScreenRect.X + (deviceScreenRect.Width / 2) - maxDistance, deviceScreenRect.Y + (deviceScreenRect.Height / 2) - maxDistance);
