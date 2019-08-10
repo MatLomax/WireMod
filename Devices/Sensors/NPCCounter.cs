@@ -80,9 +80,9 @@ namespace WireMod.Devices
 			{
 				if (int.TryParse(this.Pins["In"][1].GetValue(), out var distance))
 				{
-					debug.Add(("----------------", Color.Black, 0.75f));
+					debug.Add(("----------------", Color.Black, WireMod.SmallText));
 
-					debug.AddRange(this.GetNPCs(distance).Select(npc => ($"NPC: {npc.FullName}", Color.Red, 0.75f)));
+					debug.AddRange(this.GetNPCs(distance).Select(npc => ($"NPC: {npc.FullName}", Color.Red, WireMod.SmallText)));
 				}
 			}
 

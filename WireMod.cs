@@ -16,6 +16,7 @@ namespace WireMod
     {
         internal static WireMod Instance;
         internal const bool Debug = true;
+        internal const float SmallText = 0.75f;
         internal static DevicePacketHandler PacketHandler = new DevicePacketHandler();
 
         internal UserInterface ElectronicsManualUserInterface;

@@ -95,33 +95,31 @@ namespace WireMod.Devices
             var titleColor = Color.DarkBlue;
             var highlightColor = Color.Red;
 
-            var smallText = 0.75f;
-
             var lines = new List<(string, Color, float)>
             {
                 (this.Name, titleColor, 1f),
-                ($"X: {this.LocationTile.X + this.Origin.X}, Y: {this.LocationTile.Y + this.Origin.Y}", titleColor, 1f),
+                ($"X: {(pin != null ? pin.Location.X : this.LocationTile.X + this.Origin.X)}, Y: {(pin != null ? pin.Location.Y : this.LocationTile.Y + this.Origin.Y)}", titleColor, WireMod.SmallText),
                 ("-----------------", defaultColor, 1f),
             };
 
             foreach (var p in this.Pins.Values.SelectMany(p => p.Values))
             {
-                lines.AddRange(p.GetDebug().Select(d => (d, p == Main.LocalPlayer.GetModPlayer<WireModPlayer>().ConnectingPin ? Color.Green : p == pin ? highlightColor : defaultColor, smallText)));
+                lines.AddRange(p.GetDebug().Select(d => (d, p == Main.LocalPlayer.GetModPlayer<WireModPlayer>().ConnectingPin ? Color.Green : p == pin ? highlightColor : defaultColor, WireMod.SmallText)));
             }
 
             if (this.Settings.Any())
             {
-                lines.Add(("-----------------", defaultColor, smallText));
+                lines.Add(("-----------------", defaultColor, WireMod.SmallText));
                 foreach (var setting in this.Settings)
                 {
-                    lines.Add(($"{setting.Key}: {setting.Value}", Color.Red, smallText));
+                    lines.Add(($"{setting.Key}: {setting.Value}", Color.Red, WireMod.SmallText));
                 }
             }
 
             if (!string.IsNullOrEmpty(this.RightClickHelp))
             {
-                lines.Add(("-----------------", defaultColor, smallText));
-                lines.Add((this.RightClickHelp, Color.Blue, smallText));
+                lines.Add(("-----------------", defaultColor, WireMod.SmallText));
+                lines.Add((this.RightClickHelp, Color.Blue, WireMod.SmallText));
 
             }
 

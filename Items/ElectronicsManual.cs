@@ -224,7 +224,7 @@ namespace WireMod.Items
                     // Debug device
                     if (device == null) return false;
 
-                    WireMod.Instance.DebuggerUserInterface.SetState(new DebuggerUI(device));
+                    WireMod.Instance.DebuggerUserInterface.SetState(new DebuggerUI(device, pin));
                     DebuggerUI.Visible = true;
                 }
             }

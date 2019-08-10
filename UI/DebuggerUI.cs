@@ -14,17 +14,19 @@ namespace WireMod.UI
 		public static bool Visible { get; set; }
         
         private readonly Device _device;
+        private readonly Pin _pin;
 
-        public DebuggerUI(Device device)
+        public DebuggerUI(Device device, Pin pin = null)
         {
             this._device = device;
+            this._pin = pin;
         }
         
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
             base.DrawSelf(spriteBatch);
 
-            var lines = this._device.Debug();
+            var lines = this._device.Debug(this._pin);
 
             if (lines == null) return;
 

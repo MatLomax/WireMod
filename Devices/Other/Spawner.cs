@@ -55,8 +55,8 @@ namespace WireMod.Devices
 
             if (pin == null)
             {
-                debug.Add(("----------------", Color.Black, 0.75f));
-                debug.Add(("Right Click to spawn NPC", Color.Red, 0.75f));
+                debug.Add(("----------------", Color.Black, WireMod.SmallText));
+                debug.Add(("Right Click to spawn NPC", Color.Red, WireMod.SmallText));
             }
 
             return debug;

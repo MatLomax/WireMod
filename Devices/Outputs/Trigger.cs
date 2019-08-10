@@ -89,7 +89,7 @@ namespace WireMod.Devices
         public override List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
         {
             var debug = base.Debug(pin);
-            debug.Add(($"Reset: {(this._reset ? "True" : "False")}", Color.Black, 0.75f));
+            debug.Add(($"Reset: {(this._reset ? "True" : "False")}", Color.Black, WireMod.SmallText));
             return debug;
         }
 
