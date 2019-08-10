@@ -39,9 +39,11 @@ namespace WireMod.Devices
                 return;
             }
 
-            // TODO: Figure out what the difference AI options do
-            var npcId = NPC.NewNPC((int)this.LocationWorld.X, (int)this.LocationWorld.Y, id, 0, WorldGen.genRand.Next(100), WorldGen.genRand.Next(100));
+            // TODO: Figure out what the 'Start' argument actually does
+            var npcId = NPC.NewNPC((int)this.LocationWorld.X + (this.Origin.X * 16) + 8, (int)this.LocationWorld.Y + (this.Origin.Y * 16) + 8, id, 1);
             var npc = Main.npc[npcId];
+
+            // Do something with NPC?
         }
 
         public override void OnRightClick(Pin pin = null)

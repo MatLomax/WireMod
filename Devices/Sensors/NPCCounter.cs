@@ -18,9 +18,9 @@ namespace WireMod.Devices
 
 			this.PinLayout = new List<PinDesign>
 			{
-				new PinDesign("In", 0, new Point16(0, 1), "bool", "Hostile Filter"),
-				new PinDesign("In", 1, new Point16(1, 0), "int", "Distance"),
-				new PinDesign("In", 2, new Point16(2, 1), "bool", "Character Filter"),
+				new PinDesign("In", 0, new Point16(1, 0), "int", "Distance"),
+				new PinDesign("In", 1, new Point16(0, 1), "bool", "Hostile Filter"),
+				new PinDesign("In", 2, new Point16(2, 1), "bool", "TownNPC Filter"),
 				new PinDesign("Out", 0, new Point16(1, 2), "int", "Count"),
 			};
 		}
@@ -39,7 +39,7 @@ namespace WireMod.Devices
 			var npc = Main.npc.Select(n => n).Where(n => n.life > 0 && !n.dontCountMe);
 			var pos = this.LocationRect.Location.ToWorldCoordinates();
 
-			if (this.Pins["In"][0].IsConnected() && int.TryParse(this.Pins["In"][0].GetValue(), out var hostile))
+			if (this.Pins["In"][1].IsConnected() && int.TryParse(this.Pins["In"][1].GetValue(), out var hostile))
 			{
 				npc = npc.Where(n => n.friendly == (hostile == 0));
 			}
@@ -55,7 +55,7 @@ namespace WireMod.Devices
 		public override void Draw(SpriteBatch spriteBatch)
 		{
 			if (this.LocationRect == default(Rectangle)) return;
-			if (!this.Pins["In"][1].IsConnected() || !int.TryParse(this.Pins["In"][1].GetValue(), out var distance)) return;
+			if (!this.Pins["In"][0].IsConnected() || !int.TryParse(this.Pins["In"][0].GetValue(), out var distance)) return;
 			if (distance < 1) return;
 
 			var pixels = 16;
@@ -78,7 +78,7 @@ namespace WireMod.Devices
 
 			if (pin == null)
 			{
-				if (int.TryParse(this.Pins["In"][1].GetValue(), out var distance))
+				if (int.TryParse(this.Pins["In"][0].GetValue(), out var distance))
 				{
 					debug.Add(("----------------", Color.Black, WireMod.SmallText));
 

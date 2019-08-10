@@ -17,8 +17,8 @@ namespace WireMod.Devices
 			this.PinLayout = new List<PinDesign>
 			{
 				new PinDesign("In", 0, new Point16(0, 1), "bool", "Hostile Filter"),
-				new PinDesign("In", 1, new Point16(1, 0), "bool", "Character Filter"),
-				new PinDesign("Out", 0, new Point16(1, 2), "int"),
+				new PinDesign("In", 1, new Point16(1, 0), "bool", "TownNPC Filter"),
+				new PinDesign("Out", 0, new Point16(1, 2), "int", "Distance"),
 			};
 		}
 
