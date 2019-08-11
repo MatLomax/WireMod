@@ -72,7 +72,7 @@ namespace WireMod.Devices
 
             foreach (var entity in entities)
             {
-                var direction = entity.position - this.LocationRect.Location.ToWorldCoordinates();
+                var direction = entity.position - (this.LocationWorld + this.Origin.ToWorldCoordinates());
                 var pLeft = entity.velocity.X < 0;
                 var pUp = entity.velocity.Y < 0;
 
