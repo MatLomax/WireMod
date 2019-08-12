@@ -13,21 +13,20 @@ namespace WireMod.UI
     {
 		public static bool Visible { get; set; }
         
-        private readonly Device _device;
-        private readonly Pin _pin;
+        public readonly Device Device;
+        public readonly Pin Pin;
 
         public DebuggerUI(Device device, Pin pin = null)
         {
-            this._device = device;
-            this._pin = pin;
+            this.Device = device;
+            this.Pin = pin;
         }
         
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
             base.DrawSelf(spriteBatch);
 
-            var lines = this._device.Debug(this._pin);
-
+            var lines = this.Device.Debug(this.Pin);
             if (lines == null) return;
 
             const int padding = 10;

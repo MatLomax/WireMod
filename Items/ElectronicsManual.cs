@@ -63,7 +63,7 @@ namespace WireMod.Items
 
                 var pin = WireMod.GetDevicePin(point.X, point.Y);
 
-                WireMod.Instance.DebuggerHoverUserInterface.SetState(new HoverDebuggerUI(dev.Debug(pin)));
+                WireMod.Instance.DebuggerHoverUserInterface.SetState(new HoverDebuggerUI(dev, pin));
                 HoverDebuggerUI.Visible = true;
             }
         }

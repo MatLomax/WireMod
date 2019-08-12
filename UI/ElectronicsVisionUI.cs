@@ -12,8 +12,10 @@ namespace WireMod.UI
 	{
 		public static bool Visible { get; set; }
 
+		public const int Thickness = 4;
+
 		public static float DeviceVisibility { get; set; } = 1f;
-		public static float WireVisibility { get; set; } = 0.75f;
+		public static float WireVisibility { get; set; } = 0.5f;
 
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
@@ -23,7 +25,7 @@ namespace WireMod.UI
 
 		private static void DrawDevices(SpriteBatch spriteBatch)
 		{
-			var pixels = 16/* * Main.UIScale*/;
+			var pixels = 16;
 
 			var screenRect = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
 
@@ -45,6 +47,7 @@ namespace WireMod.UI
 		private static void DrawWires(SpriteBatch spriteBatch)
 		{
 			var screenRect = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
+			var modPlayer = Main.LocalPlayer.GetModPlayer<WireModPlayer>();
 
 			foreach (var pin in WireMod.Pins)
 			{
@@ -60,25 +63,17 @@ namespace WireMod.UI
 
 					if (pinWire == null) continue;
 
-					var points = pinWire.GetPoints(pin);
-
-					for (var i = 0; i < points.Count - 1; i++)
+					if (HoverDebuggerUI.Visible)
 					{
-						DrawLine(
-							spriteBatch,
-							points[i].ToWorldCoordinates() - screenRect.Location.ToVector2(),
-							points[i + 1].ToWorldCoordinates() - screenRect.Location.ToVector2(),
-							GetWireColor(pin)
-						);
+						var hoverDevice = ((HoverDebuggerUI)WireMod.Instance.DebuggerHoverUserInterface.CurrentState).Device;
+						WireVisibility = pin.Device == hoverDevice || p.Device == hoverDevice ? 1f : 0.5f;
 					}
-
-					DrawWireDot(spriteBatch, pinWire.StartPin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
-					DrawWireDot(spriteBatch, pinWire.EndPin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
+					
+					DrawWire(spriteBatch, pinWire);
 				}
 			}
 
 			// Draw trailing wire to mouse
-			var modPlayer = Main.LocalPlayer.GetModPlayer<WireModPlayer>();
 			if (modPlayer.ConnectingPin == null) return;
 
 			var placingPoints = modPlayer.PlacingWire.GetPoints();
@@ -112,39 +107,55 @@ namespace WireMod.UI
 			//spriteBatch.Draw(Helpers.CreateCircle(size), position - new Vector2(size / 2, size / 2), Color.White * 0.5f * WireVisibility);
 		}
 
-		private static void DrawLine(SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color, int thickness = 4)
+		private static void DrawWire(SpriteBatch spriteBatch, Wire wire)
 		{
+			var screenRect = WireMod.Instance.GetScreenRect();
+			var points = wire.GetPoints();
 
-			if (start.X < end.X)
+			for (var i = 0; i < points.Count - 1; i++)
 			{
-				start.X -= (thickness);
-				start.Y -= (thickness / 2);
-				end.Y -= (thickness / 2);
-			}
-			else if (start.X > end.X)
-			{
-				start.Y += (thickness / 2);
-				end.X -= (thickness);
-				end.Y += (thickness / 2);
+				var start = points[i].ToWorldCoordinates() - screenRect.Location.ToVector2();
+				var end = points[i + 1].ToWorldCoordinates() - screenRect.Location.ToVector2();
+
+				if (start.X < end.X)
+				{
+					start.X -= (Thickness);
+					start.Y -= (Thickness / 2);
+					end.Y -= (Thickness / 2);
+				}
+				else if (start.X > end.X)
+				{
+					start.Y += (Thickness / 2);
+					end.X -= (Thickness);
+					end.Y += (Thickness / 2);
+				}
+
+				if (start.Y < end.Y)
+				{
+					start.Y -= (Thickness / 2);
+					end.Y += (Thickness / 2);
+				}
+				else if (start.Y > end.Y)
+				{
+					start.X -= (Thickness);
+					start.Y += (Thickness / 2);
+					end.X -= (Thickness);
+					end.Y -= (Thickness / 2);
+				}
+
+				DrawLine(spriteBatch, start, end, GetWireColor(wire.StartPin));
 			}
 
-			if (start.Y < end.Y)
-			{
-				start.Y -= (thickness / 2);
-				end.Y += (thickness / 2);
-			}
-			else if (start.Y > end.Y)
-			{
-				start.X -= (thickness);
-				start.Y += (thickness / 2);
-				end.X -= (thickness);
-				end.Y -= (thickness / 2);
-			}
+			DrawWireDot(spriteBatch, wire.StartPin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
+			DrawWireDot(spriteBatch, wire.EndPin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
+		}
 
+		private static void DrawLine(SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color)
+		{
 			var edge = end - start;
 			var angle = (float)Math.Atan2(edge.Y, edge.X);
 
-			var line = new Rectangle((int)start.X + (thickness / 2), (int)start.Y, (int)edge.Length(), thickness);
+			var line = new Rectangle((int)start.X + (Thickness / 2), (int)start.Y, (int)edge.Length(), Thickness);
 			spriteBatch.Draw(Main.magicPixel, line, null, color * WireVisibility, angle, new Vector2(0, 0), SpriteEffects.None, 1f);
 		}
 

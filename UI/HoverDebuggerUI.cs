@@ -13,11 +13,16 @@ namespace WireMod.UI
     {
 		public static bool Visible { get; set; }
 
+        public readonly Device Device;
+        public readonly Pin Pin;
+
         private readonly List<(string Line, Color Color, float Size)> _lines;
 
-        public HoverDebuggerUI(List<(string, Color, float)> lines = null)
+        public HoverDebuggerUI(Device device, Pin pin = null)
         {
-            this._lines = lines;
+            this.Device = device;
+            this.Pin = pin;
+            this._lines = device.Debug(pin);
         }
         
         protected override void DrawSelf(SpriteBatch spriteBatch)

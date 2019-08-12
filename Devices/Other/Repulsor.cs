@@ -41,7 +41,7 @@ namespace WireMod.Devices
             if (deviceScreenRect == default(Rectangle)) return;
 
             var circle = Helpers.CreateCircle(maxDistance * 2);
-            var pos = new Vector2(deviceScreenRect.X + (deviceScreenRect.Width / 2) - maxDistance, deviceScreenRect.Y + (deviceScreenRect.Height / 2) - maxDistance);
+            var pos = this.LocationWorld + this.Origin.ToWorldCoordinates();
 
             spriteBatch.Draw(circle, pos, Color.LightBlue * 0.25f);
         }
@@ -73,8 +73,8 @@ namespace WireMod.Devices
             foreach (var entity in entities)
             {
                 var direction = entity.position - (this.LocationWorld + this.Origin.ToWorldCoordinates());
-                var pLeft = entity.velocity.X < 0;
-                var pUp = entity.velocity.Y < 0;
+                //var pLeft = entity.velocity.X < 0;
+                //var pUp = entity.velocity.Y < 0;
 
                 var distance = direction.Length();
 
