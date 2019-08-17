@@ -109,26 +109,17 @@ namespace WireMod.Devices
             if (pin != null)
             {
                 if (this.ConnectedPins.Contains(pin)) this.ConnectedPins.Remove(pin);
-                
                 return;
             }
 
-            try
+            var pins = this.ConnectedPins.Where(p => p.IsConnected()).ToList();
+            foreach (var p in pins) p.Disconnect();
+      
+            this.ConnectedPins.ForEach(p =>
             {
-                this.ConnectedPins.ForEach(p =>
-                {
-                    if (p.IsConnected()) p.Disconnect();
-
-                    this.Wires.RemoveAll(w => w.StartPin == this && w.EndPin == p);
-                    this.Wires.RemoveAll(w => w.StartPin == p && w.EndPin == this);
-                });
-            }
-            catch (InvalidOperationException)
-            {
-                // Ignore 'collection changed' errors, works fine.
-            }
-            
-
+                this.Wires.RemoveAll(w => w.StartPin == this && w.EndPin == p);
+                this.Wires.RemoveAll(w => w.StartPin == p && w.EndPin == this);
+            });
         }
 
         public override string GetValue() => this._value;

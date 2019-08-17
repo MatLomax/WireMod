@@ -12,6 +12,7 @@ namespace WireMod
             "Comparison",
             "Basic Inputs",
             "Sensor Inputs",
+            "Text",
             "Outputs",
             "Experimental",
         };
@@ -55,17 +56,22 @@ namespace WireMod
             },
             new List<string>
             {
-                "OutputLamp",
-                //"OutputSign",
-                "FlipFlop",
-                "Trigger",
-            },
-            new List<string>
-            {
                 "PlayerDistanceSensor",
                 "NPCDistanceSensor",
                 "TimeSensor",
                 "NPCCounter",
+            },
+            new List<string>
+            {
+                "Concat",
+                "TextTileController",
+            },
+            new List<string>
+            {
+                "OutputLamp",
+                //"OutputSign",
+                "FlipFlop",
+                "Trigger",
             },
             new List<string>
             {
@@ -97,6 +103,8 @@ namespace WireMod
             { "StringConstant", "Constant String Value" },
             { "TeamColorConstant", "Constant Team Color Value" },
             { "RandomInt", "Random Integer Value" },
+            { "Concat", "Concatenate Strings" },
+            { "TextTileController", "Text Tile Controller" },
             { "FlipFlop", "Flip/Flop" },
             { "OutputLamp", "Output Lamp" },
             //{ "OutputSign", "Output Sign" },

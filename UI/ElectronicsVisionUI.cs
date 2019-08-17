@@ -104,7 +104,6 @@ namespace WireMod.UI
 		private static void DrawWireDot(SpriteBatch spriteBatch, Vector2 position, int size = 4)
 		{
 			spriteBatch.Draw(Helpers.CreateRectangle(size, size), position - new Vector2(size / 2, size / 2), Color.White * 0.5f * WireVisibility);
-			//spriteBatch.Draw(Helpers.CreateCircle(size), position - new Vector2(size / 2, size / 2), Color.White * 0.5f * WireVisibility);
 		}
 
 		private static void DrawWire(SpriteBatch spriteBatch, Wire wire)
