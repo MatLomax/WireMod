@@ -55,6 +55,9 @@ namespace WireMod.Devices
             }
         }
 
+        public Vector2 LocationOriginWorld => (this.LocationTile + this.Origin).ToWorldCoordinates();
+        public Vector2 LocationOriginScreen => this.LocationOriginWorld - Main.screenPosition;
+
         public virtual void OnRightClick(Pin pin = null) { }
 
         public virtual void OnKill()
