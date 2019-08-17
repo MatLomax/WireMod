@@ -7,20 +7,19 @@ using Terraria.DataStructures;
 
 namespace WireMod.Devices
 {
-	internal class NPCCounter : Device, IOutput
+	internal class PlayerCounter : Device, IOutput
 	{
-		public NPCCounter()
+		public PlayerCounter()
 		{
-			this.Name = "Nearby NPC Counter Sensor";
-			this.Width = 3;
+			this.Name = "Nearby Player Counter Sensor";
+			this.Width = 2;
 			this.Height = 3;
 			this.Origin = new Point16(1, 1);
 
 			this.PinLayout = new List<PinDesign>
 			{
 				new PinDesign("In", 0, new Point16(1, 0), "int", "Distance"),
-				new PinDesign("In", 1, new Point16(0, 1), "bool", "Hostile Filter"),
-				new PinDesign("In", 2, new Point16(2, 1), "bool", "TownNPC Filter"),
+				new PinDesign("In", 1, new Point16(0, 1), "teamColor", "Team Color Filter"),
 				new PinDesign("Out", 0, new Point16(1, 2), "int", "Count"),
 			};
 		}
@@ -31,25 +30,25 @@ namespace WireMod.Devices
 		{
 			if (!int.TryParse(this.Pins["In"][0].GetValue(), out var distance)) return -2;
 
-			return this.GetNPCs(distance).Count();
+			return this.GetPlayers(distance).Count();
 		}
 
-		private IEnumerable<NPC> GetNPCs(int distance)
+		private IEnumerable<Player> GetPlayers(int distance)
 		{
-			var npc = Main.npc.Select(n => n).Where(n => n.life > 0 && !n.dontCountMe);
+			var players = Main.player.Select(p => p);
 			var pos = this.LocationWorld + new Vector2(8, 8);
 
-			if (this.Pins["In"][1].IsConnected() && int.TryParse(this.Pins["In"][1].GetValue(), out var hostile))
+			if (this.Pins["In"][1].IsConnected())
 			{
-				npc = npc.Where(n => n.friendly == (hostile == 0));
+				var team = TeamColor.White;
+				if (int.TryParse(this.Pins["In"][1].GetValue(), out var tc))
+				{
+					team = (TeamColor)tc;
+				}
+				players = players.Where(p => p.team == (int)team);
 			}
-
-			if (this.Pins["In"][2].IsConnected() && int.TryParse(this.Pins["In"][2].GetValue(), out var character))
-			{
-				npc = npc.Where(n => n.townNPC == (character == 1));
-			}
-
-			return npc.Where(n => (pos - n.position).Length() < distance && (pos - n.position).Length() > 1);
+			
+			return players.Where(p => (pos - p.position).Length() < distance && (pos - p.position).Length() > 1);
 		}
 
 		public override void Draw(SpriteBatch spriteBatch)
@@ -71,14 +70,11 @@ namespace WireMod.Devices
 		{
 			var debug = base.Debug(pin);
 
-			if (pin == null)
+			if (pin == null && int.TryParse(this.Pins["In"][0].GetValue(), out var distance))
 			{
-				if (int.TryParse(this.Pins["In"][0].GetValue(), out var distance))
-				{
-					debug.Add(("----------------", Color.Black, WireMod.SmallText));
+				debug.Add(("----------------", Color.Black, WireMod.SmallText));
 
-					debug.AddRange(this.GetNPCs(distance).Select(npc => ($"NPC: {npc.FullName}", Color.Red, WireMod.SmallText)));
-				}
+				debug.AddRange(this.GetPlayers(distance).Select(player => ($"Player: {player.name}", Color.Red, WireMod.SmallText)));
 			}
 
 			return debug;

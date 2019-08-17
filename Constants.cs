@@ -56,9 +56,10 @@ namespace WireMod
             },
             new List<string>
             {
+                "TimeSensor",
                 "PlayerDistanceSensor",
                 "NPCDistanceSensor",
-                "TimeSensor",
+                "PlayerCounter",
                 "NPCCounter",
             },
             new List<string>
@@ -112,6 +113,7 @@ namespace WireMod
             { "PlayerDistanceSensor", "Nearest Player Distance Sensor" },
             { "NPCDistanceSensor", "Nearest NPC Distance Sensor" },
             { "TimeSensor", "Time Sensor - basically a glorified clock" },
+            { "PlayerCounter", "Count nearby Players" },
             { "NPCCounter", "Count nearby NPCs" },
             { "Repulsor", "Repulsor (USE WITH CAUTION)" },
             { "Spawner", "NPC Spawner (USE WITH CAUTION)" },
