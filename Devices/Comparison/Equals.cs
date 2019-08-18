@@ -13,6 +13,7 @@ namespace WireMod.Devices
             this.Width = 3;
             this.Height = 2;
             this.Origin = new Point16(1, 0);
+
             this.Settings.Add("CompareType", CompareTypes.First());
             this.RightClickHelp = $"Right Click to change comparison type ({string.Join("/", CompareTypes)})";
 

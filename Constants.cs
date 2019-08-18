@@ -19,20 +19,21 @@ namespace WireMod
 
         public static readonly List<List<string>> Tools = new List<List<string>>
         {
-            new List<string>
+            new List<string> // Tools
             {
                 "None",
                 "Wiring",
                 "Delete",
                 "Debug",
             },
-            new List<string>
+            new List<string> // Logic Gates
             {
                 "AndGate",
                 "OrGate",
                 "NotGate",
+                "If",
             },
-            new List<string>
+            new List<string> // Maths
             {
                 "Add",
                 "Subtract",
@@ -40,13 +41,13 @@ namespace WireMod
                 "Divide",
                 "Modulo",
             },
-            new List<string>
+            new List<string> // Comparison
             {
                 "Equals",
                 "LessThan",
                 "GreaterThan",
             },
-            new List<string>
+            new List<string> // Basic Inputs
             {
                 "BooleanConstant",
                 "IntegerConstant",
@@ -56,7 +57,7 @@ namespace WireMod
                 "RandomInt",
                 "AreaInput",
             },
-            new List<string>
+            new List<string> // Sensor Inputs
             {
                 "TimeSensor",
                 "PlayerDistanceSensor",
@@ -65,19 +66,19 @@ namespace WireMod
                 "NPCCounter",
                 "TileCounter",
             },
-            new List<string>
+            new List<string> // Text
             {
                 "Concat",
                 "TextTileController",
             },
-            new List<string>
+            new List<string> // Outputs
             {
                 "OutputLamp",
                 //"OutputSign",
                 "FlipFlop",
                 "Trigger",
             },
-            new List<string>
+            new List<string> // Experimental
             {
                 "Repulsor",
                 "Spawner",
@@ -94,6 +95,7 @@ namespace WireMod
             { "AndGate", "AND Logic Gate" },
             { "OrGate", "OR Logic Gate" },
             { "NotGate", "NOT Logic Gate" },
+            { "If", "Conditional Logic Gate" },
             { "Add", "Add Operation" },
             { "Subtract", "Subtract Operation" },
             { "Multiply", "Multiply Operation" },
