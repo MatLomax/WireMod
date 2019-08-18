@@ -71,38 +71,18 @@ namespace WireMod.Devices
 			return tiles;
 		}
 
-		public override void Draw(SpriteBatch spriteBatch)
-		{
-			if (this.LocationRect == default(Rectangle)) return;
-
-			if (!this.Pins["In"][0].IsConnected() || !Helpers.TryParseArea(this.Pins["In"][0].GetValue(), out var area) || !area.HasValue) return;
-
-			// TODO: Get tiles within circular area
-			if (area.Value.AreaType == "Circle") return;
-
-			var distance = area.Value.Radius / 16;
-
-			if (distance < 1) return;
-			if (!this.LocationWorldRect.Intersects(WireMod.Instance.GetScreenRect())) return;
-
-			var size = ((distance * 2) + 1) * 16;
-			var rect = Helpers.CreateRectangle(size, size);
-
-			Vector2 pos;
-
-			var connDev = ((PinIn)this.Pins["In"][0]).ConnectedPin.Device;
-			if (connDev.Pins["In"][1].IsConnected() && Helpers.TryParsePoint(connDev.Pins["In"][1].GetValue(), out var point) && point.HasValue)
-			{
-				pos = point.Value.ToWorldCoordinates() - Main.screenPosition;
-			}
-			else
-			{
-				pos = this.LocationOriginScreen;
-			}
-
-			pos -= rect.Size() / 2;
+		//public override void Draw(SpriteBatch spriteBatch)
+		//{
+		//	if (this.LocationRect == default(Rectangle)) return;
 			
-			spriteBatch.Draw(rect, pos, Color.LightGreen * 0.25f);
-		}
+		//	if (!this.Pins["In"][0].IsConnected()) return;
+			
+		//	var area = ((AreaInput)((PinIn)this.Pins["In"][0]).ConnectedPin.Device).GetArea(this);
+
+		//	// TODO: Get tiles within circular area
+		//	if (area is CircArea) return;
+
+		//	area.Draw(spriteBatch, Color.LightGreen);
+		//}
 	}
 }

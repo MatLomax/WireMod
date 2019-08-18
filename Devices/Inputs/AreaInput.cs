@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 using Terraria.DataStructures;
 
 namespace WireMod.Devices
@@ -19,7 +22,7 @@ namespace WireMod.Devices
 
             this.PinLayout = new List<PinDesign>
             {
-                new PinDesign("In", 0, new Point16(1, 0), "int", "Radius"),
+                new PinDesign("In", 0, new Point16(1, 0), "int", "Distance"),
                 new PinDesign("In", 1, new Point16(0, 1), "point", "Point"),
                 new PinDesign("Out", 0, new Point16(1, 2), "area", "Area"),
             };
@@ -35,6 +38,44 @@ namespace WireMod.Devices
         public override void OnRightClick(Pin pin = null)
         {
             this.Settings["AreaType"] = AreaTypes[(AreaTypes.IndexOf(this.Settings["AreaType"]) + 1) % AreaTypes.Count];
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (this.LocationRect == default(Rectangle)) return;
+            if (!this.Pins["In"][0].IsConnected()) return;
+
+            this.GetArea(this).Draw(spriteBatch, Color.LightGreen);
+        }
+
+        public Area GetArea(Device device)
+        {
+            var radius = 0;
+            if (this.Pins["In"][0].IsConnected() && int.TryParse(this.Pins["In"][0].GetValue(), out var dist))
+            {
+                radius = dist;
+            }
+
+            var pos = device.LocationOriginWorld;
+            if (this.Pins["In"][1].IsConnected() && Helpers.TryParsePoint(this.Pins["In"][1].GetValue(), out var point) && point.HasValue)
+            {
+                pos = point.Value.ToWorldCoordinates();
+            }
+            
+            if (this.Settings["AreaType"] == "Circle")
+            {
+                return new CircArea
+                {
+                    Center = pos,
+                    Radius = radius
+                };
+            }
+
+            return new RectArea
+            {
+                Center = pos,
+                Radius = radius
+            };
         }
 
         private static readonly List<string> AreaTypes = new List<string>

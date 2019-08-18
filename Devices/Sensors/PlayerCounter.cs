@@ -29,13 +29,11 @@ namespace WireMod.Devices
 		private int GetOutput()
 		{
 			if (!this.Pins["In"][0].IsConnected()) return -1;
-			if (!this.Pins["In"][0].IsConnected()) return -1;
-			if (!Helpers.TryParseArea(this.Pins["In"][0].GetValue(), out var area) || !area.HasValue) return -2;
 
-			return this.GetPlayers(area.Value).Count();
+			return this.GetPlayers().Count();
 		}
 
-		private IEnumerable<Player> GetPlayers((string AreaType, int Radius) area)
+		private IEnumerable<Player> GetPlayers()
 		{
 			var players = Main.player.Select(p => p);
 			
@@ -49,65 +47,27 @@ namespace WireMod.Devices
 				players = players.Where(p => p.team == (int)team);
 			}
 
-			Vector2 pos;
-			var connDev = ((PinIn)this.Pins["In"][0]).ConnectedPin.Device;
-			if (connDev.Pins["In"][1].IsConnected() && Helpers.TryParsePoint(connDev.Pins["In"][1].GetValue(), out var point) && point.HasValue)
-			{
-				pos = point.Value.ToWorldCoordinates();
-			}
-			else
-			{
-				pos = this.LocationOriginWorld;
-			}
+			if (!this.Pins["In"][0].IsConnected()) return new List<Player>();
 
-			if (area.AreaType == "Square")
-			{
-				var rect = new Rectangle((int)pos.X - area.Radius, (int)pos.Y - area.Radius, area.Radius * 2, area.Radius * 2);
-				return players.Where(p => rect.Contains(p.position.ToPoint()));
-			}
+			var input = ((PinIn)this.Pins["In"][0]).ConnectedPin.Device;
+			if (!(input is AreaInput)) return new List<Player>();
 
-			return players.Where(p => (pos - p.position).Length() < area.Radius && (pos - p.position).Length() > 1);
+			var area = ((AreaInput)input).GetArea(this);
+
+			return players.Where(p => area.Contains(p.position));
 		}
 
-		public override void Draw(SpriteBatch spriteBatch)
+		public override List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
 		{
-			if (this.LocationRect == default(Rectangle)) return;
-			if (!this.LocationWorldRect.Intersects(WireMod.Instance.GetScreenRect())) return;
-
-			if (!this.Pins["In"][0].IsConnected() || !Helpers.TryParseArea(this.Pins["In"][0].GetValue(), out var area) || !area.HasValue) return;
+			var debug = base.Debug(pin);
 			
-			//var deviceScreenRect = this.LocationScreenRect;
-			var overlay = area.Value.AreaType == "Circle" ? Helpers.CreateCircle(area.Value.Radius * 2) : Helpers.CreateRectangle(area.Value.Radius * 2, area.Value.Radius * 2);
-
-			Vector2 pos;
-			var connDev = ((PinIn)this.Pins["In"][0]).ConnectedPin.Device;
-			if (connDev.Pins["In"][1].IsConnected() && Helpers.TryParsePoint(connDev.Pins["In"][1].GetValue(), out var point) && point.HasValue)
+			if (pin == null)
 			{
-				pos = point.Value.ToWorldCoordinates() - Main.screenPosition;
-			}
-			else
-			{
-				pos = this.LocationOriginScreen;
+				debug.Add(("----------------", Color.Black, WireMod.SmallText));
+				debug.AddRange(this.GetPlayers().Select(player => ($"Player: {player.name}", Color.Red, WireMod.SmallText)));
 			}
 
-			pos -= overlay.Size() / 2;
-
-			spriteBatch.Draw(overlay, pos, Color.LightGreen * 0.25f);
+			return debug;
 		}
-
-		//public override List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
-		//{
-		//	var debug = base.Debug(pin);
-
-		//	if (!this.Pins["In"][0].IsConnected() || !Helpers.TryParseArea(this.Pins["In"][0].GetValue(), out var area) || !area.HasValue) return;
-		//	if (pin == null && int.TryParse(this.Pins["In"][0].GetValue(), out var distance))
-		//	{
-		//		debug.Add(("----------------", Color.Black, WireMod.SmallText));
-
-		//		debug.AddRange(this.GetPlayers(distance).Select(player => ($"Player: {player.name}", Color.Red, WireMod.SmallText)));
-		//	}
-
-		//	return debug;
-		//}
 	}
 }

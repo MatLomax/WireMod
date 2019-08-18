@@ -18,7 +18,7 @@ namespace WireMod.Devices
 
 			this.PinLayout = new List<PinDesign>
 			{
-				new PinDesign("In", 0, new Point16(1, 0), "int", "Distance"),
+				new PinDesign("In", 0, new Point16(1, 0), "area", "Area"),
 				new PinDesign("In", 1, new Point16(0, 1), "bool", "Hostile Filter"),
 				new PinDesign("In", 2, new Point16(2, 1), "bool", "TownNPC Filter"),
 				new PinDesign("Out", 0, new Point16(1, 2), "int", "Count"),
@@ -29,12 +29,12 @@ namespace WireMod.Devices
 
 		private int GetOutput()
 		{
-			if (!int.TryParse(this.Pins["In"][0].GetValue(), out var distance)) return -2;
+			if (!this.Pins["In"][0].IsConnected()) return -1;
 
-			return this.GetNPCs(distance).Count();
+			return this.GetNPCs().Count();
 		}
 
-		private IEnumerable<NPC> GetNPCs(int distance)
+		private IEnumerable<NPC> GetNPCs()
 		{
 			var npc = Main.npc.Select(n => n).Where(n => n.life > 0 && !n.dontCountMe);
 			var pos = this.LocationWorld + new Vector2(8, 8);
@@ -49,22 +49,14 @@ namespace WireMod.Devices
 				npc = npc.Where(n => n.townNPC == (character == 1));
 			}
 
-			return npc.Where(n => (pos - n.position).Length() < distance && (pos - n.position).Length() > 1);
-		}
+			if (!this.Pins["In"][0].IsConnected()) return new List<NPC>();
 
-		public override void Draw(SpriteBatch spriteBatch)
-		{
-			if (this.LocationRect == default(Rectangle)) return;
-			if (!this.Pins["In"][0].IsConnected() || !int.TryParse(this.Pins["In"][0].GetValue(), out var distance)) return;
-			if (distance < 1) return;
+			var input = ((PinIn)this.Pins["In"][0]).ConnectedPin.Device;
+			if (!(input is AreaInput)) return new List<NPC>();
 
-			if (!this.LocationWorldRect.Intersects(WireMod.Instance.GetScreenRect())) return;
+			var area = ((AreaInput)input).GetArea(this);
 
-			var deviceScreenRect = this.LocationScreenRect;
-			var circle = Helpers.CreateCircle(distance * 2);
-			var pos = new Vector2(deviceScreenRect.X + (deviceScreenRect.Width / 2) - distance, deviceScreenRect.Y + (deviceScreenRect.Height / 2) - distance);
-
-			spriteBatch.Draw(circle, pos, Color.LightGreen * 0.25f);
+			return npc.Where(p => area.Contains(p.position));
 		}
 
 		public override List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
@@ -73,12 +65,8 @@ namespace WireMod.Devices
 
 			if (pin == null)
 			{
-				if (int.TryParse(this.Pins["In"][0].GetValue(), out var distance))
-				{
-					debug.Add(("----------------", Color.Black, WireMod.SmallText));
-
-					debug.AddRange(this.GetNPCs(distance).Select(npc => ($"NPC: {npc.FullName}", Color.Red, WireMod.SmallText)));
-				}
+				debug.Add(("----------------", Color.Black, WireMod.SmallText));
+				debug.AddRange(this.GetNPCs().Select(npc => ($"NPC: {npc.FullName}", Color.Red, WireMod.SmallText)));
 			}
 
 			return debug;
