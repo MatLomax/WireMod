@@ -25,7 +25,7 @@ namespace WireMod.UI
 		public float InnerPadding = 10f;
 		public float ScaleX;
 		public float ScaleY;
-		public int PerRow = 5;
+		public int PerRow = 6;
 
 		public override void OnInitialize()
 		{
