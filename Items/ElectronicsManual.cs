@@ -161,10 +161,13 @@ namespace WireMod.Items
 
                     if (modPlayer.ConnectingPin.DataType != pin.DataType)
                     {
-                        Main.NewText("Cancelled - cannot connect different data types");
-                        modPlayer.ConnectingPin = null;
-                        modPlayer.PlacingWire = null;
-                        return false;
+						if (!(modPlayer.ConnectingPin.DataType == "int" && pin.DataType == "string"))
+                        {
+                            Main.NewText("Cancelled - cannot connect different data types");
+                            modPlayer.ConnectingPin = null;
+                            modPlayer.PlacingWire = null;
+                            return false;
+                        }
                     }
 
                     if (modPlayer.ConnectingPin.Device.Pins.SelectMany(p => p.Value.Values).Any(p =>

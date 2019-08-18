@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 
 namespace WireMod
 {
@@ -48,6 +49,46 @@ namespace WireMod
 
             texture.SetData(colorData);
             return texture;
+        }
+
+        public static bool TryParseArea(string input, out (string AreaType, int Radius)? output)
+        {
+            if (string.IsNullOrEmpty(input) || !input.Contains(":"))
+            {
+                output = null;
+                return false;
+            }
+
+            var split = input.Split(':');
+
+            if (!int.TryParse(split[1], out var radius))
+            {
+                output = null;
+                return false;
+            }
+
+            output = (split[0], radius);
+            return true;
+        }
+
+        public static bool TryParsePoint(string input, out Point16? output)
+        {
+            if (string.IsNullOrEmpty(input) || !input.Contains(","))
+            {
+                output = null;
+                return false;
+            }
+
+            var split = input.Split(',');
+
+            if (!int.TryParse(split[0], out var x) || !int.TryParse(split[1], out var y))
+            {
+                output = null;
+                return false;
+            }
+
+            output = new Point16(x, y);
+            return true;
         }
     }
 }

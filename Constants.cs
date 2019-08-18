@@ -52,7 +52,9 @@ namespace WireMod
                 "IntegerConstant",
                 "StringConstant",
                 "TeamColorConstant",
+                "PointConstant",
                 "RandomInt",
+                "AreaInput",
             },
             new List<string>
             {
@@ -104,7 +106,9 @@ namespace WireMod
             { "IntegerConstant", "Constant Number Value" },
             { "StringConstant", "Constant String Value" },
             { "TeamColorConstant", "Constant Team Color Value" },
+            { "PointConstant", "Constant Point Value" },
             { "RandomInt", "Random Integer Value" },
+            { "AreaInput", "Area Value" },
             { "Concat", "Concatenate Strings" },
             { "TextTileController", "Text Tile Controller" },
             { "FlipFlop", "Flip/Flop" },

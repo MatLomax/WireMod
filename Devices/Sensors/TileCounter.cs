@@ -18,7 +18,7 @@ namespace WireMod.Devices
 
 			this.PinLayout = new List<PinDesign>
 			{
-				new PinDesign("In", 0, new Point16(1, 0), "int", "Distance"),
+				new PinDesign("In", 0, new Point16(1, 0), "area", "Area"),
 				new PinDesign("In", 1, new Point16(0, 1), "int", "Tile ID"),
 				new PinDesign("Out", 0, new Point16(1, 2), "int", "Count"),
 			};
@@ -29,21 +29,36 @@ namespace WireMod.Devices
 		private int GetOutput()
 		{
 			if (!this.Pins["In"][0].IsConnected()) return -1;
-			if (!int.TryParse(this.Pins["In"][0].GetValue(), out var distance)) return -2;
+			if (!Helpers.TryParseArea(this.Pins["In"][0].GetValue(), out var area)) return -2;
+			if (!area.HasValue) return -1;
+			if (area.Value.AreaType == "Circle") return -2;
+
 			if (!this.Pins["In"][1].IsConnected()) return -1;
 			if (!int.TryParse(this.Pins["In"][1].GetValue(), out var _)) return -2;
 
-			return this.GetTiles(distance).Count();
+			return this.GetTiles(area.Value.Radius).Count();
 		}
 
 		private IEnumerable<Tile> GetTiles(int distance)
 		{
+			distance /= 16;
+
 			var tiles = new List<Tile>();
 
 			if (!this.Pins["In"][1].IsConnected() || !int.TryParse(this.Pins["In"][1].GetValue(), out var id)) return tiles;
-			
-			var pos = this.LocationTile + this.Origin;
 
+			Point16 pos;
+
+			var connDev = ((PinIn)this.Pins["In"][0]).ConnectedPin.Device;
+			if (connDev.Pins["In"][1].IsConnected() && Helpers.TryParsePoint(connDev.Pins["In"][1].GetValue(), out var point) && point.HasValue)
+			{
+				pos = point.Value;
+			}
+			else
+			{
+				pos = this.LocationTile + this.Origin;
+			}
+		
 			for (var y = pos.Y - distance; y <= pos.Y + distance; y++)
 			{
 				for (var x = pos.X - distance; x <= pos.X + distance; x++)
@@ -59,15 +74,35 @@ namespace WireMod.Devices
 		public override void Draw(SpriteBatch spriteBatch)
 		{
 			if (this.LocationRect == default(Rectangle)) return;
-			if (!this.Pins["In"][0].IsConnected() || !int.TryParse(this.Pins["In"][0].GetValue(), out var distance)) return;
-			if (distance < 1) return;
 
+			if (!this.Pins["In"][0].IsConnected() || !Helpers.TryParseArea(this.Pins["In"][0].GetValue(), out var area) || !area.HasValue) return;
+
+			// TODO: Get tiles within circular area
+			if (area.Value.AreaType == "Circle") return;
+
+			var distance = area.Value.Radius / 16;
+
+			if (distance < 1) return;
 			if (!this.LocationWorldRect.Intersects(WireMod.Instance.GetScreenRect())) return;
 
 			var size = ((distance * 2) + 1) * 16;
 			var rect = Helpers.CreateRectangle(size, size);
 
-			spriteBatch.Draw(rect, this.LocationOriginScreen - (rect.Size() / 2), Color.LightGreen * 0.25f);
+			Vector2 pos;
+
+			var connDev = ((PinIn)this.Pins["In"][0]).ConnectedPin.Device;
+			if (connDev.Pins["In"][1].IsConnected() && Helpers.TryParsePoint(connDev.Pins["In"][1].GetValue(), out var point) && point.HasValue)
+			{
+				pos = point.Value.ToWorldCoordinates() - Main.screenPosition;
+			}
+			else
+			{
+				pos = this.LocationOriginScreen;
+			}
+
+			pos -= rect.Size() / 2;
+			
+			spriteBatch.Draw(rect, pos, Color.LightGreen * 0.25f);
 		}
 	}
 }

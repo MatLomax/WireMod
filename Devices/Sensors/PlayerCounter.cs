@@ -18,7 +18,7 @@ namespace WireMod.Devices
 
 			this.PinLayout = new List<PinDesign>
 			{
-				new PinDesign("In", 0, new Point16(1, 0), "int", "Distance"),
+				new PinDesign("In", 0, new Point16(1, 0), "area", "Area"),
 				new PinDesign("In", 1, new Point16(0, 1), "teamColor", "Team Color Filter"),
 				new PinDesign("Out", 0, new Point16(1, 2), "int", "Count"),
 			};
@@ -28,16 +28,17 @@ namespace WireMod.Devices
 
 		private int GetOutput()
 		{
-			if (!int.TryParse(this.Pins["In"][0].GetValue(), out var distance)) return -2;
+			if (!this.Pins["In"][0].IsConnected()) return -1;
+			if (!this.Pins["In"][0].IsConnected()) return -1;
+			if (!Helpers.TryParseArea(this.Pins["In"][0].GetValue(), out var area) || !area.HasValue) return -2;
 
-			return this.GetPlayers(distance).Count();
+			return this.GetPlayers(area.Value).Count();
 		}
 
-		private IEnumerable<Player> GetPlayers(int distance)
+		private IEnumerable<Player> GetPlayers((string AreaType, int Radius) area)
 		{
 			var players = Main.player.Select(p => p);
-			var pos = this.LocationWorld + new Vector2(8, 8);
-
+			
 			if (this.Pins["In"][1].IsConnected())
 			{
 				var team = TeamColor.White;
@@ -47,37 +48,66 @@ namespace WireMod.Devices
 				}
 				players = players.Where(p => p.team == (int)team);
 			}
-			
-			return players.Where(p => (pos - p.position).Length() < distance && (pos - p.position).Length() > 1);
+
+			Vector2 pos;
+			var connDev = ((PinIn)this.Pins["In"][0]).ConnectedPin.Device;
+			if (connDev.Pins["In"][1].IsConnected() && Helpers.TryParsePoint(connDev.Pins["In"][1].GetValue(), out var point) && point.HasValue)
+			{
+				pos = point.Value.ToWorldCoordinates();
+			}
+			else
+			{
+				pos = this.LocationOriginWorld;
+			}
+
+			if (area.AreaType == "Square")
+			{
+				var rect = new Rectangle((int)pos.X - area.Radius, (int)pos.Y - area.Radius, area.Radius * 2, area.Radius * 2);
+				return players.Where(p => rect.Contains(p.position.ToPoint()));
+			}
+
+			return players.Where(p => (pos - p.position).Length() < area.Radius && (pos - p.position).Length() > 1);
 		}
 
 		public override void Draw(SpriteBatch spriteBatch)
 		{
 			if (this.LocationRect == default(Rectangle)) return;
-			if (!this.Pins["In"][0].IsConnected() || !int.TryParse(this.Pins["In"][0].GetValue(), out var distance)) return;
-			if (distance < 1) return;
-
 			if (!this.LocationWorldRect.Intersects(WireMod.Instance.GetScreenRect())) return;
 
-			var deviceScreenRect = this.LocationScreenRect;
-			var circle = Helpers.CreateCircle(distance * 2);
-			var pos = new Vector2(deviceScreenRect.X + (deviceScreenRect.Width / 2) - distance, deviceScreenRect.Y + (deviceScreenRect.Height / 2) - distance);
+			if (!this.Pins["In"][0].IsConnected() || !Helpers.TryParseArea(this.Pins["In"][0].GetValue(), out var area) || !area.HasValue) return;
+			
+			//var deviceScreenRect = this.LocationScreenRect;
+			var overlay = area.Value.AreaType == "Circle" ? Helpers.CreateCircle(area.Value.Radius * 2) : Helpers.CreateRectangle(area.Value.Radius * 2, area.Value.Radius * 2);
 
-			spriteBatch.Draw(circle, pos, Color.LightGreen * 0.25f);
-		}
-
-		public override List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
-		{
-			var debug = base.Debug(pin);
-
-			if (pin == null && int.TryParse(this.Pins["In"][0].GetValue(), out var distance))
+			Vector2 pos;
+			var connDev = ((PinIn)this.Pins["In"][0]).ConnectedPin.Device;
+			if (connDev.Pins["In"][1].IsConnected() && Helpers.TryParsePoint(connDev.Pins["In"][1].GetValue(), out var point) && point.HasValue)
 			{
-				debug.Add(("----------------", Color.Black, WireMod.SmallText));
-
-				debug.AddRange(this.GetPlayers(distance).Select(player => ($"Player: {player.name}", Color.Red, WireMod.SmallText)));
+				pos = point.Value.ToWorldCoordinates() - Main.screenPosition;
+			}
+			else
+			{
+				pos = this.LocationOriginScreen;
 			}
 
-			return debug;
+			pos -= overlay.Size() / 2;
+
+			spriteBatch.Draw(overlay, pos, Color.LightGreen * 0.25f);
 		}
+
+		//public override List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
+		//{
+		//	var debug = base.Debug(pin);
+
+		//	if (!this.Pins["In"][0].IsConnected() || !Helpers.TryParseArea(this.Pins["In"][0].GetValue(), out var area) || !area.HasValue) return;
+		//	if (pin == null && int.TryParse(this.Pins["In"][0].GetValue(), out var distance))
+		//	{
+		//		debug.Add(("----------------", Color.Black, WireMod.SmallText));
+
+		//		debug.AddRange(this.GetPlayers(distance).Select(player => ($"Player: {player.name}", Color.Red, WireMod.SmallText)));
+		//	}
+
+		//	return debug;
+		//}
 	}
 }
