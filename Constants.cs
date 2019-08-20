@@ -11,6 +11,9 @@ namespace WireMod
             "Maths",
             "Comparison",
             "Basic Inputs",
+            //hlw Addition
+            "Variables",
+            //end Addition
             "Sensor Inputs",
             "Text",
             "Outputs",
@@ -56,6 +59,10 @@ namespace WireMod
                 "PointConstant",
                 "RandomInt",
                 "AreaInput",
+            },
+            new List<string>// Variables (hlw Addition)
+            {
+                "IntegerVariable"
             },
             new List<string> // Sensor Inputs
             {
@@ -126,6 +133,7 @@ namespace WireMod
             { "Repulsor", "Repulsor (USE WITH CAUTION)" },
             { "Spawner", "NPC Spawner (USE WITH CAUTION)" },
             { "Buffer", "Buffer (USE WITH CAUTION)" },
+            {"IntegerVariable", "Store number value (hlw addition)" },
         };
     }
 }
