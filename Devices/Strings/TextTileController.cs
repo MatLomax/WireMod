@@ -28,8 +28,7 @@ namespace WireMod.Devices
             var tiles = this.GetTiles();
 
             var input = this.Pins["In"][0].IsConnected() ? this.Pins["In"][0].GetValue() : "";
-            if (!this.Pins["In"][1].IsConnected()) input = "";
-            else if (!int.TryParse(this.Pins["In"][1].GetValue(), out var active) || active == 0) input = "";
+            if (this.Pins["In"][1].IsConnected() && (!int.TryParse(this.Pins["In"][1].GetValue(), out var active) || active == 0)) input = "";
             
             input = input.PadRight(tiles.Count, ' ');
             

@@ -142,7 +142,7 @@ namespace WireMod.UI
 					end.Y -= (Thickness / 2);
 				}
 
-				DrawLine(spriteBatch, start, end, GetWireColor(wire.StartPin));
+				DrawLine(spriteBatch, start, end, GetWireColor(wire.StartPin.Type == "Out" ? wire.StartPin : wire.EndPin));
 			}
 
 			DrawWireDot(spriteBatch, wire.StartPin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());

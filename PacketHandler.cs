@@ -283,7 +283,7 @@ namespace WireMod
 		}
 		#endregion
 
-		#region Change Value
+		#region Change Setting
 		public void SendChangeSetting(int to, int from, int x, int y, string key, string value)
 		{
 			var packet = GetPacket(ChangeSetting, from);

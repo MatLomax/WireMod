@@ -11,6 +11,7 @@ namespace WireMod.Devices
         public int Num { get; set; }
         public string Type { get; set; }
         public string DataType { get; set; } = "bool";
+        public bool Auto { get; set; }
 
         public Point16 Location { get; set; }
 
@@ -29,6 +30,21 @@ namespace WireMod.Devices
         public abstract void Disconnect(Pin pin = null);
 
         public abstract string GetValue();
+
+        public bool GetBool()
+        {
+            var value = this.GetValue();
+            if (!int.TryParse(value, out var b)) throw new InvalidOperationException($"Could not parse \"{value}\" as a boolean");
+            return b == 1;
+        }
+
+        public int GetInt()
+        {
+            var value = this.GetValue();
+            if (!int.TryParse(value, out var i)) throw new InvalidOperationException($"Could not parse \"{value}\" as an integer");
+            return i;
+        }
+
         public abstract List<string> GetDebug();
 
         public Wire GetWire(Pin connectedPin) => this.Wires.FirstOrDefault(w => w.StartPin == this && w.EndPin == connectedPin || w.StartPin == connectedPin && w.EndPin == this);
@@ -52,17 +68,20 @@ namespace WireMod.Devices
             if (this.IsConnected()) this.ConnectedPin.Disconnect(this);
             this.ConnectedPin = pin;
             this.Wires.Add(wire);
+
+            this.Device.SetAutoType();
         }
 
         public override void Disconnect(Pin pin = null)
         {
             if (!this.IsConnected()) return;
 
-            this.Wires.RemoveAll(w => w.StartPin == this && w.EndPin == this.ConnectedPin);
-            this.Wires.RemoveAll(w => w.StartPin == this.ConnectedPin && w.EndPin == this);
+            this.Wires.RemoveAll(w => w.StartPin == this.ConnectedPin || w.EndPin == this.ConnectedPin);
 
             this.ConnectedPin.Disconnect(this);
             this.ConnectedPin = null;
+
+            this.Device.SetAutoType();
         }
 
         public override string GetValue() => this._value;
@@ -70,8 +89,8 @@ namespace WireMod.Devices
         public override List<string> GetDebug()
         {
             return this.IsConnected()
-                ? new List<string> { $"{this.Name} [{(this.DataType == "bool" ? (this.GetValue() == "1" ? "True" : (this.GetValue() == "0" ? "False" : "Disconnected")) : this.GetValue())}] => {this.ConnectedPin.Device.Name} {this.ConnectedPin.Name}" }
-                : new List<string> { $"{this.Name} (Disconnected)" };
+                ? new List<string> { $"{this.Name} ({this.DataType}) [{(this.DataType == "bool" ? (this.GetValue() == "1" ? "True" : (this.GetValue() == "0" ? "False" : "Disconnected")) : this.GetValue())}] => {this.ConnectedPin.Device.Name} {this.ConnectedPin.Name}" }
+                : new List<string> { $"{this.Name} ({this.DataType}) (Disconnected)" };
         }
     }
 
@@ -100,6 +119,8 @@ namespace WireMod.Devices
         {
             this.ConnectedPins.Add(pin);
             this.Wires.Add(wire);
+
+            this.Device.SetAutoType();
         }
 
         public override void Disconnect(Pin pin = null)
@@ -108,18 +129,24 @@ namespace WireMod.Devices
 
             if (pin != null)
             {
-                if (this.ConnectedPins.Contains(pin)) this.ConnectedPins.Remove(pin);
+                if (this.ConnectedPins.Contains(pin))
+                {
+                    this.Wires.RemoveAll(w => w.StartPin == pin || w.EndPin == pin);
+                    this.ConnectedPins.Remove(pin);
+                    this.Device.SetAutoType();
+                }
                 return;
             }
 
             var pins = this.ConnectedPins.Where(p => p.IsConnected()).ToList();
-            foreach (var p in pins) p.Disconnect();
-      
-            this.ConnectedPins.ForEach(p =>
+
+            foreach (var p in pins)
             {
-                this.Wires.RemoveAll(w => w.StartPin == this && w.EndPin == p);
-                this.Wires.RemoveAll(w => w.StartPin == p && w.EndPin == this);
-            });
+                this.Wires.RemoveAll(w => w.StartPin == p || w.EndPin == p);
+                p.Disconnect();
+            }
+
+            this.Device.SetAutoType();
         }
 
         public override string GetValue() => this._value;
@@ -132,12 +159,12 @@ namespace WireMod.Devices
             {
                 foreach (var pin in this.ConnectedPins)
                 {
-                    lines.Add($"{this.Name} [{(this.DataType == "bool" ? (this.GetValue() == "1" ? "True" : (this.GetValue() == "0" ? "False" : "Disconnected")) : this.GetValue())}] => {pin.Device.Name} {pin.Name}");
+                    lines.Add($"{this.Name} ({this.DataType}) [{(this.DataType == "bool" ? (this.GetValue() == "1" ? "True" : (this.GetValue() == "0" ? "False" : "Disconnected")) : this.GetValue())}] => {pin.Device.Name} {pin.Name}");
                 }
             }
             else
             {
-                lines.Add($"{this.Name} (Disconnected) [{(this.DataType == "bool" ? (this.GetValue() == "1" ? "True" : (this.GetValue() == "0" ? "False" : "Disconnected")) : this.GetValue())}]");
+                lines.Add($"{this.Name} ({this.DataType}) (Disconnected) [{(this.DataType == "bool" ? (this.GetValue() == "1" ? "True" : (this.GetValue() == "0" ? "False" : "Disconnected")) : this.GetValue())}]");
             }
             
             return lines;

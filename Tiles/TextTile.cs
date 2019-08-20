@@ -2,7 +2,6 @@
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using WireMod.Items;
 
 namespace WireMod.Tiles
 {

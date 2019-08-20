@@ -13,14 +13,16 @@ namespace WireMod.Devices
             this.Width = 2;
             this.Height = 3;
             this.Origin = new Point16(1, 0);
+
+            this.AutoTypes.AddRange(new [] {"int", "bool", "string"});
             
             this.Settings.Add("Value", "0");
 
             this.PinLayout = new List<PinDesign>
             {
-                new PinDesign("In", 0, new Point16(1, 0), "int"),
+                new PinDesign("In", 0, new Point16(1, 0), "int", "", true),
                 new PinDesign("In", 1, new Point16(0, 1), "bool", "Write"),
-                new PinDesign("Out", 0, new Point16(1, 2), "int"),
+                new PinDesign("Out", 0, new Point16(1, 2), "int", "", true),
             };
         }
 

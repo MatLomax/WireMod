@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 
@@ -58,7 +56,7 @@ namespace WireMod.Devices
 			{
 				pos = this.LocationTile + this.Origin;
 			}
-		
+
 			for (var y = pos.Y - distance; y <= pos.Y + distance; y++)
 			{
 				for (var x = pos.X - distance; x <= pos.X + distance; x++)
@@ -70,19 +68,5 @@ namespace WireMod.Devices
 
 			return tiles;
 		}
-
-		//public override void Draw(SpriteBatch spriteBatch)
-		//{
-		//	if (this.LocationRect == default(Rectangle)) return;
-			
-		//	if (!this.Pins["In"][0].IsConnected()) return;
-			
-		//	var area = ((AreaInput)((PinIn)this.Pins["In"][0]).ConnectedPin.Device).GetArea(this);
-
-		//	// TODO: Get tiles within circular area
-		//	if (area is CircArea) return;
-
-		//	area.Draw(spriteBatch, Color.LightGreen);
-		//}
 	}
 }

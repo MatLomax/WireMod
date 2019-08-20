@@ -83,8 +83,7 @@ namespace WireMod.Items
             // Wiring tools
             if (modPlayer.ToolCategoryMode == 0)
             {
-                // No tool selected
-                if (modPlayer.ToolMode == 0)
+                if (modPlayer.ToolMode == 0) // No tool selected
                 {
                     if (device == null) return false;
 
@@ -98,11 +97,13 @@ namespace WireMod.Items
 
                     // Do something?
                 }
-
-                if (modPlayer.ToolMode == 1)
+                
+                if (modPlayer.ToolMode == 1) // Wiring Tool
                 {
                     if (player.altFunctionUse == 2)
                     {
+                        // Right Click
+
                         if (device == null)
                         {
                             modPlayer.ConnectingPin = null;
@@ -161,12 +162,15 @@ namespace WireMod.Items
 
                     if (modPlayer.ConnectingPin.DataType != pin.DataType)
                     {
-						if (!(modPlayer.ConnectingPin.DataType == "int" && pin.DataType == "string"))
+						if (!(modPlayer.ConnectingPin.DataType == "int" && pin.DataType == "string" && pin.Device.Name == "Concat"))
                         {
-                            Main.NewText("Cancelled - cannot connect different data types");
-                            modPlayer.ConnectingPin = null;
-                            modPlayer.PlacingWire = null;
-                            return false;
+                            if (modPlayer.ConnectingPin.Device.DetectType() != "auto" && pin.Device.DetectType() != "auto")
+                            {
+                                Main.NewText("Cancelled - cannot connect different data types");
+                                modPlayer.ConnectingPin = null;
+                                modPlayer.PlacingWire = null;
+                                return false;
+                            }
                         }
                     }
 

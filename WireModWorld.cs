@@ -28,7 +28,7 @@ namespace WireMod
 		{
 			foreach (var device in tag.Get<List<Device>>("devices"))
 			{
-				mod.Logger.Info($"Loading device \"{device.Name}\": X {device.LocationRect.X}, Y: {device.LocationRect.Y}");
+				if (WireMod.Debug) mod.Logger.Info($"Loading device \"{device.Name}\": X {device.LocationRect.X}, Y: {device.LocationRect.Y}");
 				
 				WireMod.PlaceDevice(device, device.LocationRect.X, device.LocationRect.Y);
 			}

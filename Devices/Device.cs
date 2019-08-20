@@ -15,9 +15,10 @@ namespace WireMod.Devices
         public int Width { get; set; } = 1;
         public int Height { get; set; } = 2;
 
-        public Dictionary<string, string> Settings { get; set; } = new Dictionary<string, string>
-        {
-        };
+        public List<string> AutoTypes { get; set; } = new List<string>();
+        public bool AutoDetectType => this.AutoTypes.Count > 0;
+        
+        public Dictionary<string, string> Settings { get; set; } = new Dictionary<string, string>();
 
         public string RightClickHelp { get; set; }
 
@@ -27,6 +28,7 @@ namespace WireMod.Devices
         /// </summary>
         public Point16 Origin { get; set; } = new Point16(0, 0);
         public List<PinDesign> PinLayout { get; set; } = new List<PinDesign>();
+
 
         // Instance
         public Dictionary<string, Dictionary<int, Pin>> Pins = new Dictionary<string, Dictionary<int, Pin>>
@@ -57,13 +59,42 @@ namespace WireMod.Devices
 
         public Vector2 LocationOriginWorld => (this.LocationTile + this.Origin).ToWorldCoordinates();
         public Vector2 LocationOriginScreen => this.LocationOriginWorld - Main.screenPosition;
+        
+        public string DetectType()
+        {
+            if (!this.AutoDetectType) return "";
+
+            var dataType = "auto";
+
+            foreach (var p in this.Pins.Values.SelectMany(p => p.Values).Where(p => p.Auto))
+            {
+                if (p.IsConnected())
+                {
+                    dataType = (p is PinIn pinIn) ? pinIn.ConnectedPin.DataType : ((PinOut)p).ConnectedPins.First().DataType;
+                    break;
+                }
+            }
+
+            return dataType;
+        }
+
+        public void SetAutoType(string dataType = null)
+        {
+            if (dataType == null) dataType = this.DetectType();
+            if (dataType == "auto") dataType = this.AutoTypes.First();
+
+            foreach (var p in this.Pins.Values.SelectMany(p => p.Values).Where(p => p.Auto))
+            {
+                p.DataType = dataType;
+            }
+        }
 
         public virtual void OnRightClick(Pin pin = null) { }
 
         public virtual void OnKill()
         {
-            // Drop a microchip at the device's location
-            Item.NewItem((int)this.LocationWorld.X, (int)this.LocationWorld.Y, 16, 16, WireMod.Instance.ItemType<Microchip>());
+            // Drop a microchip at the player's location
+            Item.NewItem((int)Main.LocalPlayer.position.X, (int)Main.LocalPlayer.position.Y, 16, 16, WireMod.Instance.ItemType<Microchip>());
         }
 
         public virtual void OnPlace() { }
@@ -87,6 +118,7 @@ namespace WireMod.Devices
                 pin.DataType = pinDesign.DataType;
                 pin.Type = pinDesign.Type;
                 pin.Name = pinDesign.Name;
+                pin.Auto = pinDesign.Auto;
 
                 this.Pins[pinDesign.Type].Add(pinDesign.Num, pin);
             }
@@ -107,7 +139,7 @@ namespace WireMod.Devices
 
             foreach (var p in this.Pins.Values.SelectMany(p => p.Values))
             {
-                lines.AddRange(p.GetDebug().Select(d => (d, p == Main.LocalPlayer.GetModPlayer<WireModPlayer>().ConnectingPin ? Color.Green : p == pin ? highlightColor : defaultColor, WireMod.SmallText)));
+                lines.AddRange(p.GetDebug().Select(d => (d, p == Main.LocalPlayer.GetModPlayer<WireModPlayer>().ConnectingPin ? Color.Green : (p == pin ? highlightColor : defaultColor), WireMod.SmallText)));
             }
 
             if (this.Settings.Any())

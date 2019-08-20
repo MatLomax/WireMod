@@ -18,7 +18,7 @@ namespace WireMod.UI
 
 		public float OffsetX = 300f;
 		public float OffsetY = 0f;
-		public float PanelWidth = 260f;
+		public float PanelWidth = 270f;
 		public float PanelHeight = 320f;
 		public float ButtonSize = 32f;
 		public float Padding = 20f;

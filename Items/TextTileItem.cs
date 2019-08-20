@@ -1,6 +1,5 @@
 ﻿using Terraria.ID;
 using Terraria.ModLoader;
-using WireMod.Tiles;
 
 namespace WireMod.Items
 {

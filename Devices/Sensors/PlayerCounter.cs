@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 
@@ -36,7 +35,7 @@ namespace WireMod.Devices
 		private IEnumerable<Player> GetPlayers()
 		{
 			var players = Main.player.Select(p => p);
-			
+
 			if (this.Pins["In"][1].IsConnected())
 			{
 				var team = TeamColor.White;
@@ -60,7 +59,7 @@ namespace WireMod.Devices
 		public override List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
 		{
 			var debug = base.Debug(pin);
-			
+
 			if (pin == null)
 			{
 				debug.Add(("----------------", Color.Black, WireMod.SmallText));
