@@ -12,6 +12,7 @@ namespace WireMod
             "Comparison",
             "Basic Inputs",
             "Sensor Inputs",
+            "Storage",
             "Text",
             "Outputs",
             "Experimental",
@@ -65,6 +66,10 @@ namespace WireMod
                 "PlayerCounter",
                 "NPCCounter",
                 "TileCounter",
+            },
+            new List<string> // Storage
+            {
+                "Variable"
             },
             new List<string> // Text
             {
@@ -126,6 +131,7 @@ namespace WireMod
             { "Repulsor", "Repulsor (USE WITH CAUTION)" },
             { "Spawner", "NPC Spawner (USE WITH CAUTION)" },
             { "Buffer", "Buffer (USE WITH CAUTION)" },
+            { "Variable", "Store value" },
         };
     }
 }
