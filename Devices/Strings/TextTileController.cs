@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -35,7 +36,8 @@ namespace WireMod.Devices
             for (var i = 0; i < Math.Min(input.Length, tiles.Count); i++)
             {
                 var style = GetStyle(input.Substring(i, 1));
-                tiles[i].frameX = (short)(style * 18);
+                tiles[i].frameX = (short)((style % 16) * 18);
+                tiles[i].frameY = (short)((style / 16) * 18);
             }
         }
 
@@ -68,13 +70,11 @@ namespace WireMod.Devices
             return debug;
         }
 
-        private static int GetStyle(string inputChar) => InputChars.Contains(inputChar.ToUpper()) ? InputChars.IndexOf(inputChar.ToUpper()) : 0;
-
-        private static readonly List<string> InputChars = new List<string>
+        private static int GetStyle(string inputChar)
         {
-            " ",
-            "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
-            "0","1","2","3","4","5","6","7","8","9"
-        };
+            var ccc = Encoding.GetEncoding("ISO-8859-1");
+            var by = ccc.GetBytes(inputChar);
+            return string.Equals(inputChar, ccc.GetString(by)) ? by[0] : 0;
+        }
     }
 }
