@@ -10,7 +10,7 @@ namespace WireMod.Devices
 		public NPCDistanceSensor()
 		{
 			this.Name = "Nearest NPC Distance Sensor";
-			this.Width = 2;
+			this.Width = 3;
 			this.Height = 3;
 			this.Origin = new Point16(1, 1);
 
@@ -19,12 +19,17 @@ namespace WireMod.Devices
 				new PinDesign("In", 0, new Point16(0, 1), "bool", "Hostile Filter"),
 				new PinDesign("In", 1, new Point16(1, 0), "bool", "TownNPC Filter"),
 				new PinDesign("Out", 0, new Point16(1, 2), "int", "Distance"),
+				new PinDesign("Out", 1, new Point16(2, 1), "string", "Name"),
 			};
 		}
 
-		public string Output(Pin pin = null) => this.GetOutput().ToString();
+		public string Output(Pin pin = null)
+		{
+			var npc = this.GetNearestNPC();
+			return pin == this.Pins["Out"][0] ? ((int)(this.LocationRect.Location.ToWorldCoordinates() - npc.position).Length()).ToString() : npc.FullName;
+		}
 
-		private int GetOutput()
+		private NPC GetNearestNPC()
 		{
 			var npc = Main.npc.Select(n => n);
 
@@ -38,7 +43,7 @@ namespace WireMod.Devices
 				npc = npc.Where(n => n.townNPC == (character == 1));
 			}
 
-			return (int)npc.Select(n => (this.LocationRect.Location.ToWorldCoordinates() - n.position).Length()).OrderBy(n => n).FirstOrDefault();
+			return npc.OrderBy(n => (this.LocationRect.Location.ToWorldCoordinates() - n.position).Length()).FirstOrDefault();
 		}
 	}
 }
