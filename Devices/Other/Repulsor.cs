@@ -31,10 +31,9 @@ namespace WireMod.Devices
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (this.LocationRect == default(Rectangle)) return;
-            if (!this.Pins["In"][2].IsConnected() || !int.TryParse(this.Pins["In"][2].GetValue(), out var maxDistance)) return;
+            if (!this.GetPin("Distance").IsConnected() || !int.TryParse(this.GetPin("Distance").GetValue(), out var maxDistance)) return;
             if (maxDistance == 0) return;
-            if (!int.TryParse(this.Pins["In"][0].GetValue(), out var armed)) return;
+            if (!int.TryParse(this.GetPin("Armed").GetValue(), out var armed)) return;
             if (armed == 0) return;
 
             var deviceScreenRect = this.LocationScreenRect;
@@ -48,33 +47,31 @@ namespace WireMod.Devices
 
         public override void Update(GameTime gameTime)
         {
-            if (!this.Pins["In"][0].IsConnected()) return;
+            if (!this.GetPin("Armed").IsConnected()) return;
             if (!int.TryParse(this.Pins["In"][0].GetValue(), out var armed)) return;
 
             if (armed == 0) return;
 
-            if (!this.Pins["In"][1].IsConnected() || !int.TryParse(this.Pins["In"][1].GetValue(), out var maxVelocity)) return;
-            if (!this.Pins["In"][2].IsConnected() || !int.TryParse(this.Pins["In"][2].GetValue(), out var maxDistance)) return;
+            if (!this.GetPin("Velocity").IsConnected() || !int.TryParse(this.GetPin("Velocity").GetValue(), out var maxVelocity)) return;
+            if (!this.GetPin("Distance").IsConnected() || !int.TryParse(this.GetPin("Distance").GetValue(), out var maxDistance)) return;
             
             var entities = new List<Entity>();
 
             if (this.Settings["TargetType"] == "All" || this.Settings["TargetType"] == "Players")
             {
-                entities.AddRange(Main.player.Select(p => new { player = p, distance = (p.position - this.LocationRect.Location.ToWorldCoordinates()).Length() }).OrderBy(p => p.distance).Select(p => p.player));
+                entities.AddRange(Main.player.Select(p => new { player = p, distance = (this.LocationOriginWorld - p.position).Length() }).OrderBy(p => p.distance).Select(p => p.player));
             }
 
             if (this.Settings["TargetType"] == "All" || this.Settings["TargetType"] == "NPCs")
             {
-                entities.AddRange(Main.npc.Select(p => new { player = p, distance = (p.position - this.LocationRect.Location.ToWorldCoordinates()).Length() }).OrderBy(p => p.distance).Select(p => p.player));
+                entities.AddRange(Main.npc.Select(p => new { player = p, distance = (this.LocationOriginWorld - p.position).Length() }).OrderBy(p => p.distance).Select(p => p.player));
             }
 
             if (!entities.Any()) return;
 
             foreach (var entity in entities)
             {
-                var direction = entity.position - (this.LocationWorld + this.Origin.ToWorldCoordinates());
-                //var pLeft = entity.velocity.X < 0;
-                //var pUp = entity.velocity.Y < 0;
+                var direction = this.LocationOriginWorld - entity.position;
 
                 var distance = direction.Length();
 

@@ -50,7 +50,7 @@ namespace WireMod.Devices
         public Wire GetWire(Pin connectedPin) => this.Wires.FirstOrDefault(w => w.StartPin == this && w.EndPin == connectedPin || w.StartPin == connectedPin && w.EndPin == this);
     }
 
-    internal class PinIn : Pin
+    public class PinIn : Pin
     {
         public Pin ConnectedPin { get; set; }
         private string _value => this.ConnectedPin?.GetValue();
@@ -94,7 +94,7 @@ namespace WireMod.Devices
         }
     }
 
-    internal class PinOut : Pin
+    public class PinOut : Pin
     {
         public List<Pin> ConnectedPins { get; set; } = new List<Pin>();
         private string _value => (this.Device is IOutput ? ((IOutput)this.Device).Output(this) : "");

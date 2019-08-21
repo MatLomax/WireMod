@@ -108,7 +108,7 @@ namespace WireMod.UI
 
 		private static void DrawWire(SpriteBatch spriteBatch, Wire wire)
 		{
-			var screenRect = WireMod.Instance.GetScreenRect();
+			var screenRect = Helpers.GetScreenRect();
 			var points = wire.GetPoints();
 
 			for (var i = 0; i < points.Count - 1; i++)

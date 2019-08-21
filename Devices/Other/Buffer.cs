@@ -22,7 +22,7 @@ namespace WireMod.Devices
 
             this.PinLayout = new List<PinDesign>
             {
-                new PinDesign("In", 0, new Point16(1, 0), "int", "Buff ID"),
+                new PinDesign("In", 0, new Point16(1, 0), "int", "BuffID"),
                 new PinDesign("In", 1, new Point16(0, 1), "int", "Duration"),
                 new PinDesign("In", 2, new Point16(2, 1), "int", "Distance"),
             };
@@ -30,13 +30,13 @@ namespace WireMod.Devices
 
         public override void Update(GameTime gameTime)
         {
-            if (!this.Pins["In"][0].IsConnected()) return;
-            if (!int.TryParse(this.Pins["In"][0].GetValue(), out var buffId)) return;
+            if (!this.GetPin("BuffID").IsConnected()) return;
+            if (!int.TryParse(this.GetPin("BuffID").GetValue(), out var buffId)) return;
             if (buffId == 0) return;
 
-            if (!int.TryParse(this.Pins["In"][2].GetValue(), out var maxDistance)) return;
+            if (!int.TryParse(this.GetPin("Distance").GetValue(), out var maxDistance)) return;
 
-            if (!int.TryParse(this.Pins["In"][1].GetValue(), out var duration)) duration = 10;
+            if (!int.TryParse(this.GetPin("Duration").GetValue(), out var duration)) duration = 10;
 
             duration *= 100;
 
@@ -50,11 +50,9 @@ namespace WireMod.Devices
                 case "NPCs" when !npcs.Any():
                     return;
                 case "NPCs":
-                    //Main.NewText($"NPC Buff: {buffId} ({duration} seconds)");
                     npcs.ForEach(n => n.AddBuff(buffId, duration));
                     break;
                 case "Players":
-                    //Main.NewText($"Player Buff: {buffId} ({duration} seconds)");
                     players.ForEach(p => p.AddBuff(buffId, duration));
                     break;
             }
@@ -62,10 +60,9 @@ namespace WireMod.Devices
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (this.LocationRect == default(Rectangle)) return;
-            if (!this.Pins["In"][2].IsConnected() || !int.TryParse(this.Pins["In"][2].GetValue(), out var maxDistance)) return;
+            if (!this.GetPin("Distance").IsConnected() || !int.TryParse(this.GetPin("Distance").GetValue(), out var maxDistance)) return;
             if (maxDistance == 0) return;
-            if (!int.TryParse(this.Pins["In"][0].GetValue(), out var buffId)) return;
+            if (!int.TryParse(this.GetPin("BuffID").GetValue(), out var buffId)) return;
             if (buffId == 0) return;
 
             var pixels = 16;

@@ -7,6 +7,8 @@ namespace WireMod
 {
     public class Helpers
     {
+        public static Rectangle GetScreenRect() => new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
+
         public static Texture2D CreateCircle(int diameter)
         {
             var texture = new Texture2D(Main.graphics.GraphicsDevice, diameter, diameter);

@@ -18,7 +18,7 @@ namespace WireMod.Devices
 			this.PinLayout = new List<PinDesign>
 			{
 				new PinDesign("In", 0, new Point16(1, 0), "area", "Area"),
-				new PinDesign("In", 1, new Point16(0, 1), "teamColor", "Team Color Filter"),
+				new PinDesign("In", 1, new Point16(0, 1), "teamColor", "TeamColorFilter"),
 				new PinDesign("Out", 0, new Point16(1, 2), "int", "Count"),
 			};
 		}
@@ -27,31 +27,31 @@ namespace WireMod.Devices
 
 		private int GetOutput()
 		{
-			if (!this.Pins["In"][0].IsConnected()) return -1;
+			if (!this.GetPin("Area").IsConnected()) return -1;
 
 			return this.GetPlayers().Count();
 		}
 
 		private IEnumerable<Player> GetPlayers()
 		{
+			if (!this.GetPin("Area").IsConnected()) return new List<Player>();
+
+			var input = this.GetPinIn("Area").ConnectedPin.Device;
+			if (!(input is AreaInput areaInput)) return new List<Player>();
+
 			var players = Main.player.Select(p => p);
 
-			if (this.Pins["In"][1].IsConnected())
+			if (this.GetPin("TeamColorFilter").IsConnected())
 			{
 				var team = TeamColor.White;
-				if (int.TryParse(this.Pins["In"][1].GetValue(), out var tc))
+				if (int.TryParse(this.GetPin("TeamColorFilter").GetValue(), out var tc))
 				{
 					team = (TeamColor)tc;
 				}
 				players = players.Where(p => p.team == (int)team);
 			}
-
-			if (!this.Pins["In"][0].IsConnected()) return new List<Player>();
-
-			var input = ((PinIn)this.Pins["In"][0]).ConnectedPin.Device;
-			if (!(input is AreaInput)) return new List<Player>();
-
-			var area = ((AreaInput)input).GetArea(this);
+			
+			var area = areaInput.GetArea(this);
 
 			return players.Where(p => area.Contains(p.position));
 		}
@@ -60,11 +60,8 @@ namespace WireMod.Devices
 		{
 			var debug = base.Debug(pin);
 
-			if (pin == null)
-			{
-				debug.Add(("----------------", Color.Black, WireMod.SmallText));
-				debug.AddRange(this.GetPlayers().Select(player => ($"Player: {player.name}", Color.Red, WireMod.SmallText)));
-			}
+			debug.Add(("----------------", Color.Black, WireMod.SmallText));
+			debug.AddRange(this.GetPlayers().Select(player => ($"Player: {player.name}", Color.Red, WireMod.SmallText)));
 
 			return debug;
 		}

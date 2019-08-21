@@ -28,11 +28,11 @@ namespace WireMod.Devices
 
         public override void Update(GameTime gameTime)
         {
-            if (!this.Pins["In"][1].IsConnected() || !int.TryParse(this.Pins["In"][1].GetValue(), out var write)) write = 0;
+            if (!this.GetPin("Write").IsConnected() || !int.TryParse(this.GetPin("Write").GetValue(), out var write)) write = 0;
 
-            if (this.Pins["In"][0].IsConnected() && write == 1)
+            if (this.GetPinIn(0).IsConnected() && write == 1)
             {
-                this.Settings["Value"] = this.Pins["In"][0].GetValue();
+                this.Settings["Value"] = this.GetPinIn(0).GetValue();
             }
         }
 

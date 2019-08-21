@@ -50,14 +50,15 @@ namespace WireMod.Devices
         {
             get
             {
-                var screenRect = WireMod.Instance.GetScreenRect();
+                var screenRect = Helpers.GetScreenRect();
                 var worldRect = this.LocationWorldRect;
 
                 return !worldRect.Intersects(screenRect) ? default(Rectangle) : new Rectangle(worldRect.X - screenRect.X, worldRect.Y - screenRect.Y, worldRect.Width, worldRect.Height);
             }
         }
 
-        public Vector2 LocationOriginWorld => (this.LocationTile + this.Origin).ToWorldCoordinates();
+        public Point16 LocationOriginTile => this.LocationTile + this.Origin;
+        public Vector2 LocationOriginWorld => this.LocationOriginTile.ToWorldCoordinates();
         public Vector2 LocationOriginScreen => this.LocationOriginWorld - Main.screenPosition;
         
         public string DetectType()
@@ -88,6 +89,12 @@ namespace WireMod.Devices
                 p.DataType = dataType;
             }
         }
+
+        public Pin GetPin(string name) => this.Pins["In"].Values.FirstOrDefault(p => p.Name == name) ?? this.Pins["Out"].Values.FirstOrDefault(p => p.Name == name);
+        public PinIn GetPinIn(string name) => (PinIn)this.Pins["In"].Values.FirstOrDefault(p => p.Name == name);
+        public PinIn GetPinIn(int index) => (PinIn)this.Pins["In"][index];
+        public PinOut GetPinOut(string name) => (PinOut)this.Pins["Out"].Values.FirstOrDefault(p => p.Name == name);
+        public PinOut GetPinOut(int index) => (PinOut)this.Pins["Out"][index];
 
         public virtual void OnRightClick(Pin pin = null) { }
 

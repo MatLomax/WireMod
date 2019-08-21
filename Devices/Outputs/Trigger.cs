@@ -39,7 +39,7 @@ namespace WireMod.Devices
             if (!this.Pins["In"][0].IsConnected()) return -1;
             if (!int.TryParse(this.Pins["In"][0].GetValue(), out var trigger)) return -1;
 
-            if (this.Pins["In"][1].IsConnected() && int.TryParse(this.Pins["In"][1].GetValue(), out var reset))
+            if (this.GetPin("Trigger").IsConnected() && int.TryParse(this.GetPin("Trigger").GetValue(), out var reset))
             {
                 if (reset == 1) this._reset = true;
             }
@@ -48,14 +48,15 @@ namespace WireMod.Devices
             {
                 this._reset = false;
 
-                if (!this.Pins["Out"][0].IsConnected())
+                if (!this.GetPinOut(0).IsConnected())
                 {
                     this.Settings["Value"] = trigger.ToString();
                     return 0;
                 }
 
-                var pins = ((PinOut)this.Pins["Out"][0]).ConnectedPins.Where(p => p.Device is ITriggered).ToList();
+                var pins = this.GetPinOut(0).ConnectedPins.Where(p => p.Device is ITriggered).ToList();
                 if (!int.TryParse(this.Settings["TriggerTarget"], out var target)) return 0;
+                if (target >= pins.Count) target = pins.Count - 1;
 
                 // Trigger connected devices
                 if (this.Settings["TriggerType"] == "All")
@@ -77,7 +78,7 @@ namespace WireMod.Devices
                 return 1;
             }
 
-            if (trigger <= 0 && val > 0 && !this.Pins["In"][1].IsConnected())
+            if (trigger <= 0 && val > 0 && !this.GetPinIn(1).IsConnected())
             {
                 this._reset = true;
             }
@@ -89,7 +90,9 @@ namespace WireMod.Devices
         public override List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
         {
             var debug = base.Debug(pin);
+
             debug.Add(($"Reset: {(this._reset ? "True" : "False")}", Color.Black, WireMod.SmallText));
+
             return debug;
         }
 

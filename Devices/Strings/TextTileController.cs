@@ -27,8 +27,8 @@ namespace WireMod.Devices
         {
             var tiles = this.GetTiles();
 
-            var input = this.Pins["In"][0].IsConnected() ? this.Pins["In"][0].GetValue() : "";
-            if (this.Pins["In"][1].IsConnected() && (!int.TryParse(this.Pins["In"][1].GetValue(), out var active) || active == 0)) input = "";
+            var input = this.GetPinIn(0).IsConnected() ? this.GetPinIn(0).GetValue() : "";
+            if (this.GetPin("Activated").IsConnected() && (!int.TryParse(this.GetPin("Activated").GetValue(), out var active) || active == 0)) input = "";
             
             input = input.PadRight(tiles.Count, ' ');
             
@@ -43,7 +43,7 @@ namespace WireMod.Devices
         {
             var tiles = new List<Tile>();
 
-            var pos = this.LocationTile + this.Origin;
+            var pos = this.LocationOriginTile;
             var x = pos.X;
 
             for (var i = 0; i < 255; i++)
@@ -57,6 +57,18 @@ namespace WireMod.Devices
 
             return tiles;
         }
+        
+        public override List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
+        {
+            var debug = base.Debug(pin);
+
+            debug.Add(("----------------", Color.Black, WireMod.SmallText));
+            debug.Add(($"Found {this.GetTiles().Count} tiles", Color.Red, WireMod.SmallText));
+
+            return debug;
+        }
+
+        private static int GetStyle(string inputChar) => InputChars.Contains(inputChar.ToUpper()) ? InputChars.IndexOf(inputChar.ToUpper()) : 0;
 
         private static readonly List<string> InputChars = new List<string>
         {
@@ -64,20 +76,5 @@ namespace WireMod.Devices
             "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
             "0","1","2","3","4","5","6","7","8","9"
         };
-
-        private static int GetStyle(string inputChar) => InputChars.Contains(inputChar.ToUpper()) ? InputChars.IndexOf(inputChar.ToUpper()) : 0;
-
-        public override List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
-        {
-            var debug = base.Debug(pin);
-
-            if (pin == null)
-            {
-                debug.Add(("----------------", Color.Black, WireMod.SmallText));
-                debug.Add(($"Found {this.GetTiles().Count} tiles", Color.Red, WireMod.SmallText));
-            }
-
-            return debug;
-        }
     }
 }

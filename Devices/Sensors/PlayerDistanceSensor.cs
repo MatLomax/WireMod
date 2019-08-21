@@ -16,24 +16,32 @@ namespace WireMod.Devices
 
 			this.PinLayout = new List<PinDesign>
 			{
-				new PinDesign("In", 0, new Point16(0, 0), "teamColor", "TeamColor Filter"),
+				new PinDesign("In", 0, new Point16(0, 0), "teamColor", "TeamColorFilter"),
 				new PinDesign("Out", 0, new Point16(0, 2), "int", "Distance"),
 				new PinDesign("Out", 1, new Point16(1, 1), "string", "Name"),
 			};
 		}
 
-		public string Output(Pin pin = null) => pin != null && pin.DataType == "string" ? this.GetOutputName(pin) : this.GetOutput(pin).ToString();
-
-		private int GetOutput(Pin pin)
+		public string Output(Pin pin = null)
 		{
-			if (pin == null) return -1;
+			switch (pin?.Name)
+			{
+				case "Distance": return this.GetOutputDistance(pin).ToString();
+				case "Name": return this.GetOutputName(pin);
+				default: return "";
+			}
+		}
+
+		private int GetOutputDistance(Pin pin)
+		{
+			if (pin == null) return -2;
 			if (Main.PlayerList.Count == 0) return -1;
 
 			var nearest = this.GetNearestPlayer();
 
 			if (nearest == null) return -1;
 
-			return (int)(this.LocationRect.Location.ToWorldCoordinates() - nearest.position).Length();
+			return (int)(this.LocationOriginWorld - nearest.position).Length();
 		}
 
 		private string GetOutputName(Pin pin)
@@ -43,32 +51,22 @@ namespace WireMod.Devices
 
 			var nearest = this.GetNearestPlayer();
 
-			if (nearest == null) return "";
-
-			return nearest.name;
+			return nearest?.name ?? "";
 		}
 
 		private Player GetNearestPlayer()
 		{
-			var player = Main.player.OrderBy(p => (this.LocationRect.Location.ToWorldCoordinates() - p.position).Length());
-			Player nearest;
+			var player = Main.player.OrderBy(p => (this.LocationOriginWorld - p.position).Length());
 
-			if (this.Pins["In"][0].IsConnected())
-			{
-				var team = TeamColor.White;
-				if (int.TryParse(this.Pins["In"][0].GetValue(), out var tc))
-				{
-					team = (TeamColor)tc;
-				}
+			if (!this.GetPin("TeamColorFilter").IsConnected()) return player.FirstOrDefault();
 
-				nearest = player.FirstOrDefault(p => p.team == (int)team);
-			}
-			else
+			var team = TeamColor.White;
+			if (int.TryParse(this.GetPin("TeamColorFilter").GetValue(), out var tc))
 			{
-				nearest = player.FirstOrDefault();
+				team = (TeamColor)tc;
 			}
 
-			return nearest;
+			return player.FirstOrDefault(p => p.team == (int)team);
 		}
 	}
 }

@@ -25,13 +25,13 @@ namespace WireMod.Devices
             this.PinLayout = new List<PinDesign>
             {
                 new PinDesign("In", 0, new Point16(1, 0), "bool", "Trigger"),
-                new PinDesign("In", 1, new Point16(0, 1), "int", "NPC ID"),
+                new PinDesign("In", 1, new Point16(0, 1), "int", "NPCID"),
             };
         }
 
         public void Trigger(Pin pin = null)
         {
-            if (!int.TryParse(this.Pins["In"][1].GetValue(), out var id)) return;
+            if (!int.TryParse(this.GetPin("NPCID").GetValue(), out var id)) return;
             
             if (this._blacklist.Contains(id))
             {
@@ -40,7 +40,7 @@ namespace WireMod.Devices
             }
 
             // TODO: Figure out what the 'Start' argument actually does
-            var npcId = NPC.NewNPC((int)this.LocationWorld.X + (this.Origin.X * 16) + 8, (int)this.LocationWorld.Y + (this.Origin.Y * 16) + 8, id, 1);
+            var npcId = NPC.NewNPC((int)this.LocationOriginWorld.X, (int)this.LocationOriginWorld.Y, id, 1);
             var npc = Main.npc[npcId];
 
             // Do something with NPC?

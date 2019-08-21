@@ -17,7 +17,7 @@ namespace WireMod.Devices
 			this.PinLayout = new List<PinDesign>
 			{
 				new PinDesign("In", 0, new Point16(1, 0), "area", "Area"),
-				new PinDesign("In", 1, new Point16(0, 1), "int", "Tile ID"),
+				new PinDesign("In", 1, new Point16(0, 1), "int", "TileID"),
 				new PinDesign("Out", 0, new Point16(1, 2), "int", "Count"),
 			};
 		}
@@ -26,13 +26,13 @@ namespace WireMod.Devices
 
 		private int GetOutput()
 		{
-			if (!this.Pins["In"][0].IsConnected()) return -1;
-			if (!Helpers.TryParseArea(this.Pins["In"][0].GetValue(), out var area)) return -2;
+			if (!this.GetPin("Area").IsConnected()) return -1;
+			if (!Helpers.TryParseArea(this.GetPin("Area").GetValue(), out var area)) return -2;
 			if (!area.HasValue) return -1;
 			if (area.Value.AreaType == "Circle") return -2;
 
-			if (!this.Pins["In"][1].IsConnected()) return -1;
-			if (!int.TryParse(this.Pins["In"][1].GetValue(), out var _)) return -2;
+			if (!this.GetPin("TileID").IsConnected()) return -1;
+			if (!int.TryParse(this.GetPin("TileID").GetValue(), out var _)) return -2;
 
 			return this.GetTiles(area.Value.Radius).Count();
 		}
@@ -43,18 +43,18 @@ namespace WireMod.Devices
 
 			var tiles = new List<Tile>();
 
-			if (!this.Pins["In"][1].IsConnected() || !int.TryParse(this.Pins["In"][1].GetValue(), out var id)) return tiles;
+			if (!this.GetPin("TileID").IsConnected() || !int.TryParse(this.GetPin("TileID").GetValue(), out var id)) return tiles;
 
 			Point16 pos;
 
-			var connDev = ((PinIn)this.Pins["In"][0]).ConnectedPin.Device;
-			if (connDev.Pins["In"][1].IsConnected() && Helpers.TryParsePoint(connDev.Pins["In"][1].GetValue(), out var point) && point.HasValue)
+			var connDev = this.GetPinIn("Area").ConnectedPin.Device;
+			if (connDev.GetPin("Point").IsConnected() && Helpers.TryParsePoint(connDev.GetPin("Point").GetValue(), out var point) && point.HasValue)
 			{
 				pos = point.Value;
 			}
 			else
 			{
-				pos = this.LocationTile + this.Origin;
+				pos = this.LocationOriginTile;
 			}
 
 			for (var y = pos.Y - distance; y <= pos.Y + distance; y++)

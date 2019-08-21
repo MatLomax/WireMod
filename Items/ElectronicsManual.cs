@@ -57,11 +57,12 @@ namespace WireMod.Items
             }
             else
             {
-                var point = WireMod.Instance.GetMouseTilePosition();
-                var dev = WireMod.GetDevice(point);
+                (var x, var y) = WireMod.Instance.GetMouseTilePosition();
+
+                var dev = WireMod.GetDevice(x, y);
                 if (dev == null) return;
 
-                var pin = WireMod.GetDevicePin(point.X, point.Y);
+                var pin = WireMod.GetDevicePin(x, y);
 
                 WireMod.Instance.DebuggerHoverUserInterface.SetState(new HoverDebuggerUI(dev, pin));
                 HoverDebuggerUI.Visible = true;

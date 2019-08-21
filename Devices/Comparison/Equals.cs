@@ -27,18 +27,18 @@ namespace WireMod.Devices
 
         private int GetOutput()
         {
-            if (!this.Pins["In"][0].IsConnected() || !this.Pins["In"][1].IsConnected()) return -1;
-            if (this.Pins["In"][0].DataType != this.Pins["In"][1].DataType) return -1;
+            if (!this.GetPinIn(0).IsConnected() || !this.GetPinIn(1).IsConnected()) return -1;
+            if (this.GetPinIn(0).DataType != this.GetPinIn(1).DataType) return -1;
 
-            switch (this.Pins["In"][0].DataType)
+            switch (this.GetPinIn(0).DataType)
             {
                 case "int":
-                    if (!int.TryParse(this.Pins["In"][0].GetValue(), out var in0)) return -2;
-                    if (!int.TryParse(this.Pins["In"][1].GetValue(), out var in1)) return -2;
+                    if (!int.TryParse(this.GetPinIn(0).GetValue(), out var in0)) return -2;
+                    if (!int.TryParse(this.GetPinIn(1).GetValue(), out var in1)) return -2;
                     return in0 == in1 ? 1 : 0;
                 case "string":
                 default:
-                    return this.Pins["In"][0].GetValue() == this.Pins["In"][1].GetValue() ? 1 : 0;
+                    return GetPinIn(0).GetValue() == this.GetPinIn(1).GetValue() ? 1 : 0;
             }
         }
     }

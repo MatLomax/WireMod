@@ -32,8 +32,8 @@ namespace WireMod.Devices
         private int GetOutput()
         {
             if (!int.TryParse(this.Settings["Value"], out var val)) return -1;
-            if (!this.Pins["In"][0].IsConnected()) return -1;
-            if (!int.TryParse(this.Pins["In"][0].GetValue(), out var in0)) return -1;
+            if (!this.GetPinIn(0).IsConnected()) return -1;
+            if (!int.TryParse(this.GetPinIn(0).GetValue(), out var in0)) return -1;
 
             if ((in0 <= 0 && val > 0) || (in0 > 0 && val <= 0))
             {
@@ -45,12 +45,12 @@ namespace WireMod.Devices
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        Wiring.TripWire(this.Pins["Out"][0].Location.X, this.Pins["Out"][0].Location.Y, 1, 1);
+                        Wiring.TripWire(this.GetPinOut(0).Location.X, this.GetPinOut(0).Location.Y, 1, 1);
                     }
                     else
                     {
-                        Wiring.TripWire(this.Pins["Out"][0].Location.X, this.Pins["Out"][0].Location.Y, 1, 1);
-                        WireMod.PacketHandler.SendTripWire(256, Main.myPlayer, this.Pins["Out"][0].Location.X, this.Pins["Out"][0].Location.Y);
+                        Wiring.TripWire(this.GetPinOut(0).Location.X, this.GetPinOut(0).Location.Y, 1, 1);
+                        WireMod.PacketHandler.SendTripWire(256, Main.myPlayer, this.GetPinOut(0).Location.X, this.GetPinOut(0).Location.Y);
                     }
                 }
             }

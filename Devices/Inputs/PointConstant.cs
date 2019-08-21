@@ -18,10 +18,6 @@ namespace WireMod.Devices
             };
         }
 
-        public string Output(Pin pin = null)
-        {
-            var pos = this.LocationTile + this.Origin;
-            return $"{pos.X},{pos.Y}";
-        }
+        public string Output(Pin pin = null) => $"{this.LocationOriginTile.X},{this.LocationOriginTile.Y}";
     }
 }

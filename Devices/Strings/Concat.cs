@@ -20,6 +20,6 @@ namespace WireMod.Devices
             };
         }
 
-        public string Output(Pin pin = null) => this.Pins["In"][0].GetValue() + this.Pins["In"][1].GetValue();
+        public string Output(Pin pin = null) => this.GetPinIn(0).GetValue() + this.GetPinIn(1).GetValue();
     }
 }

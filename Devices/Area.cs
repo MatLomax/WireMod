@@ -22,7 +22,7 @@ namespace WireMod.Devices
 
 		public override void Draw(SpriteBatch spriteBatch, Color color)
 		{
-			if (!WireMod.Instance.GetScreenRect().Intersects(this.GetRect())) return;
+			if (!Helpers.GetScreenRect().Intersects(this.GetRect())) return;
 
 			var size = this.GetRect().Width;
 			var rect = Helpers.CreateRectangle(size, size);

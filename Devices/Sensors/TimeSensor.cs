@@ -21,9 +21,7 @@ namespace WireMod.Devices
 			};
 		}
 
-		public string Output(Pin pin = null) => this.GetOutput(pin);
-
-		private string GetOutput(Pin pin = null)
+		public string Output(Pin pin = null)
 		{
 			var time = Main.time;
 
@@ -44,7 +42,7 @@ namespace WireMod.Devices
 						return seconds.ToString();
 				}
 			}
-			
+
 			return $"{hours}:{minutes}:{seconds}";
 		}
 	}

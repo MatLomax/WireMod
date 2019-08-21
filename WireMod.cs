@@ -167,18 +167,11 @@ namespace WireMod
                 (int)(y / 16)
             );
         }
-
-        public Rectangle GetScreenRect() => new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
-
-
-        // For lack of a better place to put all this...
-
+        
         public static List<Device> Devices = new List<Device>();
         public static List<Pin> Pins = new List<Pin>();
 
         #region Device Functions
-        public static Device GetDevice(Point16 location) => GetDevice(location.X, location.Y);
-        public static Device GetDevice((int X, int Y) location) => GetDevice(location.X, location.Y);
         public static Device GetDevice(int x, int y)
         {
             return Devices.FirstOrDefault(d => d.LocationRect.Intersects(new Rectangle(x, y, 1, 1)));
@@ -190,7 +183,6 @@ namespace WireMod
             return Pins.FirstOrDefault(p => p.Location.X == x && p.Location.Y == y);
         }
 
-        public static bool CanPlace(Device device, Point16 location) => CanPlace(device, location.X, location.Y);
         public static bool CanPlace(Device device, int x, int y)
         {
             // Check for devices and pins in the new device destination area
@@ -202,7 +194,6 @@ namespace WireMod
             )));
         }
 
-        public static void PlaceDevice(Device device, Point16 location) => PlaceDevice(device, location.X, location.Y);
         public static void PlaceDevice(Device device, int x, int y)
         {
             // Check if the target area is clear of other devices
@@ -223,11 +214,9 @@ namespace WireMod
             device.OnPlace();
         }
 
-        public static void RemoveDevice(Point16 location) => RemoveDevice(location.X, location.Y);
-        public static void RemoveDevice(int x, int y) => RemoveDevice(new Rectangle(x, y, 1, 1));
-        public static void RemoveDevice(Rectangle rect)
+        public static void RemoveDevice(int x, int y)
         {
-            var device = Devices.FirstOrDefault(d => d.LocationRect.Intersects(rect));
+            var device = Devices.FirstOrDefault(d => d.LocationRect.Contains(x, y));
 
             if (device == null) return;
 

@@ -30,20 +30,14 @@ namespace WireMod.Devices
 
         public string Output(Pin pin = null)
         {
-            if (!this.Pins["In"][0].IsConnected() || !int.TryParse(this.Pins["In"][0].GetValue(), out var radius)) return "";
+            if (!this.GetPin("Distance").IsConnected() || !int.TryParse(this.GetPin("Distance").GetValue(), out var distance)) return "";
 
-            return $"{this.Settings["AreaType"]}:{radius}";
-        }
-
-        public override void OnRightClick(Pin pin = null)
-        {
-            this.Settings["AreaType"] = AreaTypes[(AreaTypes.IndexOf(this.Settings["AreaType"]) + 1) % AreaTypes.Count];
+            return $"{this.Settings["AreaType"]}:{distance}";
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (this.LocationRect == default(Rectangle)) return;
-            if (!this.Pins["In"][0].IsConnected()) return;
+            if (!this.GetPin("Distance").IsConnected()) return;
 
             this.GetArea(this).Draw(spriteBatch, Color.LightGreen);
         }
@@ -51,13 +45,13 @@ namespace WireMod.Devices
         public Area GetArea(Device device)
         {
             var radius = 0;
-            if (this.Pins["In"][0].IsConnected() && int.TryParse(this.Pins["In"][0].GetValue(), out var dist))
+            if (this.GetPin("Distance").IsConnected() && int.TryParse(this.GetPin("Distance").GetValue(), out var dist))
             {
                 radius = dist;
             }
 
             var pos = device.LocationOriginWorld;
-            if (this.Pins["In"][1].IsConnected() && Helpers.TryParsePoint(this.Pins["In"][1].GetValue(), out var point) && point.HasValue)
+            if (this.GetPin("Point").IsConnected() && Helpers.TryParsePoint(this.GetPin("Point").GetValue(), out var point) && point.HasValue)
             {
                 pos = point.Value.ToWorldCoordinates();
             }
@@ -76,6 +70,11 @@ namespace WireMod.Devices
                 Center = pos,
                 Radius = radius
             };
+        }
+
+        public override void OnRightClick(Pin pin = null)
+        {
+            this.Settings["AreaType"] = AreaTypes[(AreaTypes.IndexOf(this.Settings["AreaType"]) + 1) % AreaTypes.Count];
         }
 
         private static readonly List<string> AreaTypes = new List<string>

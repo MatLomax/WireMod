@@ -23,7 +23,7 @@ namespace WireMod.Devices
         {
             if (style == -1)
             {
-                if (!int.TryParse(this.Pins["In"][0].GetValue(), out var input)) return base.GetSourceRect(style);
+                if (!int.TryParse(this.GetPinIn(0).GetValue(), out var input)) return base.GetSourceRect(style);
                 style = input + 1;
             }
 

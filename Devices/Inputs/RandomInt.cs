@@ -32,8 +32,8 @@ namespace WireMod.Devices
 
         public void Trigger(Pin pin = null)
         {
-            if (!int.TryParse(this.Pins["In"][1].GetValue(), out var min)) min = 0;
-            if (!int.TryParse(this.Pins["In"][2].GetValue(), out var max)) max = 100;
+            if (!int.TryParse(this.GetPin("Min").GetValue(), out var min)) min = 0;
+            if (!int.TryParse(this.GetPin("Max").GetValue(), out var max)) max = 100;
 
             this.Settings["Value"] = WorldGen.genRand.Next(min, max).ToString();
         }
