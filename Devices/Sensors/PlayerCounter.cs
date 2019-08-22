@@ -51,7 +51,7 @@ namespace WireMod.Devices
 				players = players.Where(p => p.team == (int)team);
 			}
 			
-			var area = areaInput.GetArea(this);
+			var area = areaInput.GetArea();
 
 			return players.Where(p => area.Contains(p.position));
 		}

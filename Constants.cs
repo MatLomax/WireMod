@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Terraria.ID;
 
 namespace WireMod
 {
@@ -69,7 +70,9 @@ namespace WireMod
             },
             new List<string> // Storage
             {
-                "Variable"
+                "Variable",
+                "TileCopier",
+                "TilePaster",
             },
             new List<string> // Text
             {
@@ -79,7 +82,6 @@ namespace WireMod
             new List<string> // Outputs
             {
                 "OutputLamp",
-                //"OutputSign",
                 "FlipFlop",
                 "Trigger",
             },
@@ -120,7 +122,6 @@ namespace WireMod
             { "TextTileController", "Text Tile Controller" },
             { "FlipFlop", "Flip/Flop" },
             { "OutputLamp", "Output Lamp" },
-            //{ "OutputSign", "Output Sign" },
             { "Trigger", "Trigger Output" },
             { "PlayerDistanceSensor", "Nearest Player Distance Sensor" },
             { "NPCDistanceSensor", "Nearest NPC Distance Sensor" },
@@ -132,6 +133,14 @@ namespace WireMod
             { "Spawner", "NPC Spawner (USE WITH CAUTION)" },
             { "Buffer", "Buffer (USE WITH CAUTION)" },
             { "Variable", "Store value" },
+            { "TileCopier", "Copies Tiles" },
+            { "TilePaster", "Pastes Tiles" },
+        };
+
+        public static readonly List<ushort> CopyTileBlacklist = new List<ushort>
+        {
+            TileID.DemonAltar,
+            TileID.ShadowOrbs,
         };
     }
 }

@@ -52,7 +52,7 @@ namespace WireMod.Devices
 				npc = npc.Where(n => n.townNPC == (townNPC == 1));
 			}
 			
-			var area = areaInput.GetArea(this);
+			var area = areaInput.GetArea();
 
 			return npc.Where(p => area.Contains(p.position));
 		}

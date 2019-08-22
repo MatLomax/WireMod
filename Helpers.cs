@@ -1,14 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using WireMod.Devices;
 
 namespace WireMod
 {
     public class Helpers
     {
         public static Rectangle GetScreenRect() => new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
-
+        
         public static Texture2D CreateCircle(int diameter)
         {
             var texture = new Texture2D(Main.graphics.GraphicsDevice, diameter, diameter);
@@ -53,7 +55,7 @@ namespace WireMod
             return texture;
         }
 
-        public static bool TryParseArea(string input, out (string AreaType, int Radius)? output)
+        public static bool TryParseArea(string input, out (string AreaType, int Distance)? output)
         {
             if (string.IsNullOrEmpty(input) || !input.Contains(":"))
             {

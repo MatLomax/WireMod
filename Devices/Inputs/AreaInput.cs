@@ -39,10 +39,10 @@ namespace WireMod.Devices
         {
             if (!this.GetPin("Distance").IsConnected()) return;
 
-            this.GetArea(this).Draw(spriteBatch, Color.LightGreen);
+            this.GetArea().Draw(spriteBatch, Color.LightGreen);
         }
 
-        public Area GetArea(Device device)
+        public Area GetArea()
         {
             var radius = 0;
             if (this.GetPin("Distance").IsConnected() && int.TryParse(this.GetPin("Distance").GetValue(), out var dist))
@@ -50,7 +50,7 @@ namespace WireMod.Devices
                 radius = dist;
             }
 
-            var pos = device.LocationOriginWorld;
+            var pos = this.LocationOriginWorld;
             if (this.GetPin("Point").IsConnected() && Helpers.TryParsePoint(this.GetPin("Point").GetValue(), out var point) && point.HasValue)
             {
                 pos = point.Value.ToWorldCoordinates();
@@ -69,6 +69,17 @@ namespace WireMod.Devices
             {
                 Center = pos,
                 Radius = radius
+            };
+        }
+
+        public RectArea GetTileArea()
+        {
+            var area = this.GetArea();
+
+            return new RectArea
+            {
+                Center = area.Center / 16,
+                Radius = area.Radius / 16,
             };
         }
 

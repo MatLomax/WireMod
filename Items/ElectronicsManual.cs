@@ -130,7 +130,7 @@ namespace WireMod.Items
 
                     if (pin == null)
                     {
-                        modPlayer.PlacingWire.Points.Add(new Point16(x, y));
+                        modPlayer.PlacingWire?.Points.Add(new Point16(x, y));
                         return false;
                     }
 

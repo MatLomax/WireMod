@@ -31,15 +31,15 @@ namespace WireMod.Devices
             };
         }
 
-        public string Output(Pin pin = null) => this.GetOutput().ToString();
+        public string Output(Pin pin = null) => this.Settings["Value"];
 
-        private int GetOutput()
+        public override void Update(GameTime gameTime)
         {
-            if (!int.TryParse(this.Settings["Value"], out var val)) return -1;
-            if (!this.Pins["In"][0].IsConnected()) return -1;
-            if (!int.TryParse(this.Pins["In"][0].GetValue(), out var trigger)) return -1;
+            if (!int.TryParse(this.Settings["Value"], out var val)) return;
+            if (!this.Pins["In"][0].IsConnected()) return;
+            if (!int.TryParse(this.Pins["In"][0].GetValue(), out var trigger)) return;
 
-            if (this.GetPin("Trigger").IsConnected() && int.TryParse(this.GetPin("Trigger").GetValue(), out var reset))
+            if (this.GetPin("Reset").IsConnected() && int.TryParse(this.GetPin("Reset").GetValue(), out var reset))
             {
                 if (reset == 1) this._reset = true;
             }
@@ -51,11 +51,11 @@ namespace WireMod.Devices
                 if (!this.GetPinOut(0).IsConnected())
                 {
                     this.Settings["Value"] = trigger.ToString();
-                    return 0;
+                    return;
                 }
 
                 var pins = this.GetPinOut(0).ConnectedPins.Where(p => p.Device is ITriggered).ToList();
-                if (!int.TryParse(this.Settings["TriggerTarget"], out var target)) return 0;
+                if (!int.TryParse(this.Settings["TriggerTarget"], out var target)) return;
                 if (target >= pins.Count) target = pins.Count - 1;
 
                 // Trigger connected devices
@@ -67,7 +67,7 @@ namespace WireMod.Devices
                     });
                     this.Settings["TriggerTarget"] = "0";
                 }
-                else 
+                else
                 {
                     var pin = this.Settings["TriggerType"] == "Sequential" ? pins[(target + 1) % pins.Count] : pins[WorldGen.genRand.Next(0, pins.Count)];
                     ((ITriggered)pin.Device).Trigger(pin);
@@ -75,7 +75,7 @@ namespace WireMod.Devices
                 }
 
                 this.Settings["Value"] = trigger.ToString();
-                return 1;
+                return;
             }
 
             if (trigger <= 0 && val > 0 && !this.GetPinIn(1).IsConnected())
@@ -84,7 +84,6 @@ namespace WireMod.Devices
             }
 
             this.Settings["Value"] = trigger.ToString();
-            return 0;
         }
 
         public override List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
