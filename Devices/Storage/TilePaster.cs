@@ -23,9 +23,7 @@ namespace WireMod.Devices
 				new PinDesign("In", 2, new Point16(1, 2), "area", "Area")
 			};
 		}
-
-
-
+		
 		public void Trigger(Pin pin = null)
 		{
 			if (!this.GetPin("Data").IsConnected()) return;
@@ -48,10 +46,11 @@ namespace WireMod.Devices
 				for (var x = 0; x < Math.Min(srcRect.Width, destRect.Width); x++)
 				{
 					var destTile = Main.tile[destRect.X + x, destRect.Y + y];
-					var srcTile = srcTiles.FirstOrDefault(t => t.X == srcRect.X + x && t.Y == srcRect.Y + y);
-					if (srcTile == null) continue;
+					var srcTile = Main.tile[srcRect.X + x, srcRect.Y + y];
 
-					destTile.CopyFrom(Main.tile[srcRect.X + x, srcRect.Y + y]);
+					if (Constants.CopyTileBlacklist.Contains(srcTile.type)) continue;
+
+					destTile.CopyFrom(srcTile);
 				}
 			}
 		}

@@ -4,10 +4,6 @@
 	{
 		public int X { get; set; }
 		public int Y { get; set; }
-		public bool Active { get; set; }
-		public ushort Type { get; set; }
-		public ushort Wall { get; set; }
-		public byte Slope { get; set; }
 
 		public TileInfo()
 		{

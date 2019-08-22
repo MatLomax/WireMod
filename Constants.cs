@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Terraria.ID;
 
 namespace WireMod
 {
@@ -136,6 +137,12 @@ namespace WireMod
             { "Variable", "Store value" },
             { "TileCopier", "Copies Tiles" },
             { "TilePaster", "Pastes Tiles" },
+        };
+
+        public static readonly List<ushort> CopyTileBlacklist = new List<ushort>
+        {
+            TileID.DemonAltar,
+            TileID.ShadowOrbs,
         };
     }
 }
