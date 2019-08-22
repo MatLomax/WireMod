@@ -16,7 +16,7 @@ namespace WireMod.UI
 
 		public static float DeviceVisibility { get; set; } = 1f;
 		public static float WireVisibility { get; set; } = 0.5f;
-
+		
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
 			DrawDevices(spriteBatch);
@@ -25,28 +25,23 @@ namespace WireMod.UI
 
 		private static void DrawDevices(SpriteBatch spriteBatch)
 		{
-			var pixels = 16;
-
-			var screenRect = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
+			var screenRect = Helpers.GetScreenRect();
 
 			foreach (var device in WireMod.Devices)
 			{
-				if (device.LocationRect == default(Rectangle)) continue;
-
-				var deviceWorldRect = new Rectangle((int)(device.LocationRect.X * pixels), (int)(device.LocationRect.Y * pixels), (int)(device.Width * pixels), (int)(device.Height * pixels));
-				if (!deviceWorldRect.Intersects(screenRect)) continue;
-
-				var deviceScreenRect = new Rectangle(deviceWorldRect.X - screenRect.X, deviceWorldRect.Y - screenRect.Y, deviceWorldRect.Width, deviceWorldRect.Height);
+				if (!device.LocationWorldRect.Intersects(screenRect)) continue;
+				
+				var pos = (device.LocationWorld - Main.screenPosition) - Helpers.Drift;
 
 				var texture = WireMod.Instance.GetTexture($"Images/{device.GetType().Name}");
-				spriteBatch.Draw(texture, new Vector2(deviceScreenRect.X, deviceScreenRect.Y), device.GetSourceRect(), Color.White * DeviceVisibility, 0f, new Vector2(0, 0), Main.UIScale, SpriteEffects.None, 0f);
+				spriteBatch.Draw(texture, pos, device.GetSourceRect(), Color.White * DeviceVisibility, 0f, new Vector2(0, 0), /*1 + ((Main.UIScale - 1) / 2)*/ 1f, SpriteEffects.None, 0f);
 				device.Draw(spriteBatch);
 			}
 		}
 
 		private static void DrawWires(SpriteBatch spriteBatch)
 		{
-			var screenRect = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
+			var screenRect = Helpers.GetScreenRect();
 			var modPlayer = Main.LocalPlayer.GetModPlayer<WireModPlayer>();
 
 			foreach (var pin in WireMod.Pins)
@@ -84,8 +79,8 @@ namespace WireMod.UI
 				{
 					DrawLine(
 						spriteBatch,
-						placingPoints[i].ToWorldCoordinates() - screenRect.Location.ToVector2(),
-						placingPoints[i + 1].ToWorldCoordinates() - screenRect.Location.ToVector2(),
+						placingPoints[i].ToWorldCoordinates() - Main.screenPosition - Helpers.Drift,
+						placingPoints[i + 1].ToWorldCoordinates() - Main.screenPosition - Helpers.Drift,
 						GetWireColor(modPlayer.ConnectingPin)
 					);
 				}
@@ -93,12 +88,12 @@ namespace WireMod.UI
 
 			DrawLine(
 				spriteBatch,
-				placingPoints.Last().ToWorldCoordinates() - screenRect.Location.ToVector2(),
+				placingPoints.Last().ToWorldCoordinates() - Main.screenPosition - Helpers.Drift,
 				Main.MouseScreen,
 				GetWireColor(modPlayer.ConnectingPin)
 			);
 
-			DrawWireDot(spriteBatch, modPlayer.ConnectingPin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
+			DrawWireDot(spriteBatch, modPlayer.ConnectingPin.Location.ToWorldCoordinates() - Main.screenPosition - Helpers.Drift);
 		}
 
 		private static void DrawWireDot(SpriteBatch spriteBatch, Vector2 position, int size = 4)
@@ -113,8 +108,8 @@ namespace WireMod.UI
 
 			for (var i = 0; i < points.Count - 1; i++)
 			{
-				var start = points[i].ToWorldCoordinates() - screenRect.Location.ToVector2();
-				var end = points[i + 1].ToWorldCoordinates() - screenRect.Location.ToVector2();
+				var start = points[i].ToWorldCoordinates() - Main.screenPosition - Helpers.Drift;
+				var end = points[i + 1].ToWorldCoordinates() - Main.screenPosition - Helpers.Drift;
 
 				if (start.X < end.X)
 				{
@@ -145,8 +140,8 @@ namespace WireMod.UI
 				DrawLine(spriteBatch, start, end, GetWireColor(wire.StartPin.Type == "Out" ? wire.StartPin : wire.EndPin));
 			}
 
-			DrawWireDot(spriteBatch, wire.StartPin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
-			DrawWireDot(spriteBatch, wire.EndPin.Location.ToWorldCoordinates() - screenRect.Location.ToVector2());
+			DrawWireDot(spriteBatch, wire.StartPin.Location.ToWorldCoordinates() - Main.screenPosition - Helpers.Drift);
+			DrawWireDot(spriteBatch, wire.EndPin.Location.ToWorldCoordinates() - Main.screenPosition - Helpers.Drift);
 		}
 
 		private static void DrawLine(SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color)

@@ -27,7 +27,7 @@ namespace WireMod.Devices
 
 			var size = this.GetRect().Width;
 			var rect = Helpers.CreateRectangle(size, size);
-			spriteBatch.Draw(rect, this.Center - Main.screenPosition - new Vector2(size / 2, size / 2), color * 0.25f);
+			spriteBatch.Draw(rect, this.Center - Main.screenPosition - new Vector2(size / 2, size / 2) - Helpers.Drift, color * 0.25f);
 		}
 	}
 
@@ -38,7 +38,7 @@ namespace WireMod.Devices
 		public override void Draw(SpriteBatch spriteBatch, Color color)
 		{
 			var circ = Helpers.CreateCircle(this.Radius * 2);
-			spriteBatch.Draw(circ, this.Center - Main.screenPosition - new Vector2(this.Radius, this.Radius), color * 0.25f);
+			spriteBatch.Draw(circ, this.Center - Main.screenPosition - new Vector2(this.Radius, this.Radius) - Helpers.Drift, color * 0.25f);
 		}
 	}
 }

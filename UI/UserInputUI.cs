@@ -38,12 +38,7 @@ namespace WireMod.UI
             var textbox = new UIInputTextField(this.Value, "Enter a value");
             textbox.OnTextChange += (s, e) => { this.Value = textbox.Text; };
             textbox.OnSave += (sender, args) => this.Save();
-            textbox.OnCancel += (sender, args) =>
-            {
-                Main.blockInput = false;
-                WireMod.Instance.UserInputUserInterface.SetState(null);
-                Visible = false;
-            };
+            textbox.OnCancel += (sender, args) => this.Close();
 
             var button = new UIClickableButton("Save", (evt, element) => this.Save());
 
@@ -58,8 +53,13 @@ namespace WireMod.UI
 
         private void Save()
         {
-            Main.blockInput = false;
             this.OnSave?.Invoke(this, EventArgs.Empty);
+            this.Close();
+        }
+
+        private void Close()
+        {
+            Main.blockInput = false;
             WireMod.Instance.UserInputUserInterface.SetState(null);
             Visible = false;
         }

@@ -9,7 +9,8 @@ namespace WireMod
 {
     public class Helpers
     {
-        public static Rectangle GetScreenRect() => new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
+        public static Vector2 Drift => new Vector2(Main.screenWidth, Main.screenHeight) * (Main.UIScale - 1) * 0.5f;
+        public static Rectangle GetScreenRect() => new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, (int)(Main.screenWidth * Main.UIScale), (int)(Main.screenHeight * Main.UIScale));
         
         public static Texture2D CreateCircle(int diameter)
         {

@@ -40,7 +40,7 @@ namespace WireMod.Devices
             if (deviceScreenRect == default(Rectangle)) return;
 
             var circle = Helpers.CreateCircle(maxDistance * 2);
-            var pos = this.LocationWorld + this.Origin.ToWorldCoordinates();
+            var pos = this.LocationWorld + this.Origin.ToWorldCoordinates() - Helpers.Drift;
 
             spriteBatch.Draw(circle, pos, Color.LightBlue * 0.25f);
         }

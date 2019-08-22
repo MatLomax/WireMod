@@ -74,7 +74,7 @@ namespace WireMod.Devices
             var deviceScreenRect = new Rectangle(deviceWorldRect.X - screenRect.X, deviceWorldRect.Y - screenRect.Y, deviceWorldRect.Width, deviceWorldRect.Height);
 
             var circle = Helpers.CreateCircle(maxDistance * 2);
-            var pos = new Vector2(deviceScreenRect.X + (deviceScreenRect.Width / 2) - maxDistance, deviceScreenRect.Y + (deviceScreenRect.Height / 2) - maxDistance);
+            var pos = new Vector2(deviceScreenRect.X + (deviceScreenRect.Width / 2) - maxDistance, deviceScreenRect.Y + (deviceScreenRect.Height / 2) - maxDistance) - Helpers.Drift;
 
             spriteBatch.Draw(circle, pos, Color.Red * 0.25f);
         }
