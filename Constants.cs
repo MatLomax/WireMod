@@ -82,7 +82,6 @@ namespace WireMod
             new List<string> // Outputs
             {
                 "OutputLamp",
-                //"OutputSign",
                 "FlipFlop",
                 "Trigger",
             },
@@ -123,7 +122,6 @@ namespace WireMod
             { "TextTileController", "Text Tile Controller" },
             { "FlipFlop", "Flip/Flop" },
             { "OutputLamp", "Output Lamp" },
-            //{ "OutputSign", "Output Sign" },
             { "Trigger", "Trigger Output" },
             { "PlayerDistanceSensor", "Nearest Player Distance Sensor" },
             { "NPCDistanceSensor", "Nearest NPC Distance Sensor" },

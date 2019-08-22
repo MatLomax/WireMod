@@ -31,8 +31,7 @@ namespace WireMod.Devices
 			if (!area.HasValue) return -1;
 			if (area.Value.AreaType == "Circle") return -2;
 
-			if (!this.GetPin("TileID").IsConnected()) return -1;
-			if (!int.TryParse(this.GetPin("TileID").GetValue(), out var _)) return -2;
+			if (this.GetPin("TileID").IsConnected() && !int.TryParse(this.GetPin("TileID").GetValue(), out var _)) return -2;
 
 			return this.GetTiles().Count();
 		}
@@ -41,7 +40,7 @@ namespace WireMod.Devices
 		{
 			var tiles = new List<Tile>();
 
-			if (!this.GetPin("TileID").IsConnected() || !int.TryParse(this.GetPin("TileID").GetValue(), out var id)) return tiles;
+			if (!this.GetPin("TileID").IsConnected() || !int.TryParse(this.GetPin("TileID").GetValue(), out var id)) id = -1;
 
 			var input = this.GetPinIn("Area").ConnectedPin.Device;
 			if (!(input is AreaInput areaInput)) return tiles;
@@ -53,7 +52,8 @@ namespace WireMod.Devices
 				for (var x = 0; x < areaRect.Width; x++)
 				{
 					var tile = Main.tile[areaRect.X + x, areaRect.Y + y];
-					if (tile.type == id) tiles.Add(tile);
+					if (id > -1 && tile.type != id || !tile.active()) continue;
+					tiles.Add(tile);
 				}
 			}
 

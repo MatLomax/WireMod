@@ -56,7 +56,6 @@ namespace WireMod.Devices
 			{
 				for (var x = areaRect.X; x < areaRect.X + areaRect.Width; x++)
 				{
-					var tile = Main.tile[x, y];
 					tiles.Add(new TileInfo(x, y));
 				}
 			}
