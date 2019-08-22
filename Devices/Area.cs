@@ -17,6 +17,7 @@ namespace WireMod.Devices
 	public class RectArea : Area
 	{
 		public Rectangle GetRect() => new Rectangle((int)this.Center.X - this.Radius - 8, (int)this.Center.Y - this.Radius - 8, this.Radius * 2 + 16, this.Radius * 2 + 16);
+		public Rectangle GetTileRect() => new Rectangle((int)this.Center.X - this.Radius, (int)this.Center.Y - this.Radius, this.Radius * 2 + 1, this.Radius * 2 + 1);
 
 		public override bool Contains(Vector2 point) => this.GetRect().Contains(point.ToPoint());
 

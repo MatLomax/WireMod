@@ -69,7 +69,9 @@ namespace WireMod
             },
             new List<string> // Storage
             {
-                "Variable"
+                "Variable",
+                "TileCopier",
+                "TilePaster",
             },
             new List<string> // Text
             {
@@ -132,6 +134,8 @@ namespace WireMod
             { "Spawner", "NPC Spawner (USE WITH CAUTION)" },
             { "Buffer", "Buffer (USE WITH CAUTION)" },
             { "Variable", "Store value" },
+            { "TileCopier", "Copies Tiles" },
+            { "TilePaster", "Pastes Tiles" },
         };
     }
 }

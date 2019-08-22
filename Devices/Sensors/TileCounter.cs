@@ -34,34 +34,25 @@ namespace WireMod.Devices
 			if (!this.GetPin("TileID").IsConnected()) return -1;
 			if (!int.TryParse(this.GetPin("TileID").GetValue(), out var _)) return -2;
 
-			return this.GetTiles(area.Value.Radius).Count();
+			return this.GetTiles().Count();
 		}
 
-		private IEnumerable<Tile> GetTiles(int distance)
+		private IEnumerable<Tile> GetTiles()
 		{
-			distance /= 16;
-
 			var tiles = new List<Tile>();
 
 			if (!this.GetPin("TileID").IsConnected() || !int.TryParse(this.GetPin("TileID").GetValue(), out var id)) return tiles;
 
-			Point16 pos;
+			var input = this.GetPinIn("Area").ConnectedPin.Device;
+			if (!(input is AreaInput areaInput)) return tiles;
 
-			var connDev = this.GetPinIn("Area").ConnectedPin.Device;
-			if (connDev.GetPin("Point").IsConnected() && Helpers.TryParsePoint(connDev.GetPin("Point").GetValue(), out var point) && point.HasValue)
-			{
-				pos = point.Value;
-			}
-			else
-			{
-				pos = this.LocationOriginTile;
-			}
+			var areaRect = areaInput.GetTileArea().GetTileRect();
 
-			for (var y = pos.Y - distance; y <= pos.Y + distance; y++)
+			for (var y = 0; y < areaRect.Height; y++)
 			{
-				for (var x = pos.X - distance; x <= pos.X + distance; x++)
+				for (var x = 0; x < areaRect.Width; x++)
 				{
-					var tile = Main.tile[x, y];
+					var tile = Main.tile[areaRect.X + x, areaRect.Y + y];
 					if (tile.type == id) tiles.Add(tile);
 				}
 			}

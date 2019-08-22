@@ -95,7 +95,7 @@ namespace WireMod.Devices
         public PinIn GetPinIn(int index) => (PinIn)this.Pins["In"][index];
         public PinOut GetPinOut(string name) => (PinOut)this.Pins["Out"].Values.FirstOrDefault(p => p.Name == name);
         public PinOut GetPinOut(int index) => (PinOut)this.Pins["Out"][index];
-
+        
         public virtual void OnRightClick(Pin pin = null) { }
 
         public virtual void OnKill()
