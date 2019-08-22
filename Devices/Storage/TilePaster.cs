@@ -51,10 +51,7 @@ namespace WireMod.Devices
 					var srcTile = srcTiles.FirstOrDefault(t => t.X == srcRect.X + x && t.Y == srcRect.Y + y);
 					if (srcTile == null) continue;
 
-					destTile.ResetToType(srcTile.Type);
-					destTile.wall = srcTile.Wall;
-					destTile.active(srcTile.Active);
-					destTile.slope(srcTile.Slope);
+					destTile.CopyFrom(Main.tile[srcRect.X + x, srcRect.Y + y]);
 				}
 			}
 		}
