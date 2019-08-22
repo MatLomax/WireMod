@@ -141,6 +141,8 @@ namespace WireMod
         {
             TileID.DemonAltar,
             TileID.ShadowOrbs,
+            TileID.Containers,
+            TileID.Containers2,
         };
     }
 }

@@ -28,7 +28,7 @@ namespace WireMod.UI.Elements
                 this.OnTextChange?.Invoke(this, EventArgs.Empty);
             }
         }
-        
+
         public UIInputTextField(string value, string hintText)
         {
             this._currentString = value;
@@ -37,6 +37,7 @@ namespace WireMod.UI.Elements
 
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
+            Main.blockInput = true;
             PlayerInput.WritingText = true;
             Main.instance.HandleIME();
 
@@ -49,7 +50,7 @@ namespace WireMod.UI.Elements
             }
 
             var dimensions = this.GetDimensions();
-			
+
             if (this._currentString.Length == 0)
             {
                 Utils.DrawBorderString(spriteBatch, this._hintText, new Vector2(dimensions.X, dimensions.Y), Color.Gray);
