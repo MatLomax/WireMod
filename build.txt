@@ -1,4 +1,4 @@
 author = matlomax
-version = 0.9.4
+version = 0.9.5
 displayName = WireMod
 homepage = https://github.com/MatLomax/WireMod/wiki

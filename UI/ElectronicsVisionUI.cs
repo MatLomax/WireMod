@@ -14,8 +14,8 @@ namespace WireMod.UI
 
 		public const int Thickness = 4;
 
-		public static float DeviceVisibility { get; set; } = 1f;
-		public static float WireVisibility { get; set; } = 0.5f;
+		public const float DeviceVisibility = 1f;
+		public const float WireVisibility = 0.5f;
 		
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
@@ -55,16 +55,16 @@ namespace WireMod.UI
 				foreach (var p in ((PinOut)pin).ConnectedPins)
 				{
 					var pinWire = pin.Wires.FirstOrDefault(w => w.StartPin == p || w.EndPin == p);
-
 					if (pinWire == null) continue;
 
+					var vis = WireVisibility;
 					if (HoverDebuggerUI.Visible)
 					{
 						var hoverDevice = ((HoverDebuggerUI)WireMod.Instance.DebuggerHoverUserInterface.CurrentState).Device;
-						WireVisibility = pin.Device == hoverDevice || p.Device == hoverDevice ? 1f : 0.5f;
+						if (pin.Device == hoverDevice || p.Device == hoverDevice) vis = 1f;
 					}
 					
-					DrawWire(spriteBatch, pinWire);
+					DrawWire(spriteBatch, pinWire, vis);
 				}
 			}
 
@@ -101,7 +101,7 @@ namespace WireMod.UI
 			spriteBatch.Draw(Helpers.CreateRectangle(size, size), position - new Vector2(size / 2, size / 2), Color.White * 0.5f * WireVisibility);
 		}
 
-		private static void DrawWire(SpriteBatch spriteBatch, Wire wire)
+		private static void DrawWire(SpriteBatch spriteBatch, Wire wire, float visibility = WireVisibility)
 		{
 			var screenRect = Helpers.GetScreenRect();
 			var points = wire.GetPoints();
@@ -137,7 +137,7 @@ namespace WireMod.UI
 					end.Y -= (Thickness / 2);
 				}
 
-				DrawLine(spriteBatch, start, end, GetWireColor(wire.StartPin.Type == "Out" ? wire.StartPin : wire.EndPin));
+				DrawLine(spriteBatch, start, end, GetWireColor(wire.StartPin.Type == "Out" ? wire.StartPin : wire.EndPin) * visibility);
 			}
 
 			DrawWireDot(spriteBatch, wire.StartPin.Location.ToWorldCoordinates() - Main.screenPosition - Helpers.Drift);
@@ -150,7 +150,7 @@ namespace WireMod.UI
 			var angle = (float)Math.Atan2(edge.Y, edge.X);
 
 			var line = new Rectangle((int)start.X + (Thickness / 2), (int)start.Y, (int)edge.Length(), Thickness);
-			spriteBatch.Draw(Main.magicPixel, line, null, color * WireVisibility, angle, new Vector2(0, 0), SpriteEffects.None, 1f);
+			spriteBatch.Draw(Main.magicPixel, line, null, color, angle, new Vector2(0, 0), SpriteEffects.None, 1f);
 		}
 
 		private static Color GetWireColor(Pin pin)
