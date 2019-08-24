@@ -45,14 +45,14 @@ namespace WireMod.Devices
 			var input = this.GetPinIn("Area").ConnectedPin.Device;
 			if (!(input is AreaInput areaInput)) return tiles;
 
-			var areaRect = areaInput.GetTileArea().GetTileRect();
+			var areaRect = areaInput.GetTileArea().GetRect();
 
 			for (var y = 0; y < areaRect.Height; y++)
 			{
 				for (var x = 0; x < areaRect.Width; x++)
 				{
 					var tile = Main.tile[areaRect.X + x, areaRect.Y + y];
-					if (id > -1 && tile.type != id || !tile.active()) continue;
+					if (!tile.active() || (id > -1 && tile.type != id)) continue;
 					tiles.Add(tile);
 				}
 			}

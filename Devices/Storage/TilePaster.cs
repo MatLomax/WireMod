@@ -39,7 +39,7 @@ namespace WireMod.Devices
 			var input = this.GetPinIn("Area").ConnectedPin.Device;
 			if (!(input is AreaInput areaInput)) return;
 
-			var destRect = areaInput.GetTileArea().GetTileRect();
+			var destRect = areaInput.GetTileArea().GetRect();
 
 			for (var y = 0; y < Math.Min(srcRect.Height, destRect.Height); y++)
 			{

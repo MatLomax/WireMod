@@ -37,6 +37,8 @@ namespace WireMod
         {
             Terraria.ModLoader.IO.TagSerializer.AddSerializer(new DeviceSerializer());
 
+            this.AddGlobalTile("IndestructibleTile", new WireModGlobalTile());
+
             if (Main.netMode == NetmodeID.Server) return;
 
             this.ElectronicsManualUserInterface = new UserInterface();
