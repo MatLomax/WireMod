@@ -50,7 +50,7 @@ namespace WireMod.Devices
 			var input = this.GetPinIn("Area").ConnectedPin.Device;
 			if (!(input is AreaInput areaInput)) return tiles;
 
-			var areaRect = areaInput.GetTileArea().GetTileRect();
+			var areaRect = areaInput.GetTileArea().GetRect();
 
 			for (var y = areaRect.Y; y < areaRect.Y + areaRect.Height; y++)
 			{

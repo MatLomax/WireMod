@@ -1,29 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
+using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 using WireMod.Devices;
 
 namespace WireMod
 {
-    class WireModGlobalTile : GlobalTile
+    internal class WireModGlobalTile : GlobalTile
     {
+        public override bool CanPlace(int i, int j, int type)
+        {
+            var protect = WireMod.Devices.Any(d => d is ProtectArea dev && (((TileArea)dev.GetProtectPlaceArea())?.Contains(new Vector2(i, j)) ?? false));
 
+            return !protect && base.CanPlace(i, j, type);
+        }
 
         public override bool CanKillTile(int i, int j, int type, ref bool blockDamaged)
         {
-            foreach(var u in WireMod.Devices.Where(a=> a is IndestructibleArea))
-            {
-                var item = u as IndestructibleArea;
-                if(item.GetTileArea() != null)
-                {
-                    if (item.GetTileArea().Contains(new Microsoft.Xna.Framework.Vector2(i, j))) return false;
-                }
-            }
-            
-            return base.CanKillTile(i, j, type, ref blockDamaged);
+            var protect = WireMod.Devices.Any(d => d is ProtectArea dev && (((TileArea)dev.GetProtectDestroyArea())?.Contains(new Vector2(i, j)) ?? false));
+
+            return !protect && base.CanKillTile(i, j, type, ref blockDamaged);
         }
     }
 }

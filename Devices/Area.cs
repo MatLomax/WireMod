@@ -17,7 +17,6 @@ namespace WireMod.Devices
 	public class RectArea : Area
 	{
 		public Rectangle GetRect() => new Rectangle((int)this.Center.X - this.Radius - 8, (int)this.Center.Y - this.Radius - 8, this.Radius * 2 + 16, this.Radius * 2 + 16);
-		public Rectangle GetTileRect() => new Rectangle((int)this.Center.X - this.Radius, (int)this.Center.Y - this.Radius, this.Radius * 2 + 1, this.Radius * 2 + 1);
 
 		public override bool Contains(Vector2 point) => this.GetRect().Contains(point.ToPoint());
 
@@ -28,6 +27,22 @@ namespace WireMod.Devices
 			var size = this.GetRect().Width;
 			var rect = Helpers.CreateRectangle(size, size);
 			spriteBatch.Draw(rect, this.Center - Main.screenPosition - new Vector2(size / 2, size / 2) - Helpers.Drift, color * 0.25f);
+		}
+	}
+
+	public class TileArea : Area
+	{
+		public Rectangle GetRect() => new Rectangle((int)this.Center.X - this.Radius, (int)this.Center.Y - this.Radius, this.Radius * 2 + 1, this.Radius * 2 + 1);
+
+		public override bool Contains(Vector2 point) => this.GetRect().Contains(point.ToPoint());
+
+		public override void Draw(SpriteBatch spriteBatch, Color color)
+		{
+			var rect = this.GetRect();
+			var worldRect = new Rectangle(rect.X * 16, rect.Y * 16, rect.Width * 16, rect.Height * 16);
+			if (!Helpers.GetScreenRect().Intersects(worldRect)) return;
+
+			spriteBatch.Draw(Helpers.CreateRectangle(worldRect.Width, worldRect.Height), this.Center - Main.screenPosition - new Vector2(worldRect.Width / 2, worldRect.Height / 2) - Helpers.Drift, color * 0.25f);
 		}
 	}
 

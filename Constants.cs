@@ -90,7 +90,7 @@ namespace WireMod
                 "Repulsor",
                 "Spawner",
                 "Buffer",
-                "IndestructibleArea"
+                "ProtectArea",
             },
         };
 
@@ -136,7 +136,7 @@ namespace WireMod
             { "Variable", "Store value" },
             { "TileCopier", "Copies Tiles" },
             { "TilePaster", "Pastes Tiles" },
-            { "IndestructibleArea","Turn Tiles Indestructible" }
+            { "ProtectArea", "Protect an area of tiles" }
         };
 
         public static readonly List<ushort> CopyTileBlacklist = new List<ushort>

@@ -72,11 +72,11 @@ namespace WireMod.Devices
             };
         }
 
-        public RectArea GetTileArea()
+        public TileArea GetTileArea()
         {
             var area = this.GetArea();
 
-            return new RectArea
+            return new TileArea
             {
                 Center = area.Center / 16,
                 Radius = area.Radius / 16,

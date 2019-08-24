@@ -90,7 +90,7 @@ namespace WireMod.Devices
             }
         }
 
-        public Pin GetPin(string name) => this.Pins["In"].Values.FirstOrDefault(p => p.Name == name) ?? this.Pins["Out"].Values.FirstOrDefault(p => p.Name == name);
+        public Pin GetPin(string name) => (Pin)GetPinIn(name) ?? GetPinOut(name);
         public PinIn GetPinIn(string name) => (PinIn)this.Pins["In"].Values.FirstOrDefault(p => p.Name == name);
         public PinIn GetPinIn(int index) => (PinIn)this.Pins["In"][index];
         public PinOut GetPinOut(string name) => (PinOut)this.Pins["Out"].Values.FirstOrDefault(p => p.Name == name);
