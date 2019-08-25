@@ -50,7 +50,15 @@ namespace WireMod.Devices
 
 					if (Constants.CopyTileBlacklist.Contains(srcTile.type)) continue;
 
+					var (wire, wire2, wire3, wire4) = (destTile.wire(), destTile.wire2(), destTile.wire3(), destTile.wire4());
+
 					destTile.CopyFrom(srcTile);
+
+					// Preserve tile wires
+					destTile.wire(wire);
+					destTile.wire2(wire2);
+					destTile.wire3(wire3);
+					destTile.wire4(wire4);
 				}
 			}
 		}

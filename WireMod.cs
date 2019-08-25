@@ -59,7 +59,7 @@ namespace WireMod
             foreach (var device in Devices) device.Update(gameTime);
 
             // TODO: Fix this bullshit
-            foreach (var device in Devices.Where(d => d.Pins["Out"].Count > 0)) device.Pins["Out"][0].GetValue();
+            //foreach (var device in Devices.Where(d => d.Pins["Out"].Count > 0)) device.Pins["Out"][0].GetValue();
 
             if (Main.LocalPlayer.name != "")
             {
@@ -202,7 +202,7 @@ namespace WireMod
             if (!CanPlace(device, x, y)) return;
 
             // Add to arrays
-            device.LocationRect = new Rectangle(x - device.Origin.X, y - device.Origin.Y, device.Width, device.Height);
+            device.SetLocation(x - device.Origin.X, y - device.Origin.Y);
             device.SetPins();
             Devices.Add(device);
 

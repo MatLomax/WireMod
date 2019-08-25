@@ -40,12 +40,10 @@ namespace WireMod.Devices
         /// <summary>
         /// Location of this device in the world (Tile Co-ords)
         /// </summary>
-        public Rectangle LocationRect { get; set; }
-        public Point16 LocationTile => this.LocationRect != default(Rectangle) ? new Point16(this.LocationRect.X, this.LocationRect.Y) : default(Point16);
-
-        public Vector2 LocationWorld => this.LocationRect != default(Rectangle) ? new Vector2(this.LocationRect.X * 16, this.LocationRect.Y * 16) : default(Vector2);
-        public Rectangle LocationWorldRect => this.LocationRect != default(Rectangle) ? new Rectangle(this.LocationRect.X * 16, this.LocationRect.Y * 16, this.Width * 16, this.Height * 16) : default(Rectangle);
-
+        public Rectangle LocationRect { get; private set; }
+        public Point16 LocationTile { get; private set; }
+        public Vector2 LocationWorld { get; private set; }
+        public Rectangle LocationWorldRect { get; private set; }
         public Rectangle LocationScreenRect
         {
             get
@@ -57,9 +55,21 @@ namespace WireMod.Devices
             }
         }
 
-        public Point16 LocationOriginTile => this.LocationTile + this.Origin;
-        public Vector2 LocationOriginWorld => this.LocationOriginTile.ToWorldCoordinates();
-        public Vector2 LocationOriginScreen => this.LocationOriginWorld - Main.screenPosition;
+        public Point16 LocationOriginTile { get; private set; }
+        public Vector2 LocationOriginWorld { get; private set; }
+        public Vector2 LocationOriginScreen { get; private set; }
+
+        public void SetLocation(int x, int y)
+        {
+            this.LocationRect = new Rectangle(x, y, this.Width, this.Height);
+            this.LocationTile = new Point16(this.LocationRect.X, this.LocationRect.Y);
+            this.LocationWorld = new Vector2(this.LocationRect.X * 16, this.LocationRect.Y * 16);
+            this.LocationWorldRect = new Rectangle(this.LocationRect.X * 16, this.LocationRect.Y * 16, this.Width * 16, this.Height * 16);
+
+            this.LocationOriginTile = this.LocationTile + this.Origin;
+            this.LocationOriginWorld = this.LocationOriginTile.ToWorldCoordinates();
+            this.LocationOriginScreen = this.LocationOriginWorld - Main.screenPosition;
+        }
         
         public string DetectType()
         {
@@ -97,6 +107,7 @@ namespace WireMod.Devices
         public PinOut GetPinOut(int index) => (PinOut)this.Pins["Out"][index];
         
         public virtual void OnRightClick(Pin pin = null) { }
+        public virtual void OnHitWire(Pin pin = null) { }
 
         public virtual void OnKill()
         {

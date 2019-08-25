@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.Xna.Framework;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 using WireMod.Devices;
 
@@ -19,6 +20,11 @@ namespace WireMod
             var protect = WireMod.Devices.Any(d => d is ProtectArea dev && (((TileArea)dev.GetProtectDestroyArea())?.Contains(new Vector2(i, j)) ?? false));
 
             return !protect && base.CanKillTile(i, j, type, ref blockDamaged);
+        }
+
+        public override void HitWire(int i, int j, int type)
+        {
+            WireMod.GetDevice(i, j)?.OnHitWire(WireMod.GetDevicePin(i, j));
         }
     }
 }

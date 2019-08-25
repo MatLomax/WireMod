@@ -108,7 +108,7 @@ namespace WireMod
 				SendPlace(-1, from, name, settings, x, y);
 			}
 
-			device.LocationRect = new Rectangle(x - device.Origin.X, y - device.Origin.Y, device.Width, device.Height);
+			device.SetLocation(x - device.Origin.X, y - device.Origin.Y);
 			device.Settings = settings;
 			WireMod.PlaceDevice(device, x, y);
 		}

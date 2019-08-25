@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -27,13 +28,19 @@ namespace WireMod.Devices
             };
         }
 
-        public string Output(Pin pin = null) => this.GetOutput().ToString();
-
-        private int GetOutput()
+        public override void Update(GameTime gameTime)
         {
-            if (!int.TryParse(this.Settings["Value"], out var val)) return -1;
-            if (!this.GetPinIn(0).IsConnected()) return -1;
-            if (!int.TryParse(this.GetPinIn(0).GetValue(), out var in0)) return -1;
+            if (!this.GetPinIn(0).IsConnected())
+            {
+                this.Settings["Value"] = "-1";
+                return;
+            };
+
+            if (!int.TryParse(this.Settings["Value"], out var val) || !int.TryParse(this.GetPinIn(0).GetValue(), out var in0))
+            {
+                this.Settings["Value"] = "-2";
+                return;
+            }
 
             if ((in0 <= 0 && val > 0) || (in0 > 0 && val <= 0))
             {
@@ -56,8 +63,9 @@ namespace WireMod.Devices
             }
 
             this.Settings["Value"] = in0.ToString();
-            return in0;
         }
+
+        public string Output(Pin pin = null) => this.Settings["Value"];
 
         public override void OnRightClick(Pin pin = null)
         {

@@ -33,6 +33,11 @@ namespace WireMod.Devices
 
         public string Output(Pin pin = null) => this.Settings["Value"];
 
+        public override void OnHitWire(Pin pin = null)
+        {
+            this.TriggerDevices();
+        }
+
         public override void Update(GameTime gameTime)
         {
             if (!int.TryParse(this.Settings["Value"], out var val)) return;
@@ -54,25 +59,7 @@ namespace WireMod.Devices
                     return;
                 }
 
-                var pins = this.GetPinOut(0).ConnectedPins.Where(p => p.Device is ITriggered).ToList();
-                if (!int.TryParse(this.Settings["TriggerTarget"], out var target)) return;
-                if (target >= pins.Count) target = pins.Count - 1;
-
-                // Trigger connected devices
-                if (this.Settings["TriggerType"] == "All")
-                {
-                    pins.ForEach(pin =>
-                    {
-                        ((ITriggered)pin.Device).Trigger(pin);
-                    });
-                    this.Settings["TriggerTarget"] = "0";
-                }
-                else
-                {
-                    var pin = this.Settings["TriggerType"] == "Sequential" ? pins[(target + 1) % pins.Count] : pins[WorldGen.genRand.Next(0, pins.Count)];
-                    ((ITriggered)pin.Device).Trigger(pin);
-                    this.Settings["TriggerTarget"] = pins.IndexOf(pin).ToString();
-                }
+                this.TriggerDevices();
 
                 this.Settings["Value"] = trigger.ToString();
                 return;
@@ -84,6 +71,29 @@ namespace WireMod.Devices
             }
 
             this.Settings["Value"] = trigger.ToString();
+        }
+
+        private void TriggerDevices()
+        {
+            var pins = this.GetPinOut(0).ConnectedPins.Where(p => p.Device is ITriggered).ToList();
+            if (!int.TryParse(this.Settings["TriggerTarget"], out var target)) return;
+            if (target >= pins.Count) target = pins.Count - 1;
+
+            // Trigger connected devices
+            if (this.Settings["TriggerType"] == "All")
+            {
+                pins.ForEach(pin =>
+                {
+                    ((ITriggered)pin.Device).Trigger(pin);
+                });
+                this.Settings["TriggerTarget"] = "0";
+            }
+            else
+            {
+                var pin = this.Settings["TriggerType"] == "Sequential" ? pins[(target + 1) % pins.Count] : pins[WorldGen.genRand.Next(0, pins.Count)];
+                ((ITriggered)pin.Device).Trigger(pin);
+                this.Settings["TriggerTarget"] = pins.IndexOf(pin).ToString();
+            }
         }
 
         public override List<(string Line, Color Color, float Size)> Debug(Pin pin = null)
