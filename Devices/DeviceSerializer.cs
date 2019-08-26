@@ -11,7 +11,7 @@ namespace WireMod.Devices
 		{
 			var tag = new TagCompound
 			{
-				["name"] = device.GetType().Name,
+				["name"] = device.GetType().FullName,
 				["x"] = device.LocationRect.X + device.Origin.X,
 				["y"] = device.LocationRect.Y + device.Origin.Y,
 			};
@@ -26,7 +26,10 @@ namespace WireMod.Devices
 
 		public override Device Deserialize(TagCompound tag)
 		{
-			var device = (Device)Activator.CreateInstance(Type.GetType("WireMod.Devices." + tag.GetString("name")) ?? throw new InvalidOperationException("Device not found!"));
+			var name = tag.GetString("name");
+			if (!name.Contains(".")) name = "WireMod.Devices." + name;
+
+			var device = (Device)Activator.CreateInstance(Type.GetType(name) ?? throw new InvalidOperationException("Device not found!"));
 			device.SetLocation(tag.GetInt("x"), tag.GetInt("y"));
 
 			foreach (var setting in tag.Where(t => !new[] {"name", "x", "y"}.Contains(t.Key)))
