@@ -56,8 +56,8 @@ namespace WireMod
                 "StringConstant",
                 "TeamColorConstant",
                 "PointConstant",
-                "RandomInt",
                 "AreaInput",
+                "RandomInt",
             },
             new List<string> // Sensor Inputs
             {
@@ -78,6 +78,7 @@ namespace WireMod
             {
                 "Concat",
                 "TextTileController",
+                "Announcer",
             },
             new List<string> // Outputs
             {
@@ -121,6 +122,7 @@ namespace WireMod
             { "AreaInput", "Area Value" },
             { "Concat", "Concatenate Strings" },
             { "TextTileController", "Text Tile Controller" },
+            { "Announcer", "Announces Messages" },
             { "FlipFlop", "Flip/Flop" },
             { "OutputLamp", "Output Lamp" },
             { "Trigger", "Trigger Output" },
