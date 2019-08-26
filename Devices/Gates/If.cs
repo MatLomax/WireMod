@@ -33,11 +33,13 @@ namespace WireMod.Devices
                 case "auto": return "-1";
                 case "bool":
                 case "int":
-                    if (!int.TryParse(this.GetPin("TrueValue").GetValue(), out var trueInput)) trueInput = 0;
-                    if (!int.TryParse(this.GetPin("FalseValue").GetValue(), out var falseInput)) falseInput = 0;
+                    if (!this.GetPin("TrueValue").IsConnected() || !int.TryParse(this.GetPin("TrueValue").GetValue(), out var trueInput)) trueInput = 0;
+                    if (!this.GetPin("FalseValue").IsConnected() || !int.TryParse(this.GetPin("FalseValue").GetValue(), out var falseInput)) falseInput = 0;
                     return condition == 1 ? trueInput.ToString() : falseInput.ToString();
                 case "string":
-                    return condition == 1 ? this.GetPin("TrueValue").GetValue() : this.GetPin("FalseValue").GetValue();
+                    return condition == 1
+                        ? (this.GetPin("TrueValue").IsConnected() ? this.GetPin("TrueValue").GetValue() : "")
+                        : (this.GetPin("FalseValue").IsConnected() ? this.GetPin("FalseValue").GetValue() : "");
 
                 // TODO: Add other data types
             }
