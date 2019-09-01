@@ -27,10 +27,10 @@ namespace WireMod.Devices
 		private int GetOutput()
 		{
 			if (!this.GetPin("Area").IsConnected()) return -1;
-			if (!Helpers.TryParseArea(this.GetPin("Area").GetValue(), out var area)) return -2;
-			if (!area.HasValue) return -1;
-			if (area.Value.AreaType == "Circle") return -2;
 
+			var area = AreaFactory.Create(this.GetPin("Area").GetValue());
+			if (!(area is RectArea)) return -2;
+			
 			if (this.GetPin("TileID").IsConnected() && !int.TryParse(this.GetPin("TileID").GetValue(), out var _)) return -2;
 
 			return this.GetTiles().Count();
@@ -42,10 +42,10 @@ namespace WireMod.Devices
 
 			if (!this.GetPin("TileID").IsConnected() || !int.TryParse(this.GetPin("TileID").GetValue(), out var id)) id = -1;
 
-			var input = this.GetPinIn("Area").ConnectedPin.Device;
-			if (!(input is AreaInput areaInput)) return tiles;
-
-			var areaRect = areaInput.GetTileArea().GetRect();
+			var area = AreaFactory.Create(this.GetPin("Area").GetValue());
+			if (!(area is RectArea rectArea)) return tiles;
+			
+			var areaRect = rectArea.GetTileArea().GetRect();
 
 			for (var y = 0; y < areaRect.Height; y++)
 			{

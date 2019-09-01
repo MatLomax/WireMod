@@ -32,55 +32,22 @@ namespace WireMod.Devices
         {
             if (!this.GetPin("Distance").IsConnected() || !int.TryParse(this.GetPin("Distance").GetValue(), out var distance)) return "";
 
-            return $"{this.Settings["AreaType"]}:{distance}";
+            var pos = this.LocationOriginWorld;
+            if (this.GetPin("Point").IsConnected() && Helpers.TryParsePoint(this.GetPin("Point").GetValue(), out var point) && point.HasValue)
+            {
+                pos = point.Value.ToWorldCoordinates();
+            }
+
+            return $"{this.Settings["AreaType"]}:{distance}:{pos.X},{pos.Y}";
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             if (!this.GetPin("Distance").IsConnected()) return;
 
-            this.GetArea().Draw(spriteBatch, Color.LightGreen);
-        }
+            var area = AreaFactory.Create(this.Output());
 
-        public Area GetArea()
-        {
-            var radius = 0;
-            if (this.GetPin("Distance").IsConnected() && int.TryParse(this.GetPin("Distance").GetValue(), out var dist))
-            {
-                radius = dist;
-            }
-
-            var pos = this.LocationOriginWorld;
-            if (this.GetPin("Point").IsConnected() && Helpers.TryParsePoint(this.GetPin("Point").GetValue(), out var point) && point.HasValue)
-            {
-                pos = point.Value.ToWorldCoordinates();
-            }
-            
-            if (this.Settings["AreaType"] == "Circle")
-            {
-                return new CircArea
-                {
-                    Center = pos,
-                    Radius = radius
-                };
-            }
-
-            return new RectArea
-            {
-                Center = pos,
-                Radius = radius
-            };
-        }
-
-        public TileArea GetTileArea()
-        {
-            var area = this.GetArea();
-
-            return new TileArea
-            {
-                Center = area.Center / 16,
-                Radius = area.Radius / 16,
-            };
+            area.Draw(spriteBatch, Color.LightGreen);
         }
 
         public override void OnRightClick(Pin pin = null)

@@ -1,9 +1,47 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 
 namespace WireMod.Devices
 {
+	public static class AreaFactory
+	{
+		public static Area Create(string input)
+		{
+			if (string.IsNullOrEmpty(input) || !input.Contains(":")) return null;
+
+			var split = input.Split(':');
+
+			if (!int.TryParse(split[1], out var distance)) return null;
+
+			var pos = split[2].Split(',');
+			if (!int.TryParse(pos[0], out var x) || !int.TryParse(pos[1], out var y)) return null;
+
+			return Create(split[0], distance, new Vector2(x, y));
+		}
+
+		public static Area Create(string shape, int distance, Vector2 pos)
+		{
+			switch (shape)
+			{
+				case "Circle":
+					return new CircArea
+					{
+						Center = pos,
+						Radius = distance
+					};
+				case "Square":
+				default:
+					return new RectArea
+					{
+						Center = pos,
+						Radius = distance
+					};
+			}
+		}
+	}
+
 	public abstract class Area
 	{
 		public Vector2 Center { get; set; }
@@ -27,6 +65,15 @@ namespace WireMod.Devices
 			var size = this.GetRect().Width;
 			var rect = Helpers.CreateRectangle(size, size);
 			spriteBatch.Draw(rect, this.Center - Main.screenPosition - new Vector2(size / 2, size / 2) - Helpers.Drift, color * 0.25f);
+		}
+
+		public TileArea GetTileArea()
+		{
+			return new TileArea
+			{
+				Center = this.Center / 16,
+				Radius = this.Radius / 16,
+			};
 		}
 	}
 

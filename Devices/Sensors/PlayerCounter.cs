@@ -36,8 +36,8 @@ namespace WireMod.Devices
 		{
 			if (!this.GetPin("Area").IsConnected()) return new List<Player>();
 
-			var input = this.GetPinIn("Area").ConnectedPin.Device;
-			if (!(input is AreaInput areaInput)) return new List<Player>();
+			var area = AreaFactory.Create(this.GetPin("Area").GetValue());
+			if (area == null) return new List<Player>();
 
 			var players = Main.player.Select(p => p);
 
@@ -51,8 +51,6 @@ namespace WireMod.Devices
 				players = players.Where(p => p.team == (int)team);
 			}
 			
-			var area = areaInput.GetArea();
-
 			return players.Where(p => area.Contains(p.position));
 		}
 

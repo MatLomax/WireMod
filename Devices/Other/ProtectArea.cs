@@ -25,13 +25,23 @@ namespace WireMod.Devices
         public Area GetProtectPlaceArea()
         {
             if (!this.GetPin("ProtectPlace").IsConnected() || !this.GetPin("ProtectPlace").GetBool()) return null;
-            return ((AreaInput)this.GetPinIn("Area").ConnectedPin?.Device)?.GetTileArea();
+
+            return this.GetArea();
         }
 
         public Area GetProtectDestroyArea()
         {
             if (!this.GetPin("ProtectDestroy").IsConnected() || !this.GetPin("ProtectDestroy").GetBool()) return null;
-            return ((AreaInput)this.GetPinIn("Area").ConnectedPin?.Device)?.GetTileArea();
+
+            return this.GetArea();
+        }
+
+        private Area GetArea()
+        {
+            var area = AreaFactory.Create(this.GetPin("Area").GetValue());
+            if (!(area is RectArea rectArea)) return null;
+
+            return rectArea.GetTileArea();
         }
     }
 

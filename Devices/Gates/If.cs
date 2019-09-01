@@ -12,7 +12,7 @@ namespace WireMod.Devices
             this.Height = 3;
             this.Origin = new Point16(1, 1);
 
-            this.AutoTypes.AddRange(new [] {"int", "bool", "string"});
+            this.AutoTypes.AddRange(new [] {"int", "bool", "string", "area"});
            
             this.PinLayout = new List<PinDesign>
             {
@@ -37,6 +37,7 @@ namespace WireMod.Devices
                     if (!this.GetPin("FalseValue").IsConnected() || !int.TryParse(this.GetPin("FalseValue").GetValue(), out var falseInput)) falseInput = 0;
                     return condition == 1 ? trueInput.ToString() : falseInput.ToString();
                 case "string":
+                case "area":
                     return condition == 1
                         ? (this.GetPin("TrueValue").IsConnected() ? this.GetPin("TrueValue").GetValue() : "")
                         : (this.GetPin("FalseValue").IsConnected() ? this.GetPin("FalseValue").GetValue() : "");

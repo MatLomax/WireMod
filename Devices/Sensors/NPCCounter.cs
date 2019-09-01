@@ -37,8 +37,9 @@ namespace WireMod.Devices
 		{
 			if (!this.GetPin("Area").IsConnected()) return new List<NPC>();
 
-			var input = this.GetPinIn("Area").ConnectedPin.Device;
-			if (!(input is AreaInput areaInput)) return new List<NPC>();
+			var area = AreaFactory.Create(this.GetPin("Area").GetValue());
+
+			if (area == null) return new List<NPC>();
 
 			var npc = Main.npc.Select(n => n).Where(n => !n.dontCountMe);
 
@@ -51,8 +52,6 @@ namespace WireMod.Devices
 			{
 				npc = npc.Where(n => n.townNPC == (townNPC == 1));
 			}
-			
-			var area = areaInput.GetArea();
 
 			return npc.Where(p => area.Contains(p.position));
 		}

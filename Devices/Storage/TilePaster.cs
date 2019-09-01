@@ -28,19 +28,17 @@ namespace WireMod.Devices
 		
 		public void Trigger(Pin pin = null)
 		{
-			if (!this.GetPin("Data").IsConnected()) return;
-			if (!this.GetPin("Area").IsConnected() || !Helpers.TryParseArea(this.GetPin("Area").GetValue(), out var area) || !area.HasValue) return;
-			if (area.Value.AreaType == "Circle") return;
+			if (!this.GetPin("Data").IsConnected() || !this.GetPin("Area").IsConnected()) return;
+
+			var area = AreaFactory.Create(this.GetPin("Area").GetValue());
+			if (!(area is RectArea rectArea)) return;
 
 			var data = this.GetPin("Data").GetValue().Split(';');
 
 			var srcTiles = data.Select(d => new TileInfo(d)).ToList();
 			var srcRect = new Rectangle(srcTiles.Min(t => t.X), srcTiles.Min(t => t.Y), (srcTiles.Max(t => t.X) - srcTiles.Min(t => t.X)) + 1, (srcTiles.Max(t => t.Y) - srcTiles.Min(t => t.Y)) + 1);
-
-			var input = this.GetPinIn("Area").ConnectedPin.Device;
-			if (!(input is AreaInput areaInput)) return;
-
-			var destRect = areaInput.GetTileArea().GetRect();
+			
+			var destRect = rectArea.GetTileArea().GetRect();
 
 			for (var y = 0; y < Math.Min(srcRect.Height, destRect.Height); y++)
 			{

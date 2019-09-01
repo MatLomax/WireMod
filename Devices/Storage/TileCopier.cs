@@ -35,8 +35,8 @@ namespace WireMod.Devices
 				return;
 			}
 
-			if (!Helpers.TryParseArea(this.GetPin("Area").GetValue(), out var area) || !area.HasValue) return;
-			if (area.Value.AreaType == "Circle") return;
+			var area = AreaFactory.Create(this.GetPin("Area").GetValue());
+			if (!(area is RectArea)) return;
 
 			this.Settings["Value"] = string.Join(";", this.GetTiles().Select(t => t.ToString()));
 		}
@@ -47,10 +47,10 @@ namespace WireMod.Devices
 		{
 			var tiles = new List<TileInfo>();
 
-			var input = this.GetPinIn("Area").ConnectedPin.Device;
-			if (!(input is AreaInput areaInput)) return tiles;
-
-			var areaRect = areaInput.GetTileArea().GetRect();
+			var area = AreaFactory.Create(this.GetPin("Area").GetValue());
+			if (!(area is RectArea rectArea)) return tiles;
+			
+			var areaRect = rectArea.GetTileArea().GetRect();
 
 			for (var y = areaRect.Y; y < areaRect.Y + areaRect.Height; y++)
 			{
