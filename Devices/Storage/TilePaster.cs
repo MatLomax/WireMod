@@ -4,6 +4,8 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace WireMod.Devices
 {
@@ -27,7 +29,6 @@ namespace WireMod.Devices
 		public void Trigger(Pin pin = null)
 		{
 			if (!this.GetPin("Data").IsConnected()) return;
-			//if (!this.GetPin("Paste").IsConnected() || this.GetPin("Paste").GetValue() != "1") return;
 			if (!this.GetPin("Area").IsConnected() || !Helpers.TryParseArea(this.GetPin("Area").GetValue(), out var area) || !area.HasValue) return;
 			if (area.Value.AreaType == "Circle") return;
 
@@ -45,8 +46,8 @@ namespace WireMod.Devices
 			{
 				for (var x = 0; x < Math.Min(srcRect.Width, destRect.Width); x++)
 				{
-					var destTile = Main.tile[destRect.X + x, destRect.Y + y];
 					var srcTile = Main.tile[srcRect.X + x, srcRect.Y + y];
+					var destTile = Main.tile[destRect.X + x, destRect.Y + y];
 
 					if (Constants.CopyTileBlacklist.Contains(srcTile.type)) continue;
 
@@ -59,6 +60,12 @@ namespace WireMod.Devices
 					destTile.wire2(wire2);
 					destTile.wire3(wire3);
 					destTile.wire4(wire4);
+
+					WorldGen.SquareTileFrame(destRect.X + x, destRect.Y + y);
+					if (Main.netMode == NetmodeID.Server)
+					{
+						NetMessage.SendTileSquare(-1, destRect.X + x, destRect.Y + y, 1);
+					}
 				}
 			}
 		}
