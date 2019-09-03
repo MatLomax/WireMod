@@ -14,13 +14,12 @@ namespace WireMod.Devices
         {
             this.Name = "TextTileController";
             this.Width = 2;
-            this.Height = 2;
-            this.Origin = new Point16(1, 1);
+            this.Height = 1;
+            this.Origin = new Point16(1, 0);
 
             this.PinLayout = new List<PinDesign>
             {
-                new PinDesign("In", 0, new Point16(1, 0), "string"),
-                new PinDesign("In", 1, new Point16(0, 1), "bool", "Activated"),
+                new PinDesign("In", 0, new Point16(0, 0), "string"),
             };
         }
 
@@ -29,7 +28,6 @@ namespace WireMod.Devices
             var tiles = this.GetTiles();
 
             var input = this.GetPinIn(0).IsConnected() ? this.GetPinIn(0).GetValue() : "";
-            if (this.GetPin("Activated").IsConnected() && (!int.TryParse(this.GetPin("Activated").GetValue(), out var active) || active == 0)) input = "";
             
             input = input.PadRight(tiles.Count, ' ');
             
